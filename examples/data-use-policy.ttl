@@ -1,0 +1,205 @@
+# =============================================================================
+# Example: Internal Data Access Policy
+# =============================================================================
+# Shows role-based access with purpose constraints and consent tracking.
+# =============================================================================
+
+@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-du:  <https://vocabulary.bigbank/adalbert/data-use/> .
+@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
+@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .
+
+# =============================================================================
+# AGENTS (Hierarchy)
+# =============================================================================
+
+<https://data.bigbank/agents/hr-analytics> a adalbert:Agent ;
+    rdfs:label "HR Analytics Team" ;
+    adalbert:memberOf <https://data.bigbank/agents/hr-division> .
+
+<https://data.bigbank/agents/hr-division> a adalbert:Agent ;
+    rdfs:label "Human Resources Division" .
+
+<https://data.bigbank/agents/compliance-team> a adalbert:Agent ;
+    rdfs:label "Compliance Team" .
+
+# =============================================================================
+# ASSETS (Hierarchy)
+# =============================================================================
+
+<https://data.bigbank/assets/employee-compensation> a adalbert:Asset ;
+    rdfs:label "Employee Compensation Data" ;
+    adalbert:partOf <https://data.bigbank/assets/employee-data> .
+
+<https://data.bigbank/assets/employee-performance> a adalbert:Asset ;
+    rdfs:label "Employee Performance Reviews" ;
+    adalbert:partOf <https://data.bigbank/assets/employee-data> .
+
+<https://data.bigbank/assets/employee-data> a adalbert:Asset ;
+    rdfs:label "Employee Data Lake" .
+
+# =============================================================================
+# POLICY SET: HR Data Access Controls
+# =============================================================================
+# This is a Set (no parties) - applies to anyone matching the conditions.
+
+<https://data.bigbank/policies/hr-data-access> a adalbert:Set ;
+    rdfs:label "HR Data Access Policy" ;
+    adalbert:target <https://data.bigbank/assets/employee-data> ;
+    
+    # ===== RULE 1: HR Analytics can read for analytics purposes =====
+    
+    adalbert:clause [
+        a adalbert:Privilege ;
+        rdfs:label "HR analytics read access" ;
+        adalbert:subject <https://data.bigbank/agents/hr-analytics> ;
+        adalbert:action adalbert-gov:read ;
+        adalbert:object <https://data.bigbank/assets/employee-data> ;
+        adalbert:condition [
+            a adalbert:AtomicConstraint ;
+            adalbert:leftOperand adalbert-gov:purpose ;
+            adalbert:constraintOperator adalbert:eq ;
+            adalbert:rightOperand adalbert-gov:analytics
+        ]
+    ] ;
+    
+    # ===== RULE 2: Compliance can read for compliance purposes =====
+    
+    adalbert:clause [
+        a adalbert:Privilege ;
+        rdfs:label "Compliance audit access" ;
+        adalbert:subject <https://data.bigbank/agents/compliance-team> ;
+        adalbert:action adalbert-gov:read ;
+        adalbert:object <https://data.bigbank/assets/employee-data> ;
+        adalbert:condition [
+            a adalbert:AtomicConstraint ;
+            adalbert:leftOperand adalbert-gov:purpose ;
+            adalbert:constraintOperator adalbert:eq ;
+            adalbert:rightOperand adalbert-gov:compliance
+        ]
+    ] ;
+    
+    # ===== RULE 3: Anyone reading must log access =====
+    
+    adalbert:clause [
+        a adalbert:Duty ;
+        rdfs:label "Mandatory audit logging" ;
+        adalbert:subject adalbert:currentAgent ;
+        adalbert:action adalbert-gov:log ;
+        adalbert:object <https://data.bigbank/assets/access-log> ;
+        adalbert:condition [
+            a adalbert:AtomicConstraint ;
+            adalbert:leftOperand adalbert-gov:classification ;
+            adalbert:constraintOperator adalbert:eq ;
+            adalbert:rightOperand adalbert-gov:confidential
+        ] ;
+        adalbert:deadline "PT1H"^^xsd:duration  # Log within 1 hour
+    ] ;
+    
+    # ===== RULE 4: No external distribution =====
+    
+    adalbert:clause [
+        a adalbert:Prohibition ;
+        rdfs:label "No external sharing" ;
+        adalbert:subject adalbert:currentAgent ;
+        adalbert:action adalbert-gov:distribute ;
+        adalbert:object <https://data.bigbank/assets/employee-data>
+    ] ;
+    
+    # ===== RULE 5: No use for model training =====
+    
+    adalbert:clause [
+        a adalbert:Prohibition ;
+        rdfs:label "No ML training" ;
+        adalbert:subject adalbert:currentAgent ;
+        adalbert:action adalbert-gov:use ;
+        adalbert:object <https://data.bigbank/assets/employee-data> ;
+        adalbert:condition [
+            a adalbert:AtomicConstraint ;
+            adalbert:leftOperand adalbert-gov:processingMode ;
+            adalbert:constraintOperator adalbert:eq ;
+            adalbert:rightOperand adalbert-gov:modelTraining
+        ]
+    ] ;
+    
+    # ===== RULE 6: Production only =====
+    
+    adalbert:clause [
+        a adalbert:Prohibition ;
+        rdfs:label "Production environment only" ;
+        adalbert:subject adalbert:currentAgent ;
+        adalbert:action adalbert-gov:use ;
+        adalbert:object <https://data.bigbank/assets/employee-data> ;
+        adalbert:condition [
+            a adalbert:AtomicConstraint ;
+            adalbert:leftOperand adalbert-du:environment ;
+            adalbert:constraintOperator adalbert:isNoneOf ;
+            adalbert:rightOperand (adalbert-du:production adalbert-du:staging)
+        ]
+    ] .
+
+
+# =============================================================================
+# POLICY SET: Compensation Data (Stricter)
+# =============================================================================
+# More restrictive policy for sensitive compensation data.
+
+<https://data.bigbank/policies/compensation-access> a adalbert:Set ;
+    rdfs:label "Compensation Data Access Policy" ;
+    adalbert:target <https://data.bigbank/assets/employee-compensation> ;
+    
+    # Only HR Division (not just analytics sub-team)
+    adalbert:clause [
+        a adalbert:Privilege ;
+        rdfs:label "HR Division compensation access" ;
+        adalbert:subject <https://data.bigbank/agents/hr-division> ;
+        adalbert:action adalbert-gov:read ;
+        adalbert:object <https://data.bigbank/assets/employee-compensation> ;
+        adalbert:condition [
+            a adalbert:LogicalConstraint ;
+            adalbert:constraintOperator adalbert:and ;
+            adalbert:operand [
+                a adalbert:AtomicConstraint ;
+                adalbert:leftOperand adalbert-gov:purpose ;
+                adalbert:constraintOperator adalbert:isAnyOf ;
+                adalbert:rightOperand (adalbert-gov:compliance adalbert-gov:operations)
+            ] ;
+            adalbert:operand [
+                a adalbert:AtomicConstraint ;
+                adalbert:leftOperand adalbert-du:legalBasis ;
+                adalbert:constraintOperator adalbert:eq ;
+                adalbert:rightOperand adalbert-du:legitimateInterest
+            ]
+        ]
+    ] ;
+    
+    # Retention limit: delete after 7 years
+    adalbert:clause [
+        a adalbert:Duty ;
+        rdfs:label "Retention limit" ;
+        adalbert:subject adalbert:currentAgent ;
+        adalbert:action adalbert-gov:delete ;
+        adalbert:object <https://data.bigbank/assets/employee-compensation> ;
+        adalbert:condition [
+            a adalbert:AtomicConstraint ;
+            adalbert:leftOperand adalbert-gov:retentionPeriod ;
+            adalbert:constraintOperator adalbert:gt ;
+            adalbert:rightOperand "P7Y"^^xsd:duration
+        ]
+    ] ;
+    
+    # Mandatory anonymization for any analytics
+    adalbert:clause [
+        a adalbert:Duty ;
+        rdfs:label "Anonymization required" ;
+        adalbert:subject adalbert:currentAgent ;
+        adalbert:action adalbert-gov:anonymize ;
+        adalbert:object <https://data.bigbank/assets/employee-compensation> ;
+        adalbert:condition [
+            a adalbert:AtomicConstraint ;
+            adalbert:leftOperand adalbert-gov:purpose ;
+            adalbert:constraintOperator adalbert:eq ;
+            adalbert:rightOperand adalbert-gov:analytics
+        ]
+    ] .
