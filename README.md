@@ -112,22 +112,24 @@ These can be added by upgrading to RL2 without changing existing policies.
 
 ```
 RL1.5/
-├── README.md                        # This file
-├── RL1_5_Semantics.md               # Formal semantics (normative)
+├── README.md                            # This file
 ├── ontology/
-│   ├── rl1_5-core.ttl               # OWL ontology
-│   ├── rl1_5-shacl.ttl              # SHACL validation shapes
-│   └── rl1_5-prof.ttl               # DXPROF profile declaration
+│   ├── rl1_5-core.ttl                   # OWL ontology
+│   ├── rl1_5-shacl.ttl                  # SHACL validation shapes
+│   └── rl1_5-prof.ttl                   # DXPROF profile declaration
 ├── profiles/
-│   ├── rl1_5-governance-core.ttl    # Shared data governance operands
-│   ├── rl1_5-market-data.ttl        # Market data licensing
-│   ├── rl1_5-data-use.ttl           # Internal access control
-│   └── rl1_5-dcon.ttl               # DCON conformance declaration
+│   ├── rl1_5-governance-core.ttl        # Shared governance operands
+│   ├── rl1_5-market-data.ttl            # Market data licensing
+│   ├── rl1_5-data-use.ttl               # Internal access control
+│   └── rl1_5-dcon.ttl                   # DCON conformance
 └── docs/
-    ├── comparison-odrl22.md         # ODRL 2.2 comparison
-    ├── comparison-w3c-market-data.md # W3C Market Data comparison
-    ├── comparison-dcon.md           # DCON alignment
-    └── conformance-w3c-best-practices.md
+    ├── RL1_5_Semantics.md               # Formal semantics (normative)
+    ├── conformance-w3c-best-practices.md
+    └── comparisons/
+        ├── comparison-odrl22.md         # vs ODRL 2.2
+        ├── comparison-w3c-market-data.md # vs W3C Market Data
+        ├── comparison-dcon.md           # vs DCON
+        └── namespace-alignment.md       # DCON2 namespace coordination
 ```
 
 ---
