@@ -1,267 +1,185 @@
-# ==============================================================================
+# =============================================================================
 # RL1.5 Market Data Profile
-# Version: 0.1
-# Date: 2026-02-02
-# ==============================================================================
-# Operands and actions for market data licensing contracts.
-# Covers: display/non-display, redistribution, entitlements, metering, audit.
-# ==============================================================================
+# Version: 0.2
+# Date: 2026-02-03
+# =============================================================================
+# Market data licensing vocabulary for internal governance.
+# =============================================================================
 
-@prefix rl15:    <https://rl1-5.example/ontology#> .
-@prefix rl15gov: <https://rl1-5.example/profiles/governance#> .
-@prefix rl15mkt: <https://rl1-5.example/profiles/market-data#> .
+@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
+@prefix rl15-gov: <https://vocabulary.bigbank/rl1.5/governance/> .
+@prefix rl15-md: <https://vocabulary.bigbank/rl1.5/market-data/> .
 @prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 
-# ==============================================================================
+# =============================================================================
 # PROFILE DECLARATION
-# ==============================================================================
+# =============================================================================
 
-<https://rl1-5.example/profiles/market-data> a owl:Ontology, odrl:Profile ;
+<https://vocabulary.bigbank/rl1.5/market-data/> a owl:Ontology, odrl:Profile ;
     dcterms:title "RL1.5 Market Data Profile"@en ;
     dcterms:description """
-        Vocabulary for market data licensing contracts.
+        Market data licensing vocabulary for internal data governance.
         
-        Covers:
-        - Display vs non-display use
-        - Redistribution and derived data
-        - Entitlement tiers and seat limits
-        - Delayed data and real-time access
-        - Usage metering and reporting
-        - Vendor audit rights
+        Scope: Internal data sharing (provider → consumer).
+        For external vendor contracts, see W3C Market Data Profile.
     """@en ;
-    dcterms:created "2026-02-02"^^xsd:date ;
-    owl:versionInfo "0.1" ;
-    owl:imports <https://rl1-5.example/profiles/governance> .
+    dcterms:created "2026-02-03"^^xsd:date ;
+    owl:versionInfo "0.2" ;
+    owl:imports <https://vocabulary.bigbank/rl1.5/governance/> .
 
-# ==============================================================================
-# DISPLAY/NON-DISPLAY OPERANDS
-# ==============================================================================
-
-rl15mkt:displayType a rl15:LeftOperand ;
-    rdfs:label "display type"@en ;
-    skos:definition "Whether use is display or non-display."@en ;
-    rl15gov:contextKey "displayType" ;
-    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) ;
-    rdfs:comment """
-        Critical distinction in market data licensing:
-        - Display: Human-readable presentation (terminals, screens)
-        - Non-display: Automated processing (algo trading, analytics)
-        
-        Non-display typically requires separate/additional licensing.
-    """@en .
-
-rl15mkt:display a skos:Concept ;
-    rdfs:label "display"@en ;
-    skos:definition "Human-readable presentation."@en .
-
-rl15mkt:nonDisplay a skos:Concept ;
-    rdfs:label "non-display"@en ;
-    skos:definition "Automated/programmatic use."@en .
-
-# ==============================================================================
-# REDISTRIBUTION OPERANDS
-# ==============================================================================
-
-rl15mkt:redistributionAllowed a rl15:LeftOperand ;
-    rdfs:label "redistribution allowed"@en ;
-    skos:definition "Whether redistribution to third parties is permitted."@en ;
-    rl15gov:contextKey "redistributionAllowed" ;
-    rl15gov:supportedOperators (rl15:eq) ;
-    rdfs:comment "Boolean: true if data may be redistributed."@en .
-
-rl15mkt:redistributionType a rl15:LeftOperand ;
-    rdfs:label "redistribution type"@en ;
-    skos:definition "Type of redistribution permitted."@en ;
-    rl15gov:contextKey "redistributionType" ;
-    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) .
-
-rl15mkt:internalOnly a skos:Concept ;
-    rdfs:label "internal only"@en ;
-    skos:definition "No external redistribution."@en .
-
-rl15mkt:affiliates a skos:Concept ;
-    rdfs:label "affiliates"@en ;
-    skos:definition "Redistribution to corporate affiliates."@en .
-
-rl15mkt:clients a skos:Concept ;
-    rdfs:label "clients"@en ;
-    skos:definition "Redistribution to clients."@en .
-
-rl15mkt:unrestricted a skos:Concept ;
-    rdfs:label "unrestricted"@en ;
-    skos:definition "Open redistribution."@en .
-
-# ==============================================================================
-# DERIVED DATA OPERANDS
-# ==============================================================================
-
-rl15mkt:derivedDataRestrictions a rl15:LeftOperand ;
-    rdfs:label "derived data restrictions"@en ;
-    skos:definition "Restrictions on creating derived data."@en ;
-    rl15gov:contextKey "derivedDataRestrictions" ;
-    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) ;
-    rdfs:comment """
-        Many licenses restrict how derived data can be created:
-        - irreversible: Must be impossible to recover original
-        - commingled: Must be mixed with other data sources
-        - none: No restrictions on derivation
-    """@en .
-
-rl15mkt:derivedIrreversible a skos:Concept ;
-    rdfs:label "irreversible"@en ;
-    skos:definition "Original data cannot be recovered from derived."@en .
-
-rl15mkt:derivedCommingled a skos:Concept ;
-    rdfs:label "commingled"@en ;
-    skos:definition "Must be mixed with non-vendor data."@en .
-
-rl15mkt:derivedUnrestricted a skos:Concept ;
-    rdfs:label "unrestricted derivation"@en ;
-    skos:definition "No restrictions on derived data."@en .
-
-# ==============================================================================
-# ENTITLEMENT OPERANDS
-# ==============================================================================
-
-rl15mkt:entitlementTier a rl15:LeftOperand ;
-    rdfs:label "entitlement tier"@en ;
-    skos:definition "License tier determining access level."@en ;
-    rl15gov:contextKey "entitlementTier" ;
-    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) ;
-    rdfs:comment "Different tiers may have different pricing and restrictions."@en .
-
-rl15mkt:concurrentSeats a rl15:LeftOperand ;
-    rdfs:label "concurrent seats"@en ;
-    skos:definition "Maximum concurrent users permitted."@en ;
-    rl15gov:contextKey "concurrentSeats" ;
-    rl15gov:supportedOperators (rl15:lte rl15:lt rl15:eq rl15:gt rl15:gte) .
-
-rl15mkt:deviceLimit a rl15:LeftOperand ;
-    rdfs:label "device limit"@en ;
-    skos:definition "Maximum devices permitted."@en ;
-    rl15gov:contextKey "deviceLimit" ;
-    rl15gov:supportedOperators (rl15:lte rl15:lt rl15:eq) .
-
-rl15mkt:namedUsers a rl15:LeftOperand ;
-    rdfs:label "named users"@en ;
-    skos:definition "List of named users permitted access."@en ;
-    rl15gov:contextKey "namedUsers" ;
-    rl15gov:supportedOperators (rl15:isAnyOf) .
-
-# ==============================================================================
+# =============================================================================
 # TIMELINESS OPERANDS
-# ==============================================================================
+# =============================================================================
 
-rl15mkt:delayedData a rl15:LeftOperand ;
-    rdfs:label "delayed data"@en ;
-    skos:definition "Whether data is delayed (not real-time)."@en ;
-    rl15gov:contextKey "delayedData" ;
-    rl15gov:supportedOperators (rl15:eq) ;
-    rdfs:comment "Boolean: true if data is delayed (e.g., 15-minute delay)."@en .
+rl15-md:timeliness a rl15:LeftOperand ;
+    rdfs:label "timeliness"@en ;
+    skos:definition "Data freshness category."@en ;
+    rl15:contextKey "timeliness" .
 
-rl15mkt:delayMinutes a rl15:LeftOperand ;
+rl15-md:delayMinutes a rl15:LeftOperand ;
     rdfs:label "delay minutes"@en ;
-    skos:definition "Minimum delay in minutes."@en ;
-    rl15gov:contextKey "delayMinutes" ;
-    rl15gov:supportedOperators (rl15:gte rl15:gt rl15:eq) ;
-    rdfs:comment "Used to enforce minimum delay requirements."@en .
+    skos:definition "Delay in minutes from real-time."@en ;
+    rl15:contextKey "delayMinutes" .
 
-rl15mkt:realTimeAccess a rl15:LeftOperand ;
-    rdfs:label "real-time access"@en ;
-    skos:definition "Whether real-time access is permitted."@en ;
-    rl15gov:contextKey "realTimeAccess" ;
-    rl15gov:supportedOperators (rl15:eq) ;
-    rdfs:comment "Boolean: true if real-time access is allowed."@en .
+# Timeliness values
+rl15-md:realtime a skos:Concept ; rdfs:label "real-time"@en .
+rl15-md:delayed a skos:Concept ; rdfs:label "delayed"@en .
+rl15-md:endOfDay a skos:Concept ; rdfs:label "end of day"@en .
+rl15-md:historical a skos:Concept ; rdfs:label "historical"@en .
+rl15-md:embargoed a skos:Concept ; rdfs:label "embargoed"@en .
 
-# ==============================================================================
-# METERING OPERANDS
-# ==============================================================================
+# =============================================================================
+# ASSET OPERANDS
+# =============================================================================
 
-rl15mkt:usageMetering a rl15:LeftOperand ;
-    rdfs:label "usage metering"@en ;
-    skos:definition "Type of usage metering required."@en ;
-    rl15gov:contextKey "usageMetering" ;
-    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) .
+rl15-md:assetClass a rl15:LeftOperand ;
+    rdfs:label "asset class"@en ;
+    skos:definition "Financial instrument classification."@en ;
+    rl15:contextKey "assetClass" .
 
-rl15mkt:queryCount a rl15:LeftOperand ;
-    rdfs:label "query count"@en ;
-    skos:definition "Number of queries permitted."@en ;
-    rl15gov:contextKey "queryCount" ;
-    rl15gov:supportedOperators (rl15:lte rl15:lt rl15:eq) .
+rl15-md:market a rl15:LeftOperand ;
+    rdfs:label "market"@en ;
+    skos:definition "Trading venue or market."@en ;
+    rl15:contextKey "market" .
 
-rl15mkt:dataVolume a rl15:LeftOperand ;
-    rdfs:label "data volume"@en ;
-    skos:definition "Volume of data permitted (bytes)."@en ;
-    rl15gov:contextKey "dataVolume" ;
-    rl15gov:supportedOperators (rl15:lte rl15:lt rl15:eq) .
+rl15-md:isBenchmark a rl15:LeftOperand ;
+    rdfs:label "is benchmark"@en ;
+    skos:definition "Whether asset is a benchmark/index."@en ;
+    rl15:contextKey "isBenchmark" .
 
-# ==============================================================================
-# AUDIT OPERANDS
-# ==============================================================================
+rl15-md:geographicScope a rl15:LeftOperand ;
+    rdfs:label "geographic scope"@en ;
+    skos:definition "Geographic coverage of the data."@en ;
+    rl15:contextKey "geographicScope" .
 
-rl15mkt:auditRight a rl15:LeftOperand ;
-    rdfs:label "audit right"@en ;
-    skos:definition "Whether vendor has audit rights."@en ;
-    rl15gov:contextKey "auditRight" ;
-    rl15gov:supportedOperators (rl15:eq) ;
-    rdfs:comment "Boolean: true if vendor can audit usage."@en .
+# =============================================================================
+# RECIPIENT OPERANDS
+# =============================================================================
 
-rl15mkt:reportingInterval a rl15:LeftOperand ;
-    rdfs:label "reporting interval"@en ;
-    skos:definition "Required interval for usage reporting."@en ;
-    rl15gov:contextKey "reportingInterval" ;
-    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) ;
-    rdfs:comment "e.g., monthly, quarterly, annual."@en .
+rl15-md:recipient a rl15:LeftOperand ;
+    rdfs:label "recipient"@en ;
+    skos:definition "Data recipient identity."@en ;
+    rl15:contextKey "recipient" .
 
-# Reporting interval values
-rl15mkt:monthly a skos:Concept ;
-    rdfs:label "monthly"@en .
+rl15-md:recipientType a rl15:LeftOperand ;
+    rdfs:label "recipient type"@en ;
+    skos:definition "Category of data recipient."@en ;
+    rl15:contextKey "recipientType" .
 
-rl15mkt:quarterly a skos:Concept ;
-    rdfs:label "quarterly"@en .
+rl15-md:internal a skos:Concept ; rdfs:label "internal"@en .
+rl15-md:external a skos:Concept ; rdfs:label "external"@en .
+rl15-md:professional a skos:Concept ; rdfs:label "professional"@en .
+rl15-md:nonProfessional a skos:Concept ; rdfs:label "non-professional"@en .
 
-rl15mkt:annual a skos:Concept ;
-    rdfs:label "annual"@en .
+# =============================================================================
+# COUNT OPERANDS
+# =============================================================================
 
-# ==============================================================================
-# MARKET DATA ACTIONS
-# ==============================================================================
+rl15-md:userCount a rl15:LeftOperand ;
+    rdfs:label "user count"@en ;
+    skos:definition "Number of users accessing data."@en ;
+    rl15:contextKey "userCount" .
 
-rl15mkt:displayData a rl15:Action ;
-    rdfs:label "display data"@en ;
-    skos:definition "Display data to human users."@en ;
-    rl15:includedIn rl15gov:use .
+rl15-md:deviceCount a rl15:LeftOperand ;
+    rdfs:label "device count"@en ;
+    skos:definition "Number of devices accessing data."@en ;
+    rl15:contextKey "deviceCount" .
 
-rl15mkt:processData a rl15:Action ;
-    rdfs:label "process data"@en ;
-    skos:definition "Automated processing of data."@en ;
-    rl15:includedIn rl15gov:use .
+rl15-md:locationCount a rl15:LeftOperand ;
+    rdfs:label "location count"@en ;
+    skos:definition "Number of locations accessing data."@en ;
+    rl15:contextKey "locationCount" .
 
-rl15mkt:redistribute a rl15:Action ;
-    rdfs:label "redistribute"@en ;
-    skos:definition "Redistribute to third parties."@en ;
-    rl15:includedIn rl15gov:distribute .
+# =============================================================================
+# ACTIONS
+# =============================================================================
 
-rl15mkt:createDerived a rl15:Action ;
-    rdfs:label "create derived"@en ;
+rl15-md:display a rl15:Action ;
+    rdfs:label "display"@en ;
+    skos:definition "Display data to users."@en ;
+    rl15:includedIn rl15-gov:use .
+
+rl15-md:nonDisplay a rl15:Action ;
+    rdfs:label "non-display"@en ;
+    skos:definition "Use data for non-display purposes."@en ;
+    rl15:includedIn rl15-gov:use .
+
+rl15-md:distribute a rl15:Action ;
+    rdfs:label "distribute"@en ;
+    skos:definition "Distribute data."@en ;
+    rl15:includedIn rl15-gov:distribute .
+
+rl15-md:derive a rl15:Action ;
+    rdfs:label "derive"@en ;
     skos:definition "Create derived data products."@en ;
-    rl15:includedIn rl15gov:derive .
+    rl15:includedIn rl15-gov:derive .
 
-rl15mkt:reportUsage a rl15:Action ;
-    rdfs:label "report usage"@en ;
-    skos:definition "Report usage metrics to vendor."@en ;
-    rdfs:comment "Typically a duty attached to market data agreements."@en .
+rl15-md:calculateIndex a rl15:Action ;
+    rdfs:label "calculate index"@en ;
+    skos:definition "Use for index calculation."@en ;
+    rl15:includedIn rl15-md:derive .
 
-rl15mkt:permitAudit a rl15:Action ;
-    rdfs:label "permit audit"@en ;
-    skos:definition "Allow vendor to audit usage."@en ;
-    rdfs:comment "Duty to permit vendor audits."@en .
+rl15-md:algorithmicTrading a rl15:Action ;
+    rdfs:label "algorithmic trading"@en ;
+    skos:definition "Use for automated trading."@en ;
+    rl15:includedIn rl15-md:nonDisplay .
 
-# ==============================================================================
+rl15-md:notify a rl15:Action ;
+    rdfs:label "notify"@en ;
+    skos:definition "Send usage notifications."@en ;
+    rl15:includedIn rl15-gov:notify .
+
+rl15-md:report a rl15:Action ;
+    rdfs:label "report"@en ;
+    skos:definition "Submit usage reports."@en .
+
+rl15-md:audit a rl15:Action ;
+    rdfs:label "audit"@en ;
+    skos:definition "Permit audit of data usage."@en .
+
+rl15-md:attach a rl15:Action ;
+    rdfs:label "attach"@en ;
+    skos:definition "Attach attribution to derived works."@en .
+
+# =============================================================================
+# DERIVATION TYPE (for conditions)
+# =============================================================================
+
+rl15-md:derivationType a rl15:LeftOperand ;
+    rdfs:label "derivation type"@en ;
+    skos:definition "Type of derivation being performed."@en ;
+    rl15:contextKey "derivationType" .
+
+rl15-md:commingled a skos:Concept ; rdfs:label "commingled"@en .
+rl15-md:nonSubstitutive a skos:Concept ; rdfs:label "non-substitutive"@en .
+rl15-md:newProduct a skos:Concept ; rdfs:label "new product"@en .
+
+# =============================================================================
 # END OF PROFILE
-# ==============================================================================
+# =============================================================================

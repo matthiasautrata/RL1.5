@@ -1,194 +1,88 @@
 # =============================================================================
-# RL1.5 Profile Description (W3C DXPROF)
+# RL1.5 Profile Declaration (DXPROF)
+# Version: 0.2
+# Date: 2026-02-03
 # =============================================================================
-# Profile metadata using W3C Profiles Vocabulary (https://www.w3.org/TR/dx-prof/)
-# Enables profile discovery, negotiation, and resource description.
-# =============================================================================
-
-@prefix prof: <http://www.w3.org/ns/dx/prof/> .
-@prefix role: <http://www.w3.org/ns/dx/prof/role/> .
-@prefix dct: <http://purl.org/dc/terms/> .
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-
-# =============================================================================
-# BASE SPECIFICATIONS
+# W3C Profiles Vocabulary metadata for RL1.5.
 # =============================================================================
 
-<http://www.w3.org/ns/odrl/2/core>
-    a dct:Standard ;
-    dct:title "ODRL Core Profile Version 2.2"@en ;
-    dct:description "The core vocabulary defined by the ODRL 2.2 Information Model."@en ;
-    dct:publisher "W3C" ;
-    dct:issued "2018-02-15"^^xsd:date .
+@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
+@prefix prof:    <http://www.w3.org/ns/dx/prof/> .
+@prefix role:    <http://www.w3.org/ns/dx/prof/role/> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+# =============================================================================
+# BASE SPECIFICATION
+# =============================================================================
+
+odrl:core a dct:Standard ;
+    dct:title "ODRL Information Model 2.2"@en ;
+    dct:identifier <http://www.w3.org/TR/odrl-model/> .
 
 # =============================================================================
 # RL1.5 CORE PROFILE
 # =============================================================================
 
-<https://rl2.org/rl1.5/>
-    a prof:Profile, skos:ConceptScheme ;
-    
-    # --- Identification ---
-    dct:title "RL1.5: Deterministic Rights Language"@en ;
-    dct:description """A formally specified, verification-ready subset of ODRL 2.2 
-for data governance. Provides deterministic evaluation semantics, explicit duty 
-lifecycle management, and a path to formal verification."""@en ;
-    
-    # --- Profile relationship ---
-    prof:isProfileOf <http://www.w3.org/ns/odrl/2/core> ;
+<https://vocabulary.bigbank/rl1.5/> a prof:Profile ;
+    dct:title "RL1.5 Core"@en ;
+    dct:description "Deterministic policy language extending ODRL 2.2."@en ;
+    prof:isProfileOf odrl:core ;
     prof:hasToken "rl15"^^xsd:token ;
     
-    # --- Provenance ---
-    dct:publisher "RL2 Project" ;
-    dct:creator "Data Governance Architecture Team" ;
-    owl:versionInfo "0.1" ;
-    dct:issued "2026-02-02"^^xsd:date ;
-    dct:modified "2026-02-03"^^xsd:date ;
-    
-    # --- Resources ---
-    prof:hasResource
-        <https://rl2.org/rl1.5/#readme> ,
-        <https://rl2.org/rl1.5/#semantics> ,
-        <https://rl2.org/rl1.5/#ontology> ,
-        <https://rl2.org/rl1.5/#shapes> ,
-        <https://rl2.org/rl1.5/#governance-core> .
-
-# --- README (Overview) ---
-<https://rl2.org/rl1.5/#readme>
-    a prof:ResourceDescriptor ;
-    dct:title "RL1.5 Overview"@en ;
-    dct:description "Project overview, design principles, and repository structure."@en ;
-    prof:hasRole role:guidance ;
-    dct:format <https://w3id.org/mediatype/text/markdown> ;
-    prof:hasArtifact <https://rl2.org/rl1.5/README.md> .
-
-# --- Formal Semantics (Normative) ---
-<https://rl2.org/rl1.5/#semantics>
-    a prof:ResourceDescriptor ;
-    dct:title "RL1.5 Formal Semantics"@en ;
-    dct:description "Normative operational semantics with abstract syntax, evaluation rules, and correctness properties."@en ;
-    prof:hasRole role:specification ;
-    dct:format <https://w3id.org/mediatype/text/markdown> ;
-    prof:hasArtifact <https://rl2.org/rl1.5/RL1_5_Semantics.md> .
-
-# --- OWL Ontology ---
-<https://rl2.org/rl1.5/#ontology>
-    a prof:ResourceDescriptor ;
-    dct:title "RL1.5 OWL Ontology"@en ;
-    dct:description "OWL ontology defining RL1.5 as a strict ODRL 2.2 subset."@en ;
-    prof:hasRole role:vocabulary ;
-    dct:conformsTo <https://www.w3.org/TR/owl2-rdf-based-semantics/> ;
-    dct:format <https://w3id.org/mediatype/text/turtle> ;
-    prof:hasArtifact <https://rl2.org/rl1.5/ontology/rl1_5-core.ttl> .
-
-# --- SHACL Shapes ---
-<https://rl2.org/rl1.5/#shapes>
-    a prof:ResourceDescriptor ;
-    dct:title "RL1.5 SHACL Validation Shapes"@en ;
-    dct:description "SHACL shapes enforcing RL1.5 subset constraints and rejecting RL2-only constructs."@en ;
-    prof:hasRole role:validation ;
-    dct:conformsTo <https://www.w3.org/TR/shacl/> ;
-    dct:format <https://w3id.org/mediatype/text/turtle> ;
-    prof:hasArtifact <https://rl2.org/rl1.5/ontology/rl1_5-shacl.ttl> .
-
-# --- Governance Core Vocabulary ---
-<https://rl2.org/rl1.5/#governance-core>
-    a prof:ResourceDescriptor ;
-    dct:title "RL1.5 Governance Core Vocabulary"@en ;
-    dct:description "Shared operands for data governance across domain profiles."@en ;
-    prof:hasRole role:vocabulary ;
-    dct:format <https://w3id.org/mediatype/text/turtle> ;
-    prof:hasArtifact <https://rl2.org/rl1.5/profiles/rl1_5-governance-core.ttl> .
+    prof:hasResource [
+        a prof:ResourceDescriptor ;
+        dct:title "RL1.5 Specification"@en ;
+        prof:hasRole role:specification ;
+        prof:hasArtifact <https://vocabulary.bigbank/rl1.5/docs/README.md>
+    ] , [
+        a prof:ResourceDescriptor ;
+        dct:title "RL1.5 Formal Semantics"@en ;
+        prof:hasRole role:specification ;
+        prof:hasArtifact <https://vocabulary.bigbank/rl1.5/docs/RL1_5_Semantics.md>
+    ] , [
+        a prof:ResourceDescriptor ;
+        dct:title "RL1.5 Core Ontology"@en ;
+        prof:hasRole role:vocabulary ;
+        dct:conformsTo owl: ;
+        prof:hasArtifact <https://vocabulary.bigbank/rl1.5/ontology/rl1_5-core.ttl>
+    ] , [
+        a prof:ResourceDescriptor ;
+        dct:title "RL1.5 SHACL Shapes"@en ;
+        prof:hasRole role:validation ;
+        dct:conformsTo <http://www.w3.org/ns/shacl#> ;
+        prof:hasArtifact <https://vocabulary.bigbank/rl1.5/ontology/rl1_5-shacl.ttl>
+    ] .
 
 # =============================================================================
 # DOMAIN PROFILES
 # =============================================================================
 
-# --- Market Data Profile ---
-<https://rl2.org/rl1.5/market-data>
-    a prof:Profile ;
-    dct:title "RL1.5 Market Data Profile"@en ;
-    dct:description "Market data licensing vocabulary aligned with W3C Market Data ODRL Profile."@en ;
-    prof:isProfileOf <https://rl2.org/rl1.5/> ;
-    prof:isTransitiveProfileOf 
-        <https://rl2.org/rl1.5/> ,
-        <http://www.w3.org/ns/odrl/2/core> ;
-    prof:hasToken "rl15-md"^^xsd:token ;
-    dct:publisher "RL2 Project" ;
-    owl:versionInfo "0.1" ;
-    prof:hasResource <https://rl2.org/rl1.5/market-data#ontology> .
+<https://vocabulary.bigbank/rl1.5/governance/> a prof:Profile ;
+    dct:title "RL1.5 Governance Core"@en ;
+    prof:isProfileOf <https://vocabulary.bigbank/rl1.5/> ;
+    prof:hasToken "rl15-gov"^^xsd:token .
 
-<https://rl2.org/rl1.5/market-data#ontology>
-    a prof:ResourceDescriptor ;
-    dct:title "RL1.5 Market Data Vocabulary"@en ;
-    prof:hasRole role:vocabulary ;
-    dct:format <https://w3id.org/mediatype/text/turtle> ;
-    prof:hasArtifact <https://rl2.org/rl1.5/profiles/rl1_5-market-data.ttl> .
+<https://vocabulary.bigbank/rl1.5/market-data/> a prof:Profile ;
+    dct:title "RL1.5 Market Data"@en ;
+    prof:isProfileOf <https://vocabulary.bigbank/rl1.5/governance/> ;
+    prof:isTransitiveProfileOf <https://vocabulary.bigbank/rl1.5/> , odrl:core ;
+    prof:hasToken "rl15-md"^^xsd:token .
 
-# --- Data Use Profile ---
-<https://rl2.org/rl1.5/data-use>
-    a prof:Profile ;
-    dct:title "RL1.5 Data Use Profile"@en ;
-    dct:description "Internal access control vocabulary for data use governance."@en ;
-    prof:isProfileOf <https://rl2.org/rl1.5/> ;
-    prof:isTransitiveProfileOf 
-        <https://rl2.org/rl1.5/> ,
-        <http://www.w3.org/ns/odrl/2/core> ;
-    prof:hasToken "rl15-du"^^xsd:token ;
-    dct:publisher "RL2 Project" ;
-    owl:versionInfo "0.1" ;
-    prof:hasResource <https://rl2.org/rl1.5/data-use#ontology> .
+<https://vocabulary.bigbank/rl1.5/data-use/> a prof:Profile ;
+    dct:title "RL1.5 Data Use"@en ;
+    prof:isProfileOf <https://vocabulary.bigbank/rl1.5/governance/> ;
+    prof:isTransitiveProfileOf <https://vocabulary.bigbank/rl1.5/> , odrl:core ;
+    prof:hasToken "rl15-du"^^xsd:token .
 
-<https://rl2.org/rl1.5/data-use#ontology>
-    a prof:ResourceDescriptor ;
-    dct:title "RL1.5 Data Use Vocabulary"@en ;
-    prof:hasRole role:vocabulary ;
-    dct:format <https://w3id.org/mediatype/text/turtle> ;
-    prof:hasArtifact <https://rl2.org/rl1.5/profiles/rl1_5-data-use.ttl> .
-
-# --- DCON Conformance Profile ---
-<https://rl2.org/rl1.5/dcon>
-    a prof:Profile ;
-    dct:title "RL1.5 DCON Conformance Profile"@en ;
-    dct:description "Declares RL1.5 conformance for DCON data contracts."@en ;
-    prof:isProfileOf <https://rl2.org/rl1.5/> ;
-    prof:isTransitiveProfileOf 
-        <https://rl2.org/rl1.5/> ,
-        <http://www.w3.org/ns/odrl/2/core> ;
-    prof:hasToken "rl15-dcon"^^xsd:token ;
-    dct:publisher "RL2 Project" ;
-    owl:versionInfo "0.1" ;
-    prof:hasResource <https://rl2.org/rl1.5/dcon#ontology> .
-
-<https://rl2.org/rl1.5/dcon#ontology>
-    a prof:ResourceDescriptor ;
-    dct:title "RL1.5 DCON Conformance Declaration"@en ;
-    prof:hasRole role:vocabulary ;
-    dct:format <https://w3id.org/mediatype/text/turtle> ;
-    prof:hasArtifact <https://rl2.org/rl1.5/profiles/rl1_5-dcon.ttl> .
+<https://vocabulary.bigbank/rl1.5/contracts/> a prof:Profile ;
+    dct:title "RL1.5 Contracts"@en ;
+    prof:isProfileOf <https://vocabulary.bigbank/rl1.5/> ;
+    prof:isTransitiveProfileOf odrl:core ;
+    prof:hasToken "rl15-dc"^^xsd:token .
 
 # =============================================================================
-# PROFILE HIERARCHY VISUALIZATION
-# =============================================================================
-#
-#                    ODRL 2.2 Core
-#                    (dct:Standard)
-#                         │
-#                         │ prof:isProfileOf
-#                         │
-#                    ┌────┴────┐
-#                    │  RL1.5  │
-#                    │ (core)  │
-#                    └────┬────┘
-#                         │
-#         ┌───────────────┼───────────────┐
-#         │               │               │
-#    ┌────┴────┐    ┌────┴────┐    ┌────┴────┐
-#    │ Market  │    │  Data   │    │  DCON   │
-#    │  Data   │    │   Use   │    │ Conform │
-#    └─────────┘    └─────────┘    └─────────┘
-#
+# END
 # =============================================================================

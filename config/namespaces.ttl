@@ -1,0 +1,98 @@
+# =============================================================================
+# RL1.5 Namespace Registry (Authoritative)
+# =============================================================================
+# Standard prefixes for all Turtle files and documentation.
+# This file is the single source of truth for namespace URIs.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# W3C Standard Vocabularies
+# -----------------------------------------------------------------------------
+
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix org:     <http://www.w3.org/ns/org#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix time:    <http://www.w3.org/2006/time#> .
+@prefix prof:    <http://www.w3.org/ns/dx/prof/> .
+
+# -----------------------------------------------------------------------------
+# RL1.5 Core Ontologies (TBox)
+# -----------------------------------------------------------------------------
+
+@prefix rl15:     <https://vocabulary.bigbank/rl1.5/> .
+# Core vocabulary: Privilege, Duty, Prohibition, Agreement, Offer, Set
+
+@prefix rl15sh:   <https://vocabulary.bigbank/rl1.5/shapes/> .
+# SHACL shapes for RL1.5 validation
+
+# -----------------------------------------------------------------------------
+# RL1.5 Domain Profiles (TBox)
+# -----------------------------------------------------------------------------
+
+@prefix rl15-gov: <https://vocabulary.bigbank/rl1.5/governance/> .
+# Shared governance operands: purpose, classification, jurisdiction
+
+@prefix rl15-md:  <https://vocabulary.bigbank/rl1.5/market-data/> .
+# Market data profile: timeliness, distribution, display
+
+@prefix rl15-du:  <https://vocabulary.bigbank/rl1.5/data-use/> .
+# Data use profile: internal access control
+
+@prefix rl15-dc:  <https://vocabulary.bigbank/rl1.5/contracts/> .
+# Data contracts extension: DataContract, Subscription, lifecycle
+
+# -----------------------------------------------------------------------------
+# External Vocabularies (Aligned)
+# -----------------------------------------------------------------------------
+
+@prefix dcon:    <https://vocabulary.bigbank/dcon/> .
+# DCON vocabulary (if used alongside RL1.5)
+
+@prefix rl2:     <https://vocabulary.bigbank/rl2/> .
+# RL2 full specification (superset of RL1.5)
+
+# -----------------------------------------------------------------------------
+# Instance Namespaces (ABox)
+# -----------------------------------------------------------------------------
+
+@prefix policy:       <https://data.bigbank/policies/> .
+# Policy instances: policy:<uuid>
+
+@prefix agreement:    <https://data.bigbank/agreements/> .
+# Agreement instances: agreement:<uuid>
+
+@prefix offer:        <https://data.bigbank/offers/> .
+# Offer instances: offer:<uuid>
+
+@prefix duty:         <https://data.bigbank/duties/> .
+# Duty instances: duty:<uuid>
+
+@prefix privilege:    <https://data.bigbank/privileges/> .
+# Privilege instances: privilege:<uuid>
+
+@prefix prohibition:  <https://data.bigbank/prohibitions/> .
+# Prohibition instances: prohibition:<uuid>
+
+@prefix agent:        <https://data.bigbank/agents/> .
+# Agent instances: agent:<identifier>
+
+@prefix asset:        <https://data.bigbank/assets/> .
+# Asset instances: asset:<identifier>
+
+# -----------------------------------------------------------------------------
+# Organization Instances
+# -----------------------------------------------------------------------------
+
+@prefix bbOrg:        <https://hr.data.bigbank/org/> .
+# Organization units: bbOrg:<org-code>
+
+@prefix bbWorker:     <https://hr.data.bigbank/worker/> .
+# Worker instances: bbWorker:<employee-id>

@@ -55,7 +55,7 @@ Key relationships:
 | File | Purpose |
 |------|---------|
 | `AGENTS.md` | **Governance, personas, multi-agent coordination** |
-| `RL1_5_Semantics.md` | **Formal operational semantics (normative)** |
+| `docs/RL1_5_Semantics.md` | **Formal operational semantics (normative)** |
 | `README.md` | Project overview, design principles, repository structure |
 | `ontology/rl1_5-core.ttl` | **OWL ontology -- core classes and properties** |
 | `ontology/rl1_5-shacl.ttl` | **SHACL validation shapes** |
@@ -65,12 +65,12 @@ Key relationships:
 | `profiles/rl1_5-market-data.ttl` | Market data licensing vocabulary |
 | `profiles/rl1_5-data-use.ttl` | Internal access control vocabulary |
 | `profiles/rl1_5-dcon.ttl` | DCON conformance declaration |
-| `docs/comparison-odrl22.md` | Detailed ODRL 2.2 comparison |
-| `docs/comparison-dcon.md` | DCON alignment analysis |
-| `docs/comparison-odrl-profiles.md` | W3C ecosystem positioning |
-| `docs/comparison-w3c-market-data.md` | W3C Market Data Profile mapping |
+| `docs/comparisons/comparison-odrl22.md` | Detailed ODRL 2.2 comparison |
+| `docs/comparisons/comparison-dcon.md` | DCON alignment analysis |
+| `docs/comparisons/comparison-odrl-profiles.md` | W3C ecosystem positioning |
+| `docs/comparisons/comparison-w3c-market-data.md` | W3C Market Data Profile mapping |
 | `docs/conformance-w3c-best-practices.md` | W3C Best Practices compliance |
-| `docs/namespace-alignment.md` | Namespace coordination with DCON2 |
+| `docs/comparisons/namespace-alignment.md` | Namespace coordination with DCON2 |
 
 ---
 
@@ -189,13 +189,13 @@ Note: Using `example` URIs during draft phase. Final namespace TBD.
 2. Import `rl1_5-governance-core.ttl`
 3. Define domain-specific operands and actions
 4. Add to `ontology/rl1_5-prof.ttl` as a DXPROF resource descriptor
-5. Write a comparison document in `docs/` if aligning to an external standard
+5. Write a comparison document in `docs/comparisons/` if aligning to an external standard
 6. Review: Ontologist persona for vocabulary, Reviewer persona for consistency
 
 ### Modify the formal semantics
 
 1. This is a **human-decides** change -- present rationale first
-2. Draft changes in `RL1_5_Semantics.md`
+2. Draft changes in `docs/RL1_5_Semantics.md`
 3. Verify the OWL ontology and SHACL shapes still align
 4. Check that all four correctness theorems (Totality, Determinism, Monotonicity, Duty Progress) still hold
 5. Update comparison documents if the change affects ODRL 2.2 alignment
@@ -242,7 +242,7 @@ Note: Using `example` URIs during draft phase. Final namespace TBD.
 
 - **Version:** 0.1 (Draft)
 - **Phase:** 1 -- Specification
-- **Formal semantics:** Complete draft (`RL1_5_Semantics.md`)
+- **Formal semantics:** Complete draft (`docs/RL1_5_Semantics.md`)
 - **OWL ontology:** Complete draft (`ontology/rl1_5-core.ttl`)
 - **SHACL shapes:** Complete draft (`ontology/rl1_5-shacl.ttl`)
 - **Profiles:** Draft 0.1 (governance-core, market-data, data-use, dcon)

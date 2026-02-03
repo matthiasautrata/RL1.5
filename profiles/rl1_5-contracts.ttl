@@ -1,0 +1,177 @@
+# =============================================================================
+# RL1.5 Contracts Extension
+# Version: 0.2
+# Date: 2026-02-03
+# =============================================================================
+# Contract lifecycle for data governance.
+# Absorbs key DCON concepts without Promise Theory complexity.
+# =============================================================================
+
+@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
+@prefix rl15-dc: <https://vocabulary.bigbank/rl1.5/contracts/> .
+@prefix dcon:    <https://vocabulary.bigbank/dcon/> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+
+# =============================================================================
+# EXTENSION DECLARATION
+# =============================================================================
+
+<https://vocabulary.bigbank/rl1.5/contracts/> a owl:Ontology, odrl:Profile ;
+    dcterms:title "RL1.5 Contracts Extension"@en ;
+    dcterms:description """
+        Contract lifecycle management for RL1.5 policies.
+        
+        Provides:
+        - DataContract (policy offer with lifecycle)
+        - Subscription (activated agreement)
+        - Contract states: Draft → Published → Active → Terminated
+        - Versioning via prov:wasRevisionOf
+        
+        Alignment with DCON:
+        - dcon:DataContract → rl15-dc:DataContract (both are Offers)
+        - dcon:DataContractSubscription → rl15-dc:Subscription (Agreements)
+        - State mappings via skos:closeMatch (not identity)
+    """@en ;
+    dcterms:created "2026-02-03"^^xsd:date ;
+    owl:versionInfo "0.2" ;
+    owl:imports <https://vocabulary.bigbank/rl1.5/> .
+
+# =============================================================================
+# CONTRACT CLASSES
+# =============================================================================
+
+rl15-dc:DataContract a owl:Class ;
+    rdfs:label "Data Contract"@en ;
+    skos:definition "Policy offer defining data access terms."@en ;
+    rdfs:subClassOf rl15:Offer ;
+    rdfs:comment """
+        A DataContract is an Offer from a data provider.
+        It defines privileges, duties, and prohibitions for data access.
+        
+        When accepted (subscribed), becomes a Subscription (Agreement).
+    """@en .
+
+rl15-dc:Subscription a owl:Class ;
+    rdfs:label "Subscription"@en ;
+    skos:definition "Activated data contract binding provider and consumer."@en ;
+    rdfs:subClassOf rl15:Agreement ;
+    rdfs:comment """
+        A Subscription is an activated DataContract.
+        - grantor: data provider (from contract)
+        - grantee: data consumer (subscriber)
+        
+        Bilateral: both parties may have active duties.
+    """@en .
+
+# =============================================================================
+# CONTRACT LIFECYCLE
+# =============================================================================
+
+rl15-dc:ContractState a owl:Class ;
+    rdfs:label "Contract State"@en ;
+    skos:definition "Lifecycle state of a data contract."@en ;
+    owl:oneOf (rl15-dc:Draft rl15-dc:Published rl15-dc:Active rl15-dc:Retired rl15-dc:Cancelled) .
+
+rl15-dc:Draft a rl15-dc:ContractState ;
+    rdfs:label "Draft"@en ;
+    skos:definition "Contract under development, not yet available."@en .
+
+rl15-dc:Published a rl15-dc:ContractState ;
+    rdfs:label "Published"@en ;
+    skos:definition "Contract available for subscription."@en .
+
+rl15-dc:Active a rl15-dc:ContractState ;
+    rdfs:label "Active"@en ;
+    skos:definition "Contract has active subscriptions."@en .
+
+rl15-dc:Retired a rl15-dc:ContractState ;
+    rdfs:label "Retired"@en ;
+    skos:definition "Contract no longer accepts new subscriptions."@en .
+
+rl15-dc:Cancelled a rl15-dc:ContractState ;
+    rdfs:label "Cancelled"@en ;
+    skos:definition "Contract cancelled before publication."@en .
+
+# =============================================================================
+# CONTRACT PROPERTIES
+# =============================================================================
+
+rl15-dc:contractState a owl:ObjectProperty ;
+    rdfs:label "contract state"@en ;
+    skos:definition "Current lifecycle state of the contract."@en ;
+    rdfs:domain rl15-dc:DataContract ;
+    rdfs:range rl15-dc:ContractState .
+
+rl15-dc:subscribesTo a owl:ObjectProperty ;
+    rdfs:label "subscribes to"@en ;
+    skos:definition "The contract this subscription activates."@en ;
+    rdfs:domain rl15-dc:Subscription ;
+    rdfs:range rl15-dc:DataContract .
+
+rl15-dc:effectiveDate a owl:DatatypeProperty ;
+    rdfs:label "effective date"@en ;
+    skos:definition "When the contract/subscription becomes effective."@en ;
+    rdfs:range xsd:dateTime .
+
+rl15-dc:expirationDate a owl:DatatypeProperty ;
+    rdfs:label "expiration date"@en ;
+    skos:definition "When the contract/subscription expires."@en ;
+    rdfs:range xsd:dateTime .
+
+# =============================================================================
+# VERSIONING (via PROV)
+# =============================================================================
+
+# Use prov:wasRevisionOf for contract versioning
+# Example: contract:v2 prov:wasRevisionOf contract:v1 .
+
+# =============================================================================
+# DCON ALIGNMENT (via skos:closeMatch)
+# =============================================================================
+# These are close matches, NOT identity. The state machines differ.
+
+rl15-dc:DataContract skos:closeMatch dcon:DataContract ;
+    rdfs:comment "DCON DataContract is also an Offer-like construct."@en .
+
+rl15-dc:Subscription skos:closeMatch dcon:DataContractSubscription ;
+    rdfs:comment "DCON Subscription is also an Agreement-like construct."@en .
+
+# State mappings - close but not identical semantics
+rl15-dc:Draft skos:closeMatch dcon:Draft .
+rl15-dc:Published skos:closeMatch dcon:Published .
+rl15-dc:Active skos:closeMatch dcon:Active .
+rl15-dc:Retired skos:closeMatch dcon:Retired .
+rl15-dc:Cancelled skos:closeMatch dcon:Cancelled .
+
+# Duty state alignment (different state machines: 4 vs 3 states)
+# RL1.5: Pending → Active → Fulfilled/Violated
+# DCON:  Pending → Fulfilled/Violated (no Active)
+rl15:Pending skos:closeMatch dcon:Pending ;
+    rdfs:comment "Close but not identical: RL1.5 Pending transitions to Active first."@en .
+rl15:Fulfilled skos:closeMatch dcon:Fulfilled .
+rl15:Violated skos:closeMatch dcon:Violated .
+
+# =============================================================================
+# CONTRACT-SPECIFIC OPERANDS
+# =============================================================================
+
+rl15-dc:contractStatus a rl15:LeftOperand ;
+    rdfs:label "contract status"@en ;
+    skos:definition "Lifecycle status of the data contract."@en ;
+    rl15:contextKey "contractStatus" .
+
+rl15-dc:subscriptionStatus a rl15:LeftOperand ;
+    rdfs:label "subscription status"@en ;
+    skos:definition "Status of the subscription."@en ;
+    rl15:contextKey "subscriptionStatus" .
+
+# =============================================================================
+# END OF EXTENSION
+# =============================================================================

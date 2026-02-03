@@ -1,32 +1,32 @@
 ---
 title: "RL1.5 Formal Semantics"
 subtitle: "Deterministic Policy Evaluation for Data Governance"
-version: "0.1"
+version: "0.2"
 status: "Draft"
-date: 2026-02-02
+date: 2026-02-03
 abstract: |
-  RL1.5 defines a strict subset of RL2 with deterministic, total evaluation
-  semantics. This document specifies the formal semantics in a style amenable
-  to future mechanization in Dafny, Why3, or similar verification frameworks.
+  RL1.5 extends ODRL 2.2 with deterministic, total evaluation semantics
+  and bilateral agreement support. This document specifies the formal
+  semantics in a style amenable to mechanization in Dafny, Why3, or
+  similar verification frameworks.
 ---
 
 ## 1. Introduction
 
-RL1.5 addresses the core semantic gaps in ODRL 2.2:
+RL1.5 addresses semantic gaps in ODRL 2.2:
 
 1. **Duty Ambiguity**: ODRL conflates pre-conditions with post-obligations
-2. **Operational Determinism**: ODRL leaves state transitions implicit
+2. **Unilateral Agreements**: ODRL evaluates only from assignee perspective
 3. **Undefined States**: ODRL permits evaluation to be "undefined"
 
-RL1.5 fixes these by providing:
+RL1.5 provides:
 
 - Explicit duty lifecycle with state machine semantics
+- Bilateral agreement evaluation (grantor and grantee duties)
 - Total evaluation functions (always terminate with defined result)
 - Clear separation of Condition (pre-requisite) from Duty (obligation)
 
 ### 1.1 Notation
-
-We use standard mathematical notation:
 
 - `×` for Cartesian product
 - `→` for function types
@@ -35,25 +35,15 @@ We use standard mathematical notation:
 - `⊥` for undefined/bottom value
 - `⟦e⟧` for denotation of expression `e`
 
-Type judgments use `Γ ⊢ e : τ` (under context Γ, expression e has type τ).
-
 ### 1.2 Document Status
 
-This document is **normative** for RL1.5 implementations. Any implementation
-that produces different results than specified here is non-conformant.
-
-The specification is written in a style that can be mechanized in:
-- Dafny (primary target for extraction)
-- Why3/WhyML (alternative with OCaml extraction)
-- Coq/Lean (for independent proofs)
+This document is **normative** for RL1.5 implementations.
 
 ---
 
 ## 2. Abstract Syntax
 
 ### 2.1 Syntactic Domains
-
-Let:
 
 | Domain | Symbol | Description |
 |--------|--------|-------------|
@@ -62,22 +52,23 @@ Let:
 | Assets | **S** | Set of asset identifiers |
 | Values | **V** | Set of atomic values (strings, numbers, URIs) |
 | Time | **T** | Time domain (ISO 8601 instants) |
+| Duration | **D** | Duration domain (ISO 8601 durations) |
 
 ### 2.2 Norms
 
 ```
 Norm ::= Privilege(subject: Agent, action: Action, asset: Asset, condition: Condition?)
-       | Duty(subject: Agent, action: Action, asset: Asset, condition: Condition?, deadline: Time?)
+       | Duty(subject: Agent, action: Action, asset: Asset, condition: Condition?, deadline: Deadline?)
        | Prohibition(subject: Agent, action: Action, asset: Asset, condition: Condition?)
+
+Deadline ::= AbsoluteDeadline(time: Time)
+           | RelativeDeadline(duration: Duration)
 ```
 
 **Notes**:
 
-- `Privilege` grants permission to perform an action
-- `Duty` imposes an obligation to perform an action
-- `Prohibition` forbids performing an action
-- All norms may have optional activation conditions
-- Duties may have optional deadlines
+- `AbsoluteDeadline`: Fixed point in time (e.g., 2026-12-31T23:59:59Z)
+- `RelativeDeadline`: Duration from activation (e.g., P30D, PT24H)
 
 ### 2.3 Conditions
 
@@ -88,35 +79,25 @@ Condition ::= AtomicConstraint(leftOperand: LeftOperand,
             | And(operands: Condition+)
             | Or(operands: Condition+)
             | Not(operand: Condition)
-```
 
-**Operators**:
-
-```
 ComparisonOperator ::= eq | neq | lt | lte | gt | gte | isAnyOf | isNoneOf
 
-RuntimeRef ::= currentAgent | currentTime
+RuntimeRef ::= currentAgent | currentDateTime
 ```
-
-**Notes**:
-
-- `LeftOperand` is defined by profiles (e.g., `purpose`, `classification`)
-- `RuntimeRef` resolves to values at evaluation time
-- `And` and `Or` require at least one operand
-- `Not` requires exactly one operand
 
 ### 2.4 Policies
 
 ```
-Policy ::= Set(clauses: Norm+, condition: Condition?)
-         | Agreement(grantor: Agent, grantee: Agent, clauses: Norm+, condition: Condition?)
+Policy ::= Set(target: Asset?, clauses: Norm+, condition: Condition?)
+         | Offer(grantor: Agent, grantee: Agent?, target: Asset?, clauses: Norm+, condition: Condition?)
+         | Agreement(grantor: Agent, grantee: Agent, target: Asset?, clauses: Norm+, condition: Condition?)
 ```
 
 **Notes**:
 
-- `Set` declares norms without specific counterparties
-- `Agreement` binds identified parties
-- Policy-level conditions gate all contained norms
+- `Set`: Unilateral declaration, no parties
+- `Offer`: Proposal from grantor, grantee optional (open offer)
+- `Agreement`: Bilateral binding, both parties identified
 
 ### 2.5 Requests
 
@@ -126,29 +107,20 @@ Request ::= Request(agent: Agent, action: Action, asset: Asset, context: Context
 Context ::= Map<LeftOperand, Value>
 ```
 
-A request encapsulates who wants to do what to which asset, with contextual values
-for constraint evaluation.
-
 ---
 
 ## 3. Semantic Domains
 
 ### 3.1 State
 
-State (Σ) captures the mutable aspects of the system:
-
 ```
 Σ = {
-    clock      : Time,
-    dutyState  : Duty → DutyState,
-    performed  : Set<(Agent, Action, Asset, Time)>,
-    metadata   : Asset → Map<String, Value>
+    clock        : Time,
+    dutyState    : Duty → DutyState,
+    activatedAt  : Duty → Time?,           // When duty became Active
+    performed    : Set<(Agent, Action, Asset, Time)>
 }
-```
 
-Where:
-
-```
 DutyState ::= Pending | Active | Fulfilled | Violated
 ```
 
@@ -156,16 +128,14 @@ DutyState ::= Pending | Active | Fulfilled | Violated
 
 ```
 Σ₀ = {
-    clock      = currentSystemTime,
-    dutyState  = λd. Pending,
-    performed  = ∅,
-    metadata   = λa. {}
+    clock       = currentSystemTime,
+    dutyState   = λd. Pending,
+    activatedAt = λd. ⊥,
+    performed   = ∅
 }
 ```
 
 ### 3.2 Environment
-
-The evaluation environment bundles immutable context:
 
 ```
 Env = {
@@ -187,18 +157,17 @@ Decision ::= Permit | Deny | NotApplicable
 
 ```
 Result = {
-    decision    : Decision,
-    activeDuties: Set<Duty>,
-    violations  : Set<Duty>,
-    explanation : Explanation
+    decision      : Decision,
+    grantorDuties : Set<Duty>,    // Duties on the grantor (data provider)
+    granteeDuties : Set<Duty>,    // Duties on the grantee (data consumer)
+    violations    : Set<Duty>,
+    explanation   : Explanation
 }
 ```
 
 ---
 
 ## 4. Duty Lifecycle
-
-The duty lifecycle is a deterministic state machine.
 
 ### 4.1 State Diagram
 
@@ -210,7 +179,7 @@ The duty lifecycle is a deterministic state machine.
      │Pending│                            │ Active │
      └───────┘                            └────────┘
                                            │     │
-                         action performed  │     │  deadline ∧ ¬performed
+                         action performed  │     │  deadline exceeded
                                            ▼     ▼
                                     ┌──────────┐ ┌─────────┐
                                     │Fulfilled │ │Violated │
@@ -222,60 +191,62 @@ The duty lifecycle is a deterministic state machine.
 **Activation** (Pending → Active):
 
 ```
-duty.condition ≠ ⊥ ∧ ⟦duty.condition⟧(Env) = true
-────────────────────────────────────────────────
-      Σ.dutyState(duty) := Active
-```
-
-**Activation** (immediate, no condition):
-
-```
-duty.condition = ⊥
-─────────────────────
+duty.condition = ⊥ ∨ ⟦duty.condition⟧(Env) = true
+─────────────────────────────────────────────────
 Σ.dutyState(duty) := Active
+Σ.activatedAt(duty) := Σ.clock
 ```
 
 **Fulfillment** (Active → Fulfilled):
 
 ```
 Σ.dutyState(duty) = Active ∧ 
-(duty.subject, duty.action, duty.asset, t) ∈ Σ.performed ∧
-(duty.deadline = ⊥ ∨ t ≤ duty.deadline)
+∃(a, x, s, t) ∈ Σ.performed.
+    a = duty.subject ∧
+    x matches duty.action ∧
+    s matches duty.asset ∧
+    t ≤ effectiveDeadline(duty, Σ)
 ────────────────────────────────────────
-      Σ.dutyState(duty) := Fulfilled
+Σ.dutyState(duty) := Fulfilled
 ```
 
 **Violation** (Active → Violated):
 
 ```
 Σ.dutyState(duty) = Active ∧
-duty.deadline ≠ ⊥ ∧
-Σ.clock > duty.deadline ∧
-∀t. (duty.subject, duty.action, duty.asset, t) ∉ Σ.performed
-────────────────────────────────────────────────────────────
-      Σ.dutyState(duty) := Violated
+Σ.clock > effectiveDeadline(duty, Σ) ∧
+∄(a, x, s, t) ∈ Σ.performed.
+    a = duty.subject ∧ x matches duty.action ∧ s matches duty.asset
+────────────────────────────────────────────────────────────────────
+Σ.dutyState(duty) := Violated
 ```
 
-### 4.3 State Transitions Are Total
+### 4.3 Effective Deadline
 
-For any duty `d` and state `Σ`, exactly one of the following holds:
+```
+effectiveDeadline(duty, Σ) =
+    case duty.deadline of
+        ⊥                        → ∞
+        AbsoluteDeadline(t)      → t
+        RelativeDeadline(d)      → Σ.activatedAt(duty) + d
+```
 
-1. `Σ.dutyState(d) = Pending` and no transition fires
-2. `Σ.dutyState(d) = Pending` and Activation fires → `Active`
-3. `Σ.dutyState(d) = Active` and no transition fires
-4. `Σ.dutyState(d) = Active` and Fulfillment fires → `Fulfilled`
-5. `Σ.dutyState(d) = Active` and Violation fires → `Violated`
-6. `Σ.dutyState(d) ∈ {Fulfilled, Violated}` (terminal, no transitions)
+### 4.4 Match Semantics
 
-This ensures determinism: the same inputs always produce the same state.
+Action and asset matching support hierarchy subsumption:
+
+```
+x₁ matches x₂ ⟺ x₁ = x₂ ∨ x₁ includedIn⁺ x₂
+s₁ matches s₂ ⟺ s₁ = s₂ ∨ s₁ partOf⁺ s₂
+```
+
+Where `includedIn⁺` and `partOf⁺` are transitive closures.
 
 ---
 
 ## 5. Condition Evaluation
 
 ### 5.1 Denotational Semantics
-
-Condition evaluation is a total function:
 
 ```
 ⟦_⟧ : Condition × Env → Boolean
@@ -289,17 +260,16 @@ Condition evaluation is a total function:
     let rightVal = case right of
         RuntimeRef(r) → resolveRuntime(r, Env)
         Literal(v)    → v
-    in apply(op, leftVal, rightVal)
+    in if leftVal = ⊥ then false
+       else apply(op, leftVal, rightVal)
 ```
 
 **Logical connectives**:
 
 ```
 ⟦And(c₁, ..., cₙ)⟧(Env) = ⟦c₁⟧(Env) ∧ ... ∧ ⟦cₙ⟧(Env)
-
-⟦Or(c₁, ..., cₙ)⟧(Env) = ⟦c₁⟧(Env) ∨ ... ∨ ⟦cₙ⟧(Env)
-
-⟦Not(c)⟧(Env) = ¬⟦c⟧(Env)
+⟦Or(c₁, ..., cₙ)⟧(Env)  = ⟦c₁⟧(Env) ∨ ... ∨ ⟦cₙ⟧(Env)
+⟦Not(c)⟧(Env)           = ¬⟦c⟧(Env)
 ```
 
 ### 5.2 Resolution Functions
@@ -308,12 +278,11 @@ Condition evaluation is a total function:
 
 ```
 resolve(operand, Env) =
-    if operand ∈ Env.context.keys then
-        Env.context[operand]
-    else if operand.resolutionPath ≠ ⊥ then
-        deref(operand.resolutionPath, Env)
-    else
-        ⊥  // Missing operand
+    let key = operand.contextKey
+    in if key ∈ Env.context.keys then
+           Env.context[key]
+       else
+           ⊥
 ```
 
 **resolveRuntime** : RuntimeRef × Env → Value
@@ -321,8 +290,8 @@ resolve(operand, Env) =
 ```
 resolveRuntime(ref, Env) =
     case ref of
-        currentAgent → Env.agent
-        currentTime  → Env.state.clock
+        currentAgent    → Env.agent
+        currentDateTime → Env.state.clock
 ```
 
 **apply** : ComparisonOperator × Value × Value → Boolean
@@ -338,19 +307,6 @@ apply(isAnyOf, v, set)  = v ∈ set
 apply(isNoneOf, v, set) = v ∉ set
 ```
 
-### 5.3 Totality
-
-If `resolve` returns `⊥` (missing operand), the constraint evaluates to `false`:
-
-```
-⟦AtomicConstraint(left, op, right)⟧(Env) =
-    let leftVal = resolve(left, Env)
-    in if leftVal = ⊥ then false
-       else ...
-```
-
-This ensures condition evaluation never fails—it returns `false` for malformed inputs.
-
 ---
 
 ## 6. Policy Evaluation
@@ -360,8 +316,6 @@ This ensures condition evaluation never fails—it returns `false` for malformed
 ```
 Eval : Request × Set<Policy> × Σ → Result
 ```
-
-The algorithm:
 
 ```
 Eval(request, policies, Σ) =
@@ -373,153 +327,102 @@ Eval(request, policies, Σ) =
     // 2. Collect matching norms
     let prohibitions = collectProhibitions(applicable, Env)
     let privileges = collectPrivileges(applicable, Env)
-    let duties = collectDuties(applicable, Env)
+    let allDuties = collectDuties(applicable, Env)
     
-    // 3. Update duty states
-    let Σ' = updateDutyStates(duties, Σ)
+    // 3. Partition duties by bearer (bilateral)
+    let grantorDuties = { d ∈ allDuties | d.subject = policy.grantor }
+    let granteeDuties = { d ∈ allDuties | d.subject = policy.grantee }
     
-    // 4. Check for active prohibitions
+    // 4. Update duty states
+    let Σ' = updateDutyStates(allDuties, Σ)
+    
+    // 5. Check for active prohibitions
     if ∃p ∈ prohibitions. NormActive(p, Env) then
-        return {decision: Deny, activeDuties: ∅, violations: ∅, ...}
+        return {decision: Deny, ...}
     
-    // 5. Check for granting privilege
+    // 6. Check for granting privilege
     if ∄p ∈ privileges. NormActive(p, Env) then
-        return {decision: NotApplicable, activeDuties: ∅, violations: ∅, ...}
+        return {decision: NotApplicable, ...}
     
-    // 6. Check for violated duties
-    let violated = { d ∈ duties | Σ'.dutyState(d) = Violated }
+    // 7. Check for violations
+    let violated = { d ∈ allDuties | Σ'.dutyState(d) = Violated }
     if violated ≠ ∅ then
-        return {decision: Deny, activeDuties: ∅, violations: violated, ...}
+        return {decision: Deny, violations: violated, ...}
     
-    // 7. Collect active duties for the response
-    let active = { d ∈ duties | Σ'.dutyState(d) = Active }
+    // 8. Collect active duties for both parties
+    let activeGrantor = { d ∈ grantorDuties | Σ'.dutyState(d) = Active }
+    let activeGrantee = { d ∈ granteeDuties | Σ'.dutyState(d) = Active }
     
-    return {decision: Permit, activeDuties: active, violations: ∅, ...}
+    return {
+        decision: Permit,
+        grantorDuties: activeGrantor,
+        granteeDuties: activeGrantee,
+        violations: ∅
+    }
 ```
 
 ### 6.2 Policy Applicability
 
 ```
 PolicyApplicable(p, Env) =
-    // Asset matches
-    p.target matches Env.asset ∧
-    // Policy condition satisfied (if present)
+    // Target matches (if specified)
+    (p.target = ⊥ ∨ Env.asset matches p.target) ∧
+    // Policy condition satisfied
     (p.condition = ⊥ ∨ ⟦p.condition⟧(Env))
 ```
 
-For Agreements, also check party matching:
+For Agreements, the agent must be a party:
 
 ```
 PolicyApplicable(Agreement(grantor, grantee, ...), Env) =
-    ... ∧ Env.agent = grantee
+    ... ∧ (Env.agent = grantee ∨ Env.agent = grantor)
 ```
 
 ### 6.3 Norm Activation
 
 ```
 NormActive(norm, Env) =
-    // Subject matches (or is universal)
     (norm.subject = Env.agent ∨ norm.subject = *) ∧
-    // Action matches
     norm.action matches Env.action ∧
-    // Asset matches
     norm.asset matches Env.asset ∧
-    // Condition satisfied (if present)
     (norm.condition = ⊥ ∨ ⟦norm.condition⟧(Env))
 ```
-
-### 6.4 Match Semantics
-
-Action and asset matching support hierarchy subsumption:
-
-```
-action₁ matches action₂ ⟺ action₁ ⊑ action₂
-
-asset₁ matches asset₂ ⟺ asset₁ ⊑ asset₂
-```
-
-Where `⊑` is the transitive closure of the `includedIn` relation for actions
-and `partOf` relation for assets.
-
-Profiles define the hierarchy relations.
 
 ---
 
 ## 7. Conflict Resolution
 
-### 7.1 Default Strategy: Prohibition Overrides
+### 7.1 Strategy: Prohibition Overrides
 
-RL1.5 uses a fixed conflict resolution strategy:
+RL1.5 uses a fixed conflict resolution:
 
 ```
 Prohibition > Privilege
 ```
 
-If both a prohibition and privilege match a request, the prohibition wins.
+If both a prohibition and privilege match, the prohibition wins.
 
-### 7.2 Priority Within Same Norm Type
+### 7.2 Algorithm
 
-When multiple norms of the same type match, specificity determines priority:
+```
+resolve_conflicts(prohibitions, privileges) =
+    if ∃p ∈ prohibitions. active(p) then
+        Deny
+    else if ∃p ∈ privileges. active(p) then
+        Permit
+    else
+        NotApplicable
+```
 
-1. More specific subject wins (named agent > role > *)
-2. More specific asset wins (specific asset > collection > *)
-3. More specific action wins (narrow action > broad action)
-
-If still tied, all matching norms contribute (union for privileges, intersection for prohibitions).
+No specificity ordering within norm types. All matching norms contribute.
 
 ---
 
-## 8. Operational Semantics
+## 8. Correctness Properties
 
-### 8.1 Small-Step Transitions
+### 8.1 Totality
 
-State evolves through discrete transitions:
-
-```
-(Σ, e) → (Σ', e')
-```
-
-**Event Recording**:
-
-```
-─────────────────────────────────────────────────────
-(Σ, RecordAction(agent, action, asset)) → 
-(Σ[performed := Σ.performed ∪ {(agent, action, asset, Σ.clock)}], ())
-```
-
-**Clock Advance**:
-
-```
-─────────────────────────────
-(Σ, AdvanceClock(t)) → (Σ[clock := t], ())
-```
-
-**Duty State Update**:
-
-```
-Σ.dutyState(d) = s ∧ transition(d, Σ) = s'
-────────────────────────────────────────────
-(Σ, UpdateDuty(d)) → (Σ[dutyState(d) := s'], ())
-```
-
-### 8.2 Evaluation as Transition Sequence
-
-A complete evaluation is a sequence of transitions:
-
-```
-(Σ₀, Eval(request, policies)) 
-    →* (Σₙ, Result)
-```
-
-The `→*` denotes reflexive-transitive closure.
-
----
-
-## 9. Correctness Properties
-
-### 9.1 Totality
-
-**Theorem (Totality)**: For all well-formed inputs, `Eval` terminates with a defined result.
+**Theorem**: For all well-formed inputs, `Eval` terminates with a defined result.
 
 ```
 ∀ request, policies, Σ.
@@ -527,9 +430,9 @@ The `→*` denotes reflexive-transitive closure.
     ⟹ ∃ result. Eval(request, policies, Σ) = result ∧ result ≠ ⊥
 ```
 
-### 9.2 Determinism
+### 8.2 Determinism
 
-**Theorem (Determinism)**: Evaluation is deterministic.
+**Theorem**: Evaluation is deterministic.
 
 ```
 ∀ request, policies, Σ.
@@ -537,9 +440,9 @@ The `→*` denotes reflexive-transitive closure.
     ⟹ r₁ = r₂
 ```
 
-### 9.3 Monotonicity of Prohibition
+### 8.3 Prohibition Monotonicity
 
-**Theorem (Prohibition Monotonicity)**: Adding policies cannot remove prohibitions.
+**Theorem**: Adding policies cannot remove prohibitions.
 
 ```
 ∀ request, P, P', Σ.
@@ -547,109 +450,89 @@ The `→*` denotes reflexive-transitive closure.
     ⟹ Eval(request, P', Σ).decision = Deny
 ```
 
-### 9.4 Duty Lifecycle Invariants
+### 8.4 Duty Lifecycle Invariants
 
-**Theorem (Duty Progress)**: Duties can only move forward in the lifecycle.
+**Theorem**: Terminal states are permanent.
 
 ```
 ∀ d, Σ, Σ'.
-    Σ → Σ' ∧ Σ.dutyState(d) = Fulfilled
-    ⟹ Σ'.dutyState(d) = Fulfilled
-
-∀ d, Σ, Σ'.
-    Σ → Σ' ∧ Σ.dutyState(d) = Violated
-    ⟹ Σ'.dutyState(d) = Violated
+    Σ → Σ' ∧ Σ.dutyState(d) ∈ {Fulfilled, Violated}
+    ⟹ Σ'.dutyState(d) = Σ.dutyState(d)
 ```
 
 ---
 
-## 10. Profile Extension Points
+## 9. Profile Extension Points
 
-RL1.5 Core defines the evaluation framework. Profiles extend it with:
+### 9.1 Left Operands
 
-### 10.1 Left Operands
-
-Profiles declare operands with resolution semantics:
+Profiles declare operands with resolution keys:
 
 ```turtle
 ex:purpose a rl15:LeftOperand ;
-    rl15:contextKey "purpose" ;
-    rl15:supportedOperators (rl15:eq rl15:isAnyOf) .
+    rl15:contextKey "purpose" .
 ```
 
-### 10.2 Actions
-
-Profiles declare action hierarchies:
+### 9.2 Action Hierarchies
 
 ```turtle
-ex:analytics a rl15:Action .
-ex:loanAnalysis a rl15:Action ;
-    rl15:includedIn ex:analytics .
+ex:read a rl15:Action ;
+    rl15:includedIn ex:use .
 ```
 
-### 10.3 Hierarchy Relations
+### 9.3 Asset Hierarchies
 
-Profiles may define:
-
-- Action hierarchies via `includedIn`
-- Asset hierarchies via `partOf`
-- Agent hierarchies via `memberOf`
-
-The `matches` relation uses transitive closure of these.
+```turtle
+ex:customerTable a rl15:Asset ;
+    rl15:partOf ex:customerSchema .
+```
 
 ---
 
-## 11. Mechanization Notes
+## 10. Bilateral Agreement Semantics
 
-### 11.1 Dafny Target
+### 10.1 Motivation
 
-The semantics are structured for extraction to Dafny:
+ODRL 2.2 evaluates agreements from the assignee's perspective only. This prevents modeling provider obligations (SLAs, data quality commitments).
 
-- Algebraic data types for Norm, Condition, Policy
-- Functions with explicit totality proofs
-- State as immutable with functional updates
-- Transition rules as `ensures` clauses
+RL1.5 fixes this: evaluation returns duties for **both** parties.
 
-### 11.2 Key Verification Goals
+### 10.2 Example
 
-1. **Totality**: All functions terminate
-2. **Determinism**: Same inputs → same outputs
-3. **Prohibition Safety**: Prohibitions cannot be bypassed
-4. **Duty Progress**: Lifecycle only moves forward
+```turtle
+ex:agreement a rl15:Agreement ;
+    rl15:grantor ex:dataTeam ;
+    rl15:grantee ex:analyticsTeam ;
+    
+    # Grantee privilege
+    rl15:clause [
+        a rl15:Privilege ;
+        rl15:subject ex:analyticsTeam ;
+        rl15:action rl15-md:display ;
+        rl15:object ex:marketData
+    ] ;
+    
+    # Grantee duty
+    rl15:clause [
+        a rl15:Duty ;
+        rl15:subject ex:analyticsTeam ;
+        rl15:action rl15-md:report ;
+        rl15:object ex:usageStats ;
+        rl15:deadline "P30D"^^xsd:duration
+    ] ;
+    
+    # Grantor duty (provider SLA)
+    rl15:clause [
+        a rl15:Duty ;
+        rl15:subject ex:dataTeam ;
+        rl15:action rl15-md:notify ;
+        rl15:object ex:schemaChanges ;
+        rl15:deadline "P7D"^^xsd:duration
+    ] .
+```
 
-### 11.3 Implementation Extraction
-
-Reference implementation via:
-
-1. Dafny specification with proofs
-2. Extraction to Go (via Dafny's Go backend)
-3. Property-based testing against specification
-
----
-
-## 12. Differences from RL2
-
-| Aspect | RL2 | RL1.5 |
-|--------|-----|-------|
-| Norm types | 7 (full Hohfeld) | 3 (Privilege, Duty, Prohibition) |
-| Promise Theory | Full | Deferred |
-| EventConstraint | Supported | Deferred |
-| Identity Binding | Tun-sollen, Sein-sollen | Deferred |
-| Policy Generations | Supported | Deferred |
-| Xone operator | Supported | Deferred |
-| Conflict resolution | Configurable | Fixed (Prohibition > Privilege) |
-
-RL1.5 policies are valid RL2 policies. Migration adds capabilities, not changes.
-
----
-
-## 13. References
-
-1. **RL2 Formal Semantics** — Full language specification
-2. **ODRL 2.2** — W3C Recommendation (superseded semantics)
-3. **Makinson & van der Torre (2000)** — Input/Output Logics
-4. **Hohfeld (1913)** — Fundamental Legal Conceptions
+Evaluation returns:
+- `granteeDuties`: report usage within 30 days
+- `grantorDuties`: notify of schema changes within 7 days
 
 ---
-
-*This document is normative for RL1.5 implementations.*

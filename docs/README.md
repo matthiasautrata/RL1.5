@@ -1,7 +1,5 @@
 # RL1.5 Documentation
 
----
-
 ## Specification
 
 | Document | Description |
@@ -12,7 +10,7 @@
 
 | Document | Description |
 |----------|-------------|
-| [conformance-w3c-best-practices.md](conformance-w3c-best-practices.md) | W3C ODRL Profile Best Practices compliance |
+| [conformance-w3c-best-practices.md](conformance-w3c-best-practices.md) | W3C ODRL Profile Best Practices |
 
 ## Comparisons
 
@@ -22,46 +20,53 @@
 | [comparison-odrl-profiles.md](comparisons/comparison-odrl-profiles.md) | vs W3C ODRL profile ecosystem |
 | [comparison-w3c-market-data.md](comparisons/comparison-w3c-market-data.md) | vs W3C Market Data Profile (+ migration appendix) |
 | [comparison-dcon.md](comparisons/comparison-dcon.md) | vs DCON ontology |
-| [namespace-alignment.md](comparisons/namespace-alignment.md) | DCON2 namespace coordination |
+| [namespace-alignment.md](comparisons/namespace-alignment.md) | Namespace coordination |
 
 ---
 
-## Key Findings
+## Key Design Decisions (v0.2)
 
-### RL1.5 vs ODRL 2.2
+### 1. ODRL Extension, Not Subset
 
-- Semantic clarification, not extension
-- Fixes: duty lifecycle, condition semantics, evaluation order
-- Path to formal verification
-- All RL1.5 policies are valid ODRL 2.2
+RL1.5 **extends** ODRL 2.2, not restricts it. Key additions:
+- Duty lifecycle states (Pending/Active/Fulfilled/Violated)
+- Bilateral agreement evaluation
+- `rl15:target` for policy-level assets
+- `rl15:partOf` for asset hierarchies
 
-### RL1.5 vs W3C Market Data
+RL1.5 policies require RL1.5-aware processors.
 
-- RL1.5 models internal governance
-- W3C models external vendor supply chain
-- ~85-90% policies translate mechanically (see Appendix A)
+### 2. Bilateral Agreements
 
-### RL1.5 vs DCON
+ODRL evaluates agreements from assignee perspective only. RL1.5 returns duties for **both** grantor and grantee, enabling provider SLAs.
 
-- RL1.5: policy evaluation semantics
-- DCON: contract lifecycle management
-- Designed for integration
+### 3. Deadline Semantics
+
+Supports both:
+- `xsd:dateTime`: absolute deadline (2026-12-31T23:59:59Z)
+- `xsd:duration`: relative to activation (P30D, PT24H)
+
+### 4. Offer Policy Type
+
+Added `rl15:Offer` between Set and Agreement:
+- Set: no parties
+- Offer: grantor required, grantee optional
+- Agreement: both required
+
+### 5. DCON Alignment
+
+Contracts extension (`rl15-dc:`) uses `skos:closeMatch` for DCON mappings, not `owl:sameAs`, because state machines differ.
 
 ---
 
-## Related Files
+## Namespaces
 
-| File | Location |
-|------|----------|
-| Core Ontology | `../ontology/rl1_5-core.ttl` |
-| SHACL Shapes | `../ontology/rl1_5-shacl.ttl` |
-| DXPROF Declaration | `../ontology/rl1_5-prof.ttl` |
-| Domain Profiles | `../profiles/` |
+```
+rl15:     https://vocabulary.bigbank/rl1.5/
+rl15-gov: https://vocabulary.bigbank/rl1.5/governance/
+rl15-md:  https://vocabulary.bigbank/rl1.5/market-data/
+rl15-du:  https://vocabulary.bigbank/rl1.5/data-use/
+rl15-dc:  https://vocabulary.bigbank/rl1.5/contracts/
+```
 
----
-
-## External References
-
-- [ODRL 2.2 Information Model](https://www.w3.org/TR/odrl-model/)
-- [W3C Profile Best Practices](https://www.w3.org/community/reports/odrl/CG-FINAL-profile-bp-20240808.html)
-- [W3C Market Data Profile](https://www.w3.org/2021/md-odrl-profile/v1/)
+See [../config/namespaces.ttl](../config/namespaces.ttl) for authoritative registry.

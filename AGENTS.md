@@ -21,7 +21,7 @@ This is a **cross-LLM project**. Multiple AI agents and humans collaborate on th
 
 ## Core Principles
 
-1. **Specification is normative.** `RL1_5_Semantics.md` defines correctness. If the ontology or SHACL shapes disagree with the formal semantics, the semantics wins.
+1. **Specification is normative.** `docs/RL1_5_Semantics.md` defines correctness. If the ontology or SHACL shapes disagree with the formal semantics, the semantics wins.
 2. **Total functions.** Every evaluation terminates. No undefined states.
 3. **Standards over invention.** ODRL 2.2, OWL, SHACL, SKOS, DXPROF, Dublin Core.
 4. **Strict subset of RL2.** Every RL1.5 policy is a valid RL2 policy. Never introduce concepts that would break this.
@@ -59,7 +59,7 @@ Each persona represents a discipline needed to maintain rigor on this project. A
 
 **Responsibilities:**
 
-- Design and review the formal semantics in `RL1_5_Semantics.md`
+- Design and review the formal semantics in `docs/RL1_5_Semantics.md`
 - Ensure the four correctness theorems hold: Totality, Determinism, Monotonicity, Duty Progress
 - Maintain the strict-subset relationship to RL2 (no concepts that break upward compatibility)
 - Design the duty lifecycle state machine and conflict resolution strategy
@@ -147,7 +147,7 @@ When an agent produces work for another to review or continue:
 |-------|-----------|-----------|
 | **Claude** | Deep reasoning, formal semantics, architecture | May over-engineer; keep specifications minimal |
 | **Gemini** | Broad standards knowledge, research synthesis | Verify technical claims against our ontology files |
-| **Codex** | Fast generation, pattern matching | May miss formal nuance; review against `RL1_5_Semantics.md` |
+| **Codex** | Fast generation, pattern matching | May miss formal nuance; review against `docs/RL1_5_Semantics.md` |
 
 ---
 
@@ -164,7 +164,7 @@ When an agent produces work for another to review or continue:
 
 ### Human Decides
 
-- Changes to the formal semantics (`RL1_5_Semantics.md`)
+- Changes to the formal semantics (`docs/RL1_5_Semantics.md`)
 - New norm types or policy types (currently: none allowed in RL1.5)
 - What to include in RL1.5 vs defer to RL2
 - Conflict resolution strategy changes
@@ -268,7 +268,7 @@ Read these when starting a session:
 |------|---------|
 | `LLM.md` | Technical briefing and instructions |
 | `AGENTS.md` | Governance, personas, decision authority (this file) |
-| `RL1_5_Semantics.md` | **Formal semantics (normative reference)** |
+| `docs/RL1_5_Semantics.md` | **Formal semantics (normative reference)** |
 | `README.md` | Project overview, design principles |
 | `profiles/README.md` | Profile architecture and extension rules |
 
@@ -280,7 +280,7 @@ Read these when starting a session:
 
 **Complete:**
 
-- Formal semantics draft (`RL1_5_Semantics.md`)
+- Formal semantics draft (`docs/RL1_5_Semantics.md`)
 - OWL ontology (`ontology/rl1_5-core.ttl`)
 - SHACL validation shapes (`ontology/rl1_5-shacl.ttl`)
 - DXPROF profile metadata (`ontology/rl1_5-prof.ttl`)
