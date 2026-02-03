@@ -112,17 +112,22 @@ These can be added by upgrading to RL2 without changing existing policies.
 
 ```
 RL1.5/
-├── README.md                    # This file
-├── RL1_5_Semantics.md           # Formal semantics (normative)
-├── RL1_5_Vocabulary.md          # Class/property reference
+├── README.md                        # This file
+├── RL1_5_Semantics.md               # Formal semantics (normative)
 ├── ontology/
-│   ├── rl1_5-core.ttl           # OWL ontology
-│   └── rl1_5-shacl.ttl          # SHACL validation shapes
-└── profiles/
-    ├── rl1_5-governance-core.ttl    # Shared data governance operands
-    ├── rl1_5-market-data.ttl        # Market data licensing
-    ├── rl1_5-data-use.ttl           # Internal access control
-    └── rl1_5-dcon.ttl               # DCON conformance declaration
+│   ├── rl1_5-core.ttl               # OWL ontology
+│   ├── rl1_5-shacl.ttl              # SHACL validation shapes
+│   └── rl1_5-prof.ttl               # DXPROF profile declaration
+├── profiles/
+│   ├── rl1_5-governance-core.ttl    # Shared data governance operands
+│   ├── rl1_5-market-data.ttl        # Market data licensing
+│   ├── rl1_5-data-use.ttl           # Internal access control
+│   └── rl1_5-dcon.ttl               # DCON conformance declaration
+└── docs/
+    ├── comparison-odrl22.md         # ODRL 2.2 comparison
+    ├── comparison-w3c-market-data.md # W3C Market Data comparison
+    ├── comparison-dcon.md           # DCON alignment
+    └── conformance-w3c-best-practices.md
 ```
 
 ---
@@ -199,10 +204,12 @@ An implementation conforms to RL1.5 if:
 
 ## References
 
-- [RL2 Specification](../RL2/README.md) - Full language specification
-- [DCON Ontology](../dcon/dcon/ontology/dcon.ttl) - Data contract vocabulary
-- [Semantipolis](../dcon/semantipolis/README.md) - Semantic control plane
-- [Themis](../themis/README.md) - Existing ODRL runtime
+- **RL2 Specification** — Full language specification (forthcoming)
+- **DCON Ontology** — Data contract vocabulary
+- **Semantipolis** — Semantic control plane
+- **Themis** — Existing ODRL runtime
+- [ODRL 2.2](https://www.w3.org/TR/odrl-model/) — W3C base specification
+- [W3C Market Data Profile](https://www.w3.org/2021/md-odrl-profile/v1/) — Market data vocabulary
 
 ---
 
