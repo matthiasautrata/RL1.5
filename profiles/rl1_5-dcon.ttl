@@ -1,0 +1,149 @@
+# ==============================================================================
+# RL1.5 DCON Profile
+# Version: 0.1
+# Date: 2026-02-02
+# ==============================================================================
+# Conformance declaration for DCON (Data Contract Ontology).
+# DCON is an RL1.5 profile with Promise extension.
+# ==============================================================================
+
+@prefix rl15:    <https://rl1-5.example/ontology#> .
+@prefix rl15gov: <https://rl1-5.example/profiles/governance#> .
+@prefix rl15dcon: <https://rl1-5.example/profiles/dcon#> .
+@prefix dcon:    <https://vocabulary.jpmorgan/dcon/> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# ==============================================================================
+# PROFILE DECLARATION
+# ==============================================================================
+
+<https://rl1-5.example/profiles/dcon> a owl:Ontology, odrl:Profile ;
+    dcterms:title "RL1.5 DCON Profile"@en ;
+    dcterms:description """
+        Conformance declaration establishing DCON as an RL1.5 profile.
+        
+        DCON (Data Contract Ontology) is designed for internal data contracts
+        with Promise Theory concepts. This profile:
+        
+        1. Imports DCON vocabulary
+        2. Maps DCON concepts to RL1.5 semantics
+        3. Adds Promise as a profile extension (not RL2's full Promise Theory)
+        
+        Key distinction from RL2 Promise:
+        - DCON Promise: Commitment tracking with explicit lifecycle
+        - RL2 Promise: Full Promise Theory with automatic remedial generation
+        
+        DCON Promise is sufficient for data contracts without requiring
+        the complexity of RL2's automatic remediation mechanisms.
+    """@en ;
+    dcterms:created "2026-02-02"^^xsd:date ;
+    owl:versionInfo "0.1" ;
+    owl:imports <https://rl1-5.example/profiles/governance> ,
+                <https://vocabulary.jpmorgan/dcon> .
+
+# ==============================================================================
+# DCON → RL1.5 MAPPINGS
+# ==============================================================================
+
+# Policy type mappings
+dcon:DataContract rdfs:subClassOf rl15:Set ;
+    rdfs:comment "DataContract is a Set (unilateral offer)."@en .
+
+dcon:DataContractSubscription rdfs:subClassOf rl15:Agreement ;
+    rdfs:comment "DataContractSubscription is an Agreement (bilateral)."@en .
+
+# DCON uses odrl:permission and odrl:duty, which map cleanly
+# to RL1.5 Privilege and Duty
+
+# ==============================================================================
+# PROMISE EXTENSION
+# ==============================================================================
+# DCON Promise is a profile extension, not RL2's full Promise Theory
+
+rl15dcon:Promise a owl:Class ;
+    rdfs:label "Promise (DCON Extension)"@en ;
+    skos:definition "Voluntary commitment from promisor to promisee."@en ;
+    owl:equivalentClass dcon:Promise ;
+    rdfs:comment """
+        DCON Promise is a profile-level extension to RL1.5.
+        
+        Unlike RL2's full Promise Theory:
+        - No automatic remedial duty generation
+        - No event-driven promise evaluation
+        - Simple lifecycle: Pending → Fulfilled | Violated
+        
+        This is sufficient for data contract SLAs and commitments.
+        Full Promise Theory (RL2) adds automatic remediation.
+    """@en .
+
+# Promise state mapping (DCON reuses RL1.5 states)
+dcon:Pending owl:sameAs rl15:Pending .
+dcon:Fulfilled owl:sameAs rl15:Fulfilled .
+dcon:Violated owl:sameAs rl15:Violated .
+
+# Note: DCON Promise does not have Active state (intentional)
+
+# ==============================================================================
+# DCON-SPECIFIC OPERANDS
+# ==============================================================================
+
+rl15dcon:promiseState a rl15:LeftOperand ;
+    rdfs:label "promise state"@en ;
+    skos:definition "Current state of a promise."@en ;
+    rl15gov:contextKey "promiseState" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) ;
+    rdfs:comment "Used to condition on promise fulfillment."@en .
+
+rl15dcon:contractStatus a rl15:LeftOperand ;
+    rdfs:label "contract status"@en ;
+    skos:definition "Lifecycle status of the data contract."@en ;
+    rl15gov:contextKey "contractStatus" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) .
+
+# Contract status values from DCON
+dcon:Draft owl:sameAs rl15dcon:draft .
+dcon:Active owl:sameAs rl15dcon:active .
+dcon:Retired owl:sameAs rl15dcon:retired .
+dcon:Cancelled owl:sameAs rl15dcon:cancelled .
+
+rl15dcon:draft a skos:Concept ; rdfs:label "draft"@en .
+rl15dcon:active a skos:Concept ; rdfs:label "active"@en .
+rl15dcon:retired a skos:Concept ; rdfs:label "retired"@en .
+rl15dcon:cancelled a skos:Concept ; rdfs:label "cancelled"@en .
+
+# ==============================================================================
+# DCON ACTIONS IN RL1.5 TERMS
+# ==============================================================================
+
+dcon:deliver rl15:includedIn rl15gov:use .
+dcon:maintain rl15:includedIn rl15gov:use .
+dcon:notify rl15:includedIn rl15gov:use .
+
+# ==============================================================================
+# VALIDATION NOTES
+# ==============================================================================
+
+# DCON policies using the following are RL1.5-conformant:
+# - dcon:DataContract (as rl15:Set)
+# - dcon:DataContractSubscription (as rl15:Agreement)
+# - odrl:permission (as rl15:Privilege)
+# - odrl:duty (as rl15:Duty)
+# - dcon:Promise (as profile extension)
+# - DCON conditions (as rl15:Condition)
+
+# DCON does NOT use RL2-exclusive features:
+# ❌ rl2:Claim
+# ❌ rl2:Power
+# ❌ rl2:Liability
+# ❌ rl2:Immunity
+# ❌ rl2:EventConstraint
+# ❌ Automatic remedial duty generation
+
+# ==============================================================================
+# END OF PROFILE
+# ==============================================================================

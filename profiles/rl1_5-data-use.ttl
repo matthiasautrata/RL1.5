@@ -1,0 +1,282 @@
+# ==============================================================================
+# RL1.5 Data Use Profile
+# Version: 0.1
+# Date: 2026-02-02
+# ==============================================================================
+# Operands and actions for internal data access control.
+# Covers: roles, departments, environments, approvals, break-glass.
+# ==============================================================================
+
+@prefix rl15:    <https://rl1-5.example/ontology#> .
+@prefix rl15gov: <https://rl1-5.example/profiles/governance#> .
+@prefix rl15use: <https://rl1-5.example/profiles/data-use#> .
+@prefix org:     <http://www.w3.org/ns/org#> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# ==============================================================================
+# PROFILE DECLARATION
+# ==============================================================================
+
+<https://rl1-5.example/profiles/data-use> a owl:Ontology, odrl:Profile ;
+    dcterms:title "RL1.5 Data Use Profile"@en ;
+    dcterms:description """
+        Vocabulary for internal data access control.
+        
+        Covers:
+        - Role-based access (RBAC patterns)
+        - Organizational hierarchy (departments, business units)
+        - Environment constraints (prod/dev/sandbox)
+        - Approval workflows
+        - Break-glass emergency access
+        - Separation of duties
+    """@en ;
+    dcterms:created "2026-02-02"^^xsd:date ;
+    owl:versionInfo "0.1" ;
+    owl:imports <https://rl1-5.example/profiles/governance> .
+
+# ==============================================================================
+# ROLE OPERANDS
+# ==============================================================================
+
+rl15use:role a rl15:LeftOperand ;
+    rdfs:label "role"@en ;
+    skos:definition "Functional role of the requesting agent."@en ;
+    rl15gov:contextKey "role" ;
+    rl15gov:hierarchyType "role" ;
+    rl15gov:hierarchyProperty skos:broader ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) ;
+    rdfs:comment """
+        Role hierarchy uses skos:broader.
+        Example: seniorAnalyst skos:broader analyst
+        
+        Constraint: role eq analyst
+        Matches: analyst, seniorAnalyst, leadAnalyst
+    """@en .
+
+# Common roles (organization-specific roles extend this)
+rl15use:analyst a skos:Concept ;
+    rdfs:label "analyst"@en .
+
+rl15use:developer a skos:Concept ;
+    rdfs:label "developer"@en .
+
+rl15use:administrator a skos:Concept ;
+    rdfs:label "administrator"@en .
+
+rl15use:auditor a skos:Concept ;
+    rdfs:label "auditor"@en .
+
+# ==============================================================================
+# ORGANIZATIONAL OPERANDS
+# ==============================================================================
+
+rl15use:department a rl15:LeftOperand ;
+    rdfs:label "department"@en ;
+    skos:definition "Department of the requesting agent."@en ;
+    rl15gov:contextKey "department" ;
+    rl15gov:hierarchyType "org" ;
+    rl15gov:hierarchyProperty org:subOrganizationOf ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) .
+
+rl15use:businessUnit a rl15:LeftOperand ;
+    rdfs:label "business unit"@en ;
+    skos:definition "Business unit of the requesting agent."@en ;
+    rl15gov:contextKey "businessUnit" ;
+    rl15gov:hierarchyType "org" ;
+    rl15gov:hierarchyProperty org:subOrganizationOf ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) .
+
+rl15use:costCenter a rl15:LeftOperand ;
+    rdfs:label "cost center"@en ;
+    skos:definition "Cost center for billing/chargeback."@en ;
+    rl15gov:contextKey "costCenter" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) .
+
+rl15use:memberOf a rl15:LeftOperand ;
+    rdfs:label "member of"@en ;
+    skos:definition "Organization the agent is a member of."@en ;
+    rl15gov:contextKey "memberOf" ;
+    rl15gov:hierarchyType "org" ;
+    rl15gov:hierarchyProperty [ owl:unionOf (org:memberOf org:subOrganizationOf) ] ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) ;
+    rdfs:comment "Supports org:memberOf and org:subOrganizationOf hierarchy."@en .
+
+# ==============================================================================
+# ENVIRONMENT OPERANDS
+# ==============================================================================
+
+rl15use:environment a rl15:LeftOperand ;
+    rdfs:label "environment"@en ;
+    skos:definition "Execution environment."@en ;
+    rl15gov:contextKey "environment" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) .
+
+rl15use:production a skos:Concept ;
+    rdfs:label "production"@en ;
+    skos:definition "Production environment."@en .
+
+rl15use:development a skos:Concept ;
+    rdfs:label "development"@en ;
+    skos:definition "Development environment."@en .
+
+rl15use:staging a skos:Concept ;
+    rdfs:label "staging"@en ;
+    skos:definition "Staging/pre-production environment."@en .
+
+rl15use:sandbox a skos:Concept ;
+    rdfs:label "sandbox"@en ;
+    skos:definition "Sandbox/test environment."@en .
+
+rl15use:region a rl15:LeftOperand ;
+    rdfs:label "region"@en ;
+    skos:definition "Geographic region of access."@en ;
+    rl15gov:contextKey "region" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) .
+
+# ==============================================================================
+# APPROVAL OPERANDS
+# ==============================================================================
+
+rl15use:approvalRequired a rl15:LeftOperand ;
+    rdfs:label "approval required"@en ;
+    skos:definition "Whether approval is required."@en ;
+    rl15gov:contextKey "approvalRequired" ;
+    rl15gov:supportedOperators (rl15:eq) ;
+    rdfs:comment "Boolean: true if approval workflow must be completed."@en .
+
+rl15use:approvalStatus a rl15:LeftOperand ;
+    rdfs:label "approval status"@en ;
+    skos:definition "Status of approval workflow."@en ;
+    rl15gov:contextKey "approvalStatus" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) .
+
+rl15use:approved a skos:Concept ;
+    rdfs:label "approved"@en .
+
+rl15use:pending a skos:Concept ;
+    rdfs:label "pending"@en .
+
+rl15use:rejected a skos:Concept ;
+    rdfs:label "rejected"@en .
+
+rl15use:legalReview a rl15:LeftOperand ;
+    rdfs:label "legal review"@en ;
+    skos:definition "Whether legal review is required/completed."@en ;
+    rl15gov:contextKey "legalReview" ;
+    rl15gov:supportedOperators (rl15:eq) .
+
+# ==============================================================================
+# BREAK-GLASS OPERANDS
+# ==============================================================================
+
+rl15use:breakGlass a rl15:LeftOperand ;
+    rdfs:label "break glass"@en ;
+    skos:definition "Whether this is emergency break-glass access."@en ;
+    rl15gov:contextKey "breakGlass" ;
+    rl15gov:supportedOperators (rl15:eq) ;
+    rdfs:comment """
+        Break-glass access bypasses normal controls for emergencies.
+        Typically triggers enhanced logging and post-hoc review.
+        
+        Boolean: true if break-glass access is being invoked.
+    """@en .
+
+rl15use:breakGlassJustification a rl15:LeftOperand ;
+    rdfs:label "break glass justification"@en ;
+    skos:definition "Justification for break-glass access."@en ;
+    rl15gov:contextKey "breakGlassJustification" ;
+    rl15gov:supportedOperators (rl15:eq rl15:neq) ;
+    rdfs:comment "Non-empty string required when breakGlass = true."@en .
+
+# ==============================================================================
+# SEPARATION OF DUTIES OPERANDS
+# ==============================================================================
+
+rl15use:separationOfDuty a rl15:LeftOperand ;
+    rdfs:label "separation of duty"@en ;
+    skos:definition "Separation of duty constraint."@en ;
+    rl15gov:contextKey "separationOfDuty" ;
+    rl15gov:supportedOperators (rl15:eq) ;
+    rdfs:comment """
+        Enforces that certain actions must be performed by different agents.
+        Example: approver must be different from requester.
+    """@en .
+
+rl15use:previousActor a rl15:LeftOperand ;
+    rdfs:label "previous actor"@en ;
+    skos:definition "Agent who performed the previous action in workflow."@en ;
+    rl15gov:contextKey "previousActor" ;
+    rl15gov:supportedOperators (rl15:neq rl15:eq) ;
+    rdfs:comment "Used for separation of duties: currentAgent neq previousActor."@en .
+
+# ==============================================================================
+# DATA LINEAGE OPERANDS
+# ==============================================================================
+
+rl15use:dataLineage a rl15:LeftOperand ;
+    rdfs:label "data lineage"@en ;
+    skos:definition "Whether data lineage tracking is required."@en ;
+    rl15gov:contextKey "dataLineage" ;
+    rl15gov:supportedOperators (rl15:eq) .
+
+rl15use:thirdPartyTransfer a rl15:LeftOperand ;
+    rdfs:label "third party transfer"@en ;
+    skos:definition "Whether transfer to third parties is involved."@en ;
+    rl15gov:contextKey "thirdPartyTransfer" ;
+    rl15gov:supportedOperators (rl15:eq) .
+
+rl15use:internalUseOnly a rl15:LeftOperand ;
+    rdfs:label "internal use only"@en ;
+    skos:definition "Whether data is restricted to internal use."@en ;
+    rl15gov:contextKey "internalUseOnly" ;
+    rl15gov:supportedOperators (rl15:eq) .
+
+# ==============================================================================
+# DATA USE ACTIONS
+# ==============================================================================
+
+rl15use:access a rl15:Action ;
+    rdfs:label "access"@en ;
+    skos:definition "Access data."@en ;
+    rl15:includedIn rl15gov:use .
+
+rl15use:query a rl15:Action ;
+    rdfs:label "query"@en ;
+    skos:definition "Query/search data."@en ;
+    rl15:includedIn rl15use:access .
+
+rl15use:export a rl15:Action ;
+    rdfs:label "export"@en ;
+    skos:definition "Export data from system."@en ;
+    rl15:includedIn rl15gov:use .
+
+rl15use:share a rl15:Action ;
+    rdfs:label "share"@en ;
+    skos:definition "Share data internally."@en ;
+    rl15:includedIn rl15gov:distribute .
+
+rl15use:requestApproval a rl15:Action ;
+    rdfs:label "request approval"@en ;
+    skos:definition "Request approval for access."@en .
+
+rl15use:grantApproval a rl15:Action ;
+    rdfs:label "grant approval"@en ;
+    skos:definition "Grant approval for access."@en .
+
+rl15use:revokeAccess a rl15:Action ;
+    rdfs:label "revoke access"@en ;
+    skos:definition "Revoke previously granted access."@en .
+
+rl15use:reviewAccess a rl15:Action ;
+    rdfs:label "review access"@en ;
+    skos:definition "Review break-glass or exceptional access."@en ;
+    rdfs:comment "Post-hoc review duty for break-glass access."@en .
+
+# ==============================================================================
+# END OF PROFILE
+# ==============================================================================

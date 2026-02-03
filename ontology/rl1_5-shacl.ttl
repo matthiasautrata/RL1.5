@@ -1,0 +1,366 @@
+# ==============================================================================
+# RL1.5 SHACL Shapes
+# Version: 0.1
+# Date: 2026-02-02
+# ==============================================================================
+# Validation shapes for RL1.5 policies.
+# Enforces RL1.5 subset: rejects Claim, Power, Promise, EventConstraint, etc.
+# ==============================================================================
+
+@prefix rl15:    <https://rl1-5.example/ontology#> .
+@prefix rl15sh:  <https://rl1-5.example/shapes#> .
+@prefix rl2:     <https://rl2.example/ontology#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+
+# ==============================================================================
+# POLICY SHAPES
+# ==============================================================================
+
+rl15sh:PolicyShape a sh:NodeShape ;
+    sh:targetClass rl15:Policy ;
+    sh:name "Policy Shape" ;
+    sh:description "Validates RL1.5 policies." ;
+    
+    # Must have at least one clause
+    sh:property [
+        sh:path rl15:clause ;
+        sh:minCount 1 ;
+        sh:message "Policy must have at least one clause."
+    ] ;
+    
+    # Optional condition
+    sh:property [
+        sh:path rl15:condition ;
+        sh:maxCount 1 ;
+        sh:node rl15sh:ConditionShape ;
+        sh:message "Policy condition must be a valid RL1.5 Condition."
+    ] ;
+    
+    # Optional grantor
+    sh:property [
+        sh:path rl15:grantor ;
+        sh:maxCount 1 ;
+        sh:class rl15:Agent
+    ] ;
+    
+    # Optional grantee
+    sh:property [
+        sh:path rl15:grantee ;
+        sh:maxCount 1 ;
+        sh:class rl15:Agent
+    ] .
+
+rl15sh:AgreementShape a sh:NodeShape ;
+    sh:targetClass rl15:Agreement ;
+    sh:name "Agreement Shape" ;
+    sh:description "Validates RL1.5 agreements (requires grantor and grantee)." ;
+    
+    # Requires grantor
+    sh:property [
+        sh:path rl15:grantor ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Agreement must have exactly one grantor."
+    ] ;
+    
+    # Requires grantee
+    sh:property [
+        sh:path rl15:grantee ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Agreement must have exactly one grantee."
+    ] .
+
+# ==============================================================================
+# NORM SHAPES
+# ==============================================================================
+
+rl15sh:PrivilegeShape a sh:NodeShape ;
+    sh:targetClass rl15:Privilege ;
+    sh:name "Privilege Shape" ;
+    sh:description "Validates RL1.5 privileges." ;
+    
+    sh:property [
+        sh:path rl15:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Agent ;
+        sh:message "Privilege must have exactly one subject."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:action ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Action ;
+        sh:message "Privilege must have exactly one action."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Asset ;
+        sh:message "Privilege must have exactly one object."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:condition ;
+        sh:maxCount 1 ;
+        sh:node rl15sh:ConditionShape
+    ] .
+
+rl15sh:DutyShape a sh:NodeShape ;
+    sh:targetClass rl15:Duty ;
+    sh:name "Duty Shape" ;
+    sh:description "Validates RL1.5 duties." ;
+    
+    sh:property [
+        sh:path rl15:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Agent ;
+        sh:message "Duty must have exactly one subject."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:action ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Action ;
+        sh:message "Duty must have exactly one action."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Asset ;
+        sh:message "Duty must have exactly one object."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:condition ;
+        sh:maxCount 1 ;
+        sh:node rl15sh:ConditionShape
+    ] ;
+    
+    sh:property [
+        sh:path rl15:deadline ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime
+    ] ;
+    
+    sh:property [
+        sh:path rl15:dutyState ;
+        sh:maxCount 1 ;
+        sh:in (rl15:Pending rl15:Active rl15:Fulfilled rl15:Violated) ;
+        sh:message "Duty state must be one of: Pending, Active, Fulfilled, Violated."
+    ] .
+
+rl15sh:ProhibitionShape a sh:NodeShape ;
+    sh:targetClass rl15:Prohibition ;
+    sh:name "Prohibition Shape" ;
+    sh:description "Validates RL1.5 prohibitions." ;
+    
+    sh:property [
+        sh:path rl15:subject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Agent ;
+        sh:message "Prohibition must have exactly one subject."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:prohibitedAction ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Action ;
+        sh:message "Prohibition must have exactly one prohibitedAction."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:object ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:Asset ;
+        sh:message "Prohibition must have exactly one object."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:condition ;
+        sh:maxCount 1 ;
+        sh:node rl15sh:ConditionShape
+    ] .
+
+# ==============================================================================
+# CONDITION SHAPES
+# ==============================================================================
+
+rl15sh:ConditionShape a sh:NodeShape ;
+    sh:name "Condition Shape" ;
+    sh:description "Validates RL1.5 conditions (atomic or logical)." ;
+    
+    # Must be one of the allowed condition types
+    sh:or (
+        [ sh:class rl15:AtomicConstraint ]
+        [ sh:class rl15:LogicalConstraint ]
+    ) ;
+    sh:message "Condition must be AtomicConstraint or LogicalConstraint." .
+
+rl15sh:AtomicConstraintShape a sh:NodeShape ;
+    sh:targetClass rl15:AtomicConstraint ;
+    sh:name "Atomic Constraint Shape" ;
+    sh:description "Validates atomic constraints." ;
+    
+    sh:property [
+        sh:path rl15:leftOperand ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:LeftOperand ;
+        sh:message "AtomicConstraint must have exactly one leftOperand."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:constraintOperator ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:ComparisonOperator ;
+        sh:message "AtomicConstraint must have exactly one comparison operator."
+    ] ;
+    
+    # Must have rightOperand OR rightOperandRef (not both)
+    sh:xone (
+        [ sh:property [ sh:path rl15:rightOperand ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path rl15:rightOperandRef ; sh:minCount 1 ] ]
+    ) ;
+    sh:message "AtomicConstraint must have exactly one of: rightOperand or rightOperandRef." .
+
+rl15sh:LogicalConstraintShape a sh:NodeShape ;
+    sh:targetClass rl15:LogicalConstraint ;
+    sh:name "Logical Constraint Shape" ;
+    sh:description "Validates logical constraints." ;
+    
+    sh:property [
+        sh:path rl15:constraintOperator ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rl15:LogicalOperator ;
+        sh:message "LogicalConstraint must have exactly one logical operator."
+    ] ;
+    
+    sh:property [
+        sh:path rl15:operand ;
+        sh:minCount 1 ;
+        sh:node rl15sh:ConditionShape ;
+        sh:message "LogicalConstraint must have at least one operand."
+    ] .
+
+rl15sh:NotConstraintShape a sh:NodeShape ;
+    sh:target [
+        a sh:SPARQLTarget ;
+        sh:select """
+            SELECT ?this WHERE {
+                ?this a rl15:LogicalConstraint ;
+                      rl15:constraintOperator rl15:not .
+            }
+        """
+    ] ;
+    sh:name "Not Constraint Shape" ;
+    sh:description "Not operator requires exactly one operand." ;
+    
+    sh:property [
+        sh:path rl15:operand ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Not constraint must have exactly one operand."
+    ] .
+
+# ==============================================================================
+# RL1.5 SUBSET ENFORCEMENT
+# ==============================================================================
+# These shapes REJECT constructs that belong to RL2 but not RL1.5
+
+rl15sh:RejectClaimShape a sh:NodeShape ;
+    sh:targetClass rl2:Claim ;
+    sh:severity sh:Violation ;
+    sh:message "RL1.5 does not support Claim. Use RL2 for Hohfeldian correlatives." ;
+    sh:sparql [
+        sh:select """
+            SELECT $this WHERE { $this a rl2:Claim }
+        """ ;
+        sh:message "Claim is not supported in RL1.5."
+    ] .
+
+rl15sh:RejectPowerShape a sh:NodeShape ;
+    sh:targetClass rl2:Power ;
+    sh:severity sh:Violation ;
+    sh:message "RL1.5 does not support Power. Use RL2 for administrative rights." ;
+    sh:sparql [
+        sh:select """
+            SELECT $this WHERE { $this a rl2:Power }
+        """ ;
+        sh:message "Power is not supported in RL1.5."
+    ] .
+
+rl15sh:RejectLiabilityShape a sh:NodeShape ;
+    sh:targetClass rl2:Liability ;
+    sh:severity sh:Violation ;
+    sh:message "RL1.5 does not support Liability. Use RL2 for Hohfeldian correlatives." ;
+    sh:sparql [
+        sh:select """
+            SELECT $this WHERE { $this a rl2:Liability }
+        """ ;
+        sh:message "Liability is not supported in RL1.5."
+    ] .
+
+rl15sh:RejectImmunityShape a sh:NodeShape ;
+    sh:targetClass rl2:Immunity ;
+    sh:severity sh:Violation ;
+    sh:message "RL1.5 does not support Immunity. Use RL2 for Hohfeldian correlatives." ;
+    sh:sparql [
+        sh:select """
+            SELECT $this WHERE { $this a rl2:Immunity }
+        """ ;
+        sh:message "Immunity is not supported in RL1.5."
+    ] .
+
+rl15sh:RejectPromiseShape a sh:NodeShape ;
+    sh:targetClass rl2:Promise ;
+    sh:severity sh:Violation ;
+    sh:message "RL1.5 does not support Promise. Use RL2 for Promise Theory." ;
+    sh:sparql [
+        sh:select """
+            SELECT $this WHERE { $this a rl2:Promise }
+        """ ;
+        sh:message "Promise is not supported in RL1.5."
+    ] .
+
+rl15sh:RejectEventConstraintShape a sh:NodeShape ;
+    sh:targetClass rl2:EventConstraint ;
+    sh:severity sh:Violation ;
+    sh:message "RL1.5 does not support EventConstraint. Use RL2 for event-driven conditions." ;
+    sh:sparql [
+        sh:select """
+            SELECT $this WHERE { $this a rl2:EventConstraint }
+        """ ;
+        sh:message "EventConstraint is not supported in RL1.5."
+    ] .
+
+rl15sh:RejectXoneOperatorShape a sh:NodeShape ;
+    sh:target [
+        a sh:SPARQLTarget ;
+        sh:select """
+            SELECT ?this WHERE {
+                ?this rl15:constraintOperator rl2:xone .
+            }
+        """
+    ] ;
+    sh:severity sh:Violation ;
+    sh:message "RL1.5 does not support xone operator. Use RL2 for exclusive-or constraints." .
+
+# ==============================================================================
+# END OF SHAPES
+# ==============================================================================

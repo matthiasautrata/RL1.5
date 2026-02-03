@@ -1,0 +1,318 @@
+# ==============================================================================
+# RL1.5 Data Governance Core Profile
+# Version: 0.1
+# Date: 2026-02-02
+# ==============================================================================
+# Shared operands and actions for data governance across domains:
+# - Market Data Contracts
+# - Internal Data Use
+# - Data Contracts (DCON)
+# ==============================================================================
+
+@prefix rl15:    <https://rl1-5.example/ontology#> .
+@prefix rl15gov: <https://rl1-5.example/profiles/governance#> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# ==============================================================================
+# PROFILE DECLARATION
+# ==============================================================================
+
+<https://rl1-5.example/profiles/governance> a owl:Ontology, odrl:Profile ;
+    dcterms:title "RL1.5 Data Governance Core Profile"@en ;
+    dcterms:description """
+        Shared vocabulary for data governance across domains:
+        - Purpose and classification constraints
+        - Jurisdiction and residency requirements  
+        - Retention and processing controls
+        - Audit and logging requirements
+        
+        This profile is imported by domain-specific profiles.
+    """@en ;
+    dcterms:created "2026-02-02"^^xsd:date ;
+    owl:versionInfo "0.1" ;
+    owl:imports <https://rl1-5.example/ontology> .
+
+# ==============================================================================
+# PURPOSE OPERANDS
+# ==============================================================================
+
+rl15gov:purpose a rl15:LeftOperand ;
+    rdfs:label "purpose"@en ;
+    skos:definition "Intended use of the data."@en ;
+    rl15gov:contextKey "purpose" ;
+    rl15gov:hierarchyType "purpose" ;
+    rl15gov:hierarchyProperty skos:broader ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) ;
+    rdfs:comment """
+        Purpose hierarchy uses skos:broader.
+        Example: loanAnalysis skos:broader analytics
+        
+        Constraint: purpose eq analytics
+        Matches: analytics, creditAnalytics, loanAnalysis, riskModeling
+    """@en .
+
+# Purpose taxonomy (partial)
+rl15gov:analytics a skos:Concept ;
+    rdfs:label "analytics"@en ;
+    skos:definition "General analytical use."@en .
+
+rl15gov:research a skos:Concept ;
+    rdfs:label "research"@en ;
+    skos:definition "Research and development."@en .
+
+rl15gov:compliance a skos:Concept ;
+    rdfs:label "compliance"@en ;
+    skos:definition "Regulatory compliance."@en .
+
+rl15gov:operations a skos:Concept ;
+    rdfs:label "operations"@en ;
+    skos:definition "Operational use."@en .
+
+# ==============================================================================
+# CLASSIFICATION OPERANDS
+# ==============================================================================
+
+rl15gov:classification a rl15:LeftOperand ;
+    rdfs:label "classification"@en ;
+    skos:definition "Data classification level."@en ;
+    rl15gov:contextKey "classification" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf) ;
+    rdfs:comment "Confidentiality classification of the data."@en .
+
+rl15gov:sensitivity a rl15:LeftOperand ;
+    rdfs:label "sensitivity"@en ;
+    skos:definition "Data sensitivity type."@en ;
+    rl15gov:contextKey "sensitivity" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) ;
+    rdfs:comment "PII, MNPI, PHI, etc."@en .
+
+# Classification values
+rl15gov:public a skos:Concept ;
+    rdfs:label "public"@en ;
+    skos:definition "Publicly available data."@en .
+
+rl15gov:internal a skos:Concept ;
+    rdfs:label "internal"@en ;
+    skos:definition "Internal use only."@en .
+
+rl15gov:confidential a skos:Concept ;
+    rdfs:label "confidential"@en ;
+    skos:definition "Confidential data."@en .
+
+rl15gov:restricted a skos:Concept ;
+    rdfs:label "restricted"@en ;
+    skos:definition "Highly restricted data."@en .
+
+# Sensitivity values
+rl15gov:pii a skos:Concept ;
+    rdfs:label "PII"@en ;
+    skos:definition "Personally Identifiable Information."@en .
+
+rl15gov:mnpi a skos:Concept ;
+    rdfs:label "MNPI"@en ;
+    skos:definition "Material Non-Public Information."@en .
+
+rl15gov:phi a skos:Concept ;
+    rdfs:label "PHI"@en ;
+    skos:definition "Protected Health Information."@en .
+
+# ==============================================================================
+# OWNERSHIP OPERANDS
+# ==============================================================================
+
+rl15gov:dataOwner a rl15:LeftOperand ;
+    rdfs:label "data owner"@en ;
+    skos:definition "Agent responsible for the data."@en ;
+    rl15gov:contextKey "dataOwner" ;
+    rl15gov:supportedOperators (rl15:eq rl15:neq) .
+
+rl15gov:dataSubject a rl15:LeftOperand ;
+    rdfs:label "data subject"@en ;
+    skos:definition "Individual the data is about."@en ;
+    rl15gov:contextKey "dataSubject" ;
+    rl15gov:supportedOperators (rl15:eq rl15:neq) .
+
+rl15gov:dataSteward a rl15:LeftOperand ;
+    rdfs:label "data steward"@en ;
+    skos:definition "Agent managing the data on behalf of owner."@en ;
+    rl15gov:contextKey "dataSteward" ;
+    rl15gov:supportedOperators (rl15:eq rl15:neq) .
+
+# ==============================================================================
+# JURISDICTION OPERANDS
+# ==============================================================================
+
+rl15gov:jurisdiction a rl15:LeftOperand ;
+    rdfs:label "jurisdiction"@en ;
+    skos:definition "Legal jurisdiction governing data use."@en ;
+    rl15gov:contextKey "jurisdiction" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) .
+
+rl15gov:residency a rl15:LeftOperand ;
+    rdfs:label "residency"@en ;
+    skos:definition "Data residency location."@en ;
+    rl15gov:contextKey "residency" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) ;
+    rdfs:comment "Where data must be stored/processed."@en .
+
+# ==============================================================================
+# TEMPORAL OPERANDS
+# ==============================================================================
+
+rl15gov:retentionPeriod a rl15:LeftOperand ;
+    rdfs:label "retention period"@en ;
+    skos:definition "Maximum time data may be retained."@en ;
+    rl15gov:contextKey "retentionPeriod" ;
+    rl15gov:supportedOperators (rl15:lte rl15:lt rl15:eq) ;
+    rdfs:comment "Duration in ISO 8601 format (e.g., P30D, P1Y)."@en .
+
+rl15gov:effectiveWindow a rl15:LeftOperand ;
+    rdfs:label "effective window"@en ;
+    skos:definition "Time window when policy is effective."@en ;
+    rl15gov:contextKey "effectiveWindow" ;
+    rl15gov:supportedOperators (rl15:eq) ;
+    rdfs:comment "Time interval during which access is permitted."@en .
+
+rl15gov:expiry a rl15:LeftOperand ;
+    rdfs:label "expiry"@en ;
+    skos:definition "Expiration date of the policy or entitlement."@en ;
+    rl15gov:contextKey "expiry" ;
+    rl15gov:supportedOperators (rl15:gt rl15:gte rl15:lt rl15:lte) .
+
+# ==============================================================================
+# PROCESSING OPERANDS
+# ==============================================================================
+
+rl15gov:processingMode a rl15:LeftOperand ;
+    rdfs:label "processing mode"@en ;
+    skos:definition "How data is processed."@en ;
+    rl15gov:contextKey "processingMode" ;
+    rl15gov:supportedOperators (rl15:eq rl15:isAnyOf rl15:isNoneOf) .
+
+# Processing mode values
+rl15gov:human a skos:Concept ;
+    rdfs:label "human"@en ;
+    skos:definition "Human review/processing."@en .
+
+rl15gov:automated a skos:Concept ;
+    rdfs:label "automated"@en ;
+    skos:definition "Automated processing."@en .
+
+rl15gov:modelTraining a skos:Concept ;
+    rdfs:label "model training"@en ;
+    skos:definition "Machine learning model training."@en .
+
+rl15gov:inference a skos:Concept ;
+    rdfs:label "inference"@en ;
+    skos:definition "Model inference/prediction."@en .
+
+# ==============================================================================
+# AUDIT OPERANDS
+# ==============================================================================
+
+rl15gov:auditRequired a rl15:LeftOperand ;
+    rdfs:label "audit required"@en ;
+    skos:definition "Whether audit logging is required."@en ;
+    rl15gov:contextKey "auditRequired" ;
+    rl15gov:supportedOperators (rl15:eq) ;
+    rdfs:comment "Boolean: true if audit logging must be enabled."@en .
+
+rl15gov:loggingRequired a rl15:LeftOperand ;
+    rdfs:label "logging required"@en ;
+    skos:definition "Whether access logging is required."@en ;
+    rl15gov:contextKey "loggingRequired" ;
+    rl15gov:supportedOperators (rl15:eq) .
+
+# ==============================================================================
+# COMMON ACTIONS
+# ==============================================================================
+
+rl15gov:use a rl15:Action ;
+    rdfs:label "use"@en ;
+    skos:definition "General use of the asset."@en ;
+    owl:sameAs odrl:use .
+
+rl15gov:read a rl15:Action ;
+    rdfs:label "read"@en ;
+    skos:definition "Read/view the asset."@en ;
+    rl15:includedIn rl15gov:use ;
+    owl:sameAs odrl:read .
+
+rl15gov:distribute a rl15:Action ;
+    rdfs:label "distribute"@en ;
+    skos:definition "Distribute to third parties."@en ;
+    owl:sameAs odrl:distribute .
+
+rl15gov:delete a rl15:Action ;
+    rdfs:label "delete"@en ;
+    skos:definition "Delete the asset."@en ;
+    owl:sameAs odrl:delete .
+
+rl15gov:modify a rl15:Action ;
+    rdfs:label "modify"@en ;
+    skos:definition "Modify the asset."@en ;
+    owl:sameAs odrl:modify .
+
+rl15gov:aggregate a rl15:Action ;
+    rdfs:label "aggregate"@en ;
+    skos:definition "Aggregate with other data."@en ;
+    owl:sameAs odrl:aggregate .
+
+rl15gov:anonymize a rl15:Action ;
+    rdfs:label "anonymize"@en ;
+    skos:definition "Remove identifying information."@en ;
+    owl:sameAs odrl:anonymize .
+
+rl15gov:derive a rl15:Action ;
+    rdfs:label "derive"@en ;
+    skos:definition "Create derived data."@en ;
+    owl:sameAs odrl:derive .
+
+rl15gov:log a rl15:Action ;
+    rdfs:label "log"@en ;
+    skos:definition "Log access to the asset."@en ;
+    rdfs:comment "Used in duties requiring audit trail."@en .
+
+rl15gov:notify a rl15:Action ;
+    rdfs:label "notify"@en ;
+    skos:definition "Notify relevant parties."@en ;
+    rdfs:comment "Used in duties requiring notification."@en .
+
+# ==============================================================================
+# PROFILE METADATA PROPERTIES
+# ==============================================================================
+
+rl15gov:contextKey a owl:DatatypeProperty ;
+    rdfs:label "context key"@en ;
+    skos:definition "Key to lookup value in request context."@en ;
+    rdfs:domain rl15:LeftOperand ;
+    rdfs:range xsd:string .
+
+rl15gov:hierarchyType a owl:DatatypeProperty ;
+    rdfs:label "hierarchy type"@en ;
+    skos:definition "Type of hierarchy for subsumption."@en ;
+    rdfs:domain rl15:LeftOperand ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Values: purpose, action, org, asset, none."@en .
+
+rl15gov:hierarchyProperty a owl:ObjectProperty ;
+    rdfs:label "hierarchy property"@en ;
+    skos:definition "Property defining hierarchy relation."@en ;
+    rdfs:domain rl15:LeftOperand ;
+    rdfs:range rdf:Property ;
+    rdfs:comment "e.g., skos:broader, rl15:includedIn, org:subOrganizationOf."@en .
+
+rl15gov:supportedOperators a owl:ObjectProperty ;
+    rdfs:label "supported operators"@en ;
+    skos:definition "Operators valid for this operand."@en ;
+    rdfs:domain rl15:LeftOperand ;
+    rdfs:range rdf:List .
+
+# ==============================================================================
+# END OF PROFILE
+# ==============================================================================

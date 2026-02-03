@@ -1,0 +1,383 @@
+# ==============================================================================
+# RL1.5 Core Ontology
+# Version: 0.1
+# Date: 2026-02-02
+# ==============================================================================
+# Strict subset of RL2 for deterministic data governance.
+# Excludes: Claim, Power, Liability, Immunity, Promise, EventConstraint
+# ==============================================================================
+
+@prefix rl15:    <https://rl1-5.example/ontology#> .
+@prefix rl2:     <https://rl2.example/ontology#> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+
+# ==============================================================================
+# ONTOLOGY DECLARATION
+# ==============================================================================
+
+<https://rl1-5.example/ontology> a owl:Ontology ;
+    dcterms:title "RL1.5 Core Ontology"@en ;
+    dcterms:description """
+        Deterministic Rights Language 1.5 - A strict subset of RL2.
+        
+        Provides:
+        - Three norm types: Privilege, Duty, Prohibition
+        - Explicit duty lifecycle: Pending → Active → Fulfilled/Violated
+        - Total evaluation semantics (no undefined states)
+        - Condition/Duty separation (pre-requisites vs obligations)
+        
+        Defers to RL2:
+        - Claim, Power, Liability, Immunity (second-order norms)
+        - Promise Theory
+        - EventConstraint
+        - Policy Generations
+    """@en ;
+    dcterms:created "2026-02-02"^^xsd:date ;
+    owl:versionInfo "0.1" ;
+    owl:versionIRI <https://rl1-5.example/ontology/0.1> ;
+    rdfs:seeAlso <https://rl2.example/ontology> .
+
+# ==============================================================================
+# NORM CLASSES
+# ==============================================================================
+
+rl15:Norm a owl:Class ;
+    rdfs:label "Norm"@en ;
+    skos:definition "Abstract base class for normative relations."@en ;
+    rdfs:subClassOf rl2:Norm ;
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:unionOf (rl15:Privilege rl15:Duty rl15:Prohibition)
+    ] ;
+    rdfs:comment """
+        RL1.5 restricts RL2's seven norm types to three:
+        - Privilege (permission to act)
+        - Duty (obligation to act)
+        - Prohibition (forbidden to act)
+    """@en .
+
+rl15:Privilege a owl:Class ;
+    rdfs:label "Privilege"@en ;
+    skos:definition "Permission to perform an action on an asset."@en ;
+    rdfs:subClassOf rl15:Norm, rl2:Privilege ;
+    rdfs:comment "The subject is permitted to perform the action."@en .
+
+rl15:Duty a owl:Class ;
+    rdfs:label "Duty"@en ;
+    skos:definition "Obligation to perform an action on an asset."@en ;
+    rdfs:subClassOf rl15:Norm, rl2:Duty ;
+    rdfs:comment """
+        The subject must perform the action.
+        
+        Key distinction from ODRL:
+        - ODRL duty conflates pre-conditions with post-obligations
+        - RL1.5 Duty is strictly an obligation (ought-to-do)
+        - Pre-conditions are modeled as Conditions on Privileges
+        
+        Lifecycle: Pending → Active → Fulfilled | Violated
+    """@en .
+
+rl15:Prohibition a owl:Class ;
+    rdfs:label "Prohibition"@en ;
+    skos:definition "Prohibition on performing an action on an asset."@en ;
+    rdfs:subClassOf rl15:Norm, rl2:Prohibition ;
+    rdfs:comment "The subject must not perform the action."@en .
+
+# ==============================================================================
+# POLICY CLASSES
+# ==============================================================================
+
+rl15:Policy a owl:Class ;
+    rdfs:label "Policy"@en ;
+    skos:definition "Container for normative clauses."@en ;
+    rdfs:subClassOf rl2:Policy ;
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:unionOf (rl15:Set rl15:Agreement)
+    ] ;
+    rdfs:comment "RL1.5 supports Set and Agreement. Offer, Privacy, Assertion deferred to RL2."@en .
+
+rl15:Set a owl:Class ;
+    rdfs:label "Set"@en ;
+    skos:definition "Unilateral policy declaration without specific counterparties."@en ;
+    rdfs:subClassOf rl15:Policy, rl2:Set ;
+    rdfs:comment "Use for public licenses, general terms, policy templates."@en .
+
+rl15:Agreement a owl:Class ;
+    rdfs:label "Agreement"@en ;
+    skos:definition "Bilateral policy with identified, consenting parties."@en ;
+    rdfs:subClassOf rl15:Policy, rl2:Agreement ;
+    rdfs:comment "Requires grantor and grantee. Creates enforceable obligations."@en .
+
+# ==============================================================================
+# CONDITION CLASSES
+# ==============================================================================
+
+rl15:Condition a owl:Class ;
+    rdfs:label "Condition"@en ;
+    skos:definition "Constraint that must hold for norm activation."@en ;
+    rdfs:subClassOf rl2:Condition ;
+    owl:equivalentClass [
+        a owl:Class ;
+        owl:unionOf (rl15:AtomicConstraint rl15:LogicalConstraint)
+    ] ;
+    rdfs:comment """
+        Key distinction: Conditions are NOT Duties.
+        - Condition: Boolean guard (pre-requisite)
+        - Duty: Obligation to act (has lifecycle)
+    """@en .
+
+rl15:AtomicConstraint a owl:Class ;
+    rdfs:label "Atomic Constraint"@en ;
+    skos:definition "Simple comparison: leftOperand operator rightOperand."@en ;
+    rdfs:subClassOf rl15:Condition, rl2:AtomicConstraint .
+
+rl15:LogicalConstraint a owl:Class ;
+    rdfs:label "Logical Constraint"@en ;
+    skos:definition "Combines conditions via logical operators."@en ;
+    rdfs:subClassOf rl15:Condition, rl2:LogicalConstraint ;
+    rdfs:comment "Supports: and, or, not. Xone deferred to RL2."@en .
+
+# ==============================================================================
+# DUTY STATE
+# ==============================================================================
+
+rl15:DutyState a owl:Class ;
+    rdfs:label "Duty State"@en ;
+    skos:definition "Lifecycle state of a duty."@en ;
+    owl:oneOf (rl15:Pending rl15:Active rl15:Fulfilled rl15:Violated) ;
+    rdfs:comment """
+        State machine:
+        Pending --[condition true]--> Active
+        Active  --[action done]-----> Fulfilled
+        Active  --[deadline passed]-> Violated
+        
+        Terminal states (Fulfilled, Violated) cannot transition.
+    """@en .
+
+rl15:Pending a rl15:DutyState ;
+    rdfs:label "Pending"@en ;
+    skos:definition "Duty exists but activation condition not yet met."@en .
+
+rl15:Active a rl15:DutyState ;
+    rdfs:label "Active"@en ;
+    skos:definition "Duty is active and must be fulfilled."@en .
+
+rl15:Fulfilled a rl15:DutyState ;
+    rdfs:label "Fulfilled"@en ;
+    skos:definition "Duty has been satisfied."@en .
+
+rl15:Violated a rl15:DutyState ;
+    rdfs:label "Violated"@en ;
+    skos:definition "Duty was not fulfilled within required constraints."@en .
+
+# ==============================================================================
+# AGENT AND ASSET CLASSES
+# ==============================================================================
+
+rl15:Agent a owl:Class ;
+    rdfs:label "Agent"@en ;
+    skos:definition "Party participating in normative relations."@en ;
+    rdfs:subClassOf rl2:Agent .
+
+rl15:Asset a owl:Class ;
+    rdfs:label "Asset"@en ;
+    skos:definition "Resource subject to normative control."@en ;
+    rdfs:subClassOf rl2:Asset .
+
+rl15:Action a owl:Class ;
+    rdfs:label "Action"@en ;
+    skos:definition "Action that may be performed on an asset."@en ;
+    rdfs:subClassOf rl2:Action .
+
+# ==============================================================================
+# OPERATORS
+# ==============================================================================
+
+rl15:ComparisonOperator a owl:Class ;
+    rdfs:label "Comparison Operator"@en ;
+    skos:definition "Operators for comparing values."@en ;
+    rdfs:subClassOf rl2:ComparisonOperator ;
+    owl:oneOf (rl15:eq rl15:neq rl15:lt rl15:lte rl15:gt rl15:gte rl15:isAnyOf rl15:isNoneOf) .
+
+rl15:LogicalOperator a owl:Class ;
+    rdfs:label "Logical Operator"@en ;
+    skos:definition "Operators for combining conditions."@en ;
+    rdfs:subClassOf rl2:LogicalOperator ;
+    owl:oneOf (rl15:and rl15:or rl15:not) ;
+    rdfs:comment "Xone deferred to RL2."@en .
+
+# Comparison operator instances
+rl15:eq a rl15:ComparisonOperator ; rdfs:label "equal"@en ; owl:sameAs rl2:eq .
+rl15:neq a rl15:ComparisonOperator ; rdfs:label "not equal"@en ; owl:sameAs rl2:neq .
+rl15:lt a rl15:ComparisonOperator ; rdfs:label "less than"@en ; owl:sameAs rl2:lt .
+rl15:lte a rl15:ComparisonOperator ; rdfs:label "less than or equal"@en ; owl:sameAs rl2:lte .
+rl15:gt a rl15:ComparisonOperator ; rdfs:label "greater than"@en ; owl:sameAs rl2:gt .
+rl15:gte a rl15:ComparisonOperator ; rdfs:label "greater than or equal"@en ; owl:sameAs rl2:gte .
+rl15:isAnyOf a rl15:ComparisonOperator ; rdfs:label "is any of"@en ; owl:sameAs rl2:isAnyOf .
+rl15:isNoneOf a rl15:ComparisonOperator ; rdfs:label "is none of"@en ; owl:sameAs rl2:isNoneOf .
+
+# Logical operator instances
+rl15:and a rl15:LogicalOperator ; rdfs:label "and"@en ; owl:sameAs rl2:and .
+rl15:or a rl15:LogicalOperator ; rdfs:label "or"@en ; owl:sameAs rl2:or .
+rl15:not a rl15:LogicalOperator ; rdfs:label "not"@en ; owl:sameAs rl2:not .
+
+# ==============================================================================
+# NORM PROPERTIES
+# ==============================================================================
+
+rl15:subject a owl:ObjectProperty ;
+    rdfs:label "subject"@en ;
+    skos:definition "Agent bearing the normative status."@en ;
+    rdfs:domain rl15:Norm ;
+    rdfs:range rl15:Agent ;
+    rdfs:subPropertyOf rl2:subject .
+
+rl15:action a owl:ObjectProperty ;
+    rdfs:label "action"@en ;
+    skos:definition "Action specified in the norm."@en ;
+    rdfs:domain rl15:Norm ;
+    rdfs:range rl15:Action ;
+    rdfs:subPropertyOf rl2:action .
+
+rl15:prohibitedAction a owl:ObjectProperty ;
+    rdfs:label "prohibited action"@en ;
+    skos:definition "Action that is forbidden."@en ;
+    rdfs:domain rl15:Prohibition ;
+    rdfs:range rl15:Action ;
+    rdfs:subPropertyOf rl15:action, rl2:prohibitedAction .
+
+rl15:object a owl:ObjectProperty ;
+    rdfs:label "object"@en ;
+    skos:definition "Asset the norm concerns."@en ;
+    rdfs:domain rl15:Norm ;
+    rdfs:range rl15:Asset ;
+    rdfs:subPropertyOf rl2:object .
+
+rl15:condition a owl:ObjectProperty ;
+    rdfs:label "condition"@en ;
+    skos:definition "Activation condition for the norm or policy."@en ;
+    rdfs:domain [ owl:unionOf (rl15:Norm rl15:Policy) ] ;
+    rdfs:range rl15:Condition ;
+    rdfs:subPropertyOf rl2:condition .
+
+rl15:deadline a owl:DatatypeProperty ;
+    rdfs:label "deadline"@en ;
+    skos:definition "Time by which duty must be fulfilled."@en ;
+    rdfs:domain rl15:Duty ;
+    rdfs:range xsd:dateTime .
+
+rl15:dutyState a owl:ObjectProperty ;
+    rdfs:label "duty state"@en ;
+    skos:definition "Current lifecycle state of the duty."@en ;
+    rdfs:domain rl15:Duty ;
+    rdfs:range rl15:DutyState ;
+    rdfs:subPropertyOf rl2:obligationState .
+
+# ==============================================================================
+# POLICY PROPERTIES
+# ==============================================================================
+
+rl15:clause a owl:ObjectProperty ;
+    rdfs:label "clause"@en ;
+    skos:definition "Norm contained in the policy."@en ;
+    rdfs:domain rl15:Policy ;
+    rdfs:range rl15:Norm ;
+    rdfs:subPropertyOf rl2:clause .
+
+rl15:grantor a owl:ObjectProperty ;
+    rdfs:label "grantor"@en ;
+    skos:definition "Agent who issues the policy."@en ;
+    rdfs:domain rl15:Policy ;
+    rdfs:range rl15:Agent ;
+    rdfs:subPropertyOf rl2:grantor .
+
+rl15:grantee a owl:ObjectProperty ;
+    rdfs:label "grantee"@en ;
+    skos:definition "Agent who receives privileges."@en ;
+    rdfs:domain rl15:Policy ;
+    rdfs:range rl15:Agent ;
+    rdfs:subPropertyOf rl2:grantee .
+
+# ==============================================================================
+# CONDITION PROPERTIES
+# ==============================================================================
+
+rl15:leftOperand a owl:ObjectProperty ;
+    rdfs:label "left operand"@en ;
+    skos:definition "Property being evaluated."@en ;
+    rdfs:domain rl15:AtomicConstraint ;
+    rdfs:range rl15:LeftOperand ;
+    rdfs:subPropertyOf rl2:leftOperand .
+
+rl15:constraintOperator a owl:ObjectProperty ;
+    rdfs:label "constraint operator"@en ;
+    skos:definition "Operator for evaluation."@en ;
+    rdfs:domain rl15:Condition ;
+    rdfs:subPropertyOf rl2:constraintOperator .
+
+rl15:rightOperand a owl:DatatypeProperty ;
+    rdfs:label "right operand"@en ;
+    skos:definition "Literal value for comparison."@en ;
+    rdfs:domain rl15:AtomicConstraint ;
+    rdfs:subPropertyOf rl2:rightOperand .
+
+rl15:rightOperandRef a owl:ObjectProperty ;
+    rdfs:label "right operand reference"@en ;
+    skos:definition "Resource for comparison (e.g., RuntimeReference)."@en ;
+    rdfs:domain rl15:AtomicConstraint ;
+    rdfs:subPropertyOf rl2:rightOperandRef .
+
+rl15:operand a owl:ObjectProperty ;
+    rdfs:label "operand"@en ;
+    skos:definition "Sub-condition in logical constraint."@en ;
+    rdfs:domain rl15:LogicalConstraint ;
+    rdfs:range rl15:Condition ;
+    rdfs:subPropertyOf rl2:operand .
+
+# ==============================================================================
+# LEFT OPERAND AND RUNTIME REFERENCE
+# ==============================================================================
+
+rl15:LeftOperand a owl:Class ;
+    rdfs:label "Left Operand"@en ;
+    skos:definition "Property or attribute for condition evaluation."@en ;
+    rdfs:subClassOf rl2:LeftOperand ;
+    rdfs:comment "Profiles define domain-specific operands."@en .
+
+rl15:RuntimeReference a owl:Class ;
+    rdfs:label "Runtime Reference"@en ;
+    skos:definition "Value reference resolved at evaluation time."@en ;
+    rdfs:subClassOf rl2:RuntimeReference .
+
+rl15:currentAgent a rl15:RuntimeReference ;
+    rdfs:label "current agent"@en ;
+    skos:definition "Resolves to the requesting agent."@en ;
+    owl:sameAs rl2:currentAgent .
+
+rl15:currentDateTime a rl15:LeftOperand ;
+    rdfs:label "current date time"@en ;
+    skos:definition "Resolves to evaluation time."@en ;
+    owl:sameAs rl2:currentDateTime .
+
+# ==============================================================================
+# ACTION HIERARCHY
+# ==============================================================================
+
+rl15:includedIn a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:label "included in"@en ;
+    skos:definition "Narrower action included in broader action."@en ;
+    rdfs:domain rl15:Action ;
+    rdfs:range rl15:Action ;
+    rdfs:subPropertyOf rl2:includedIn ;
+    rdfs:comment "Transitive: if A includedIn B and B includedIn C, then A includedIn C."@en .
+
+# ==============================================================================
+# END OF ONTOLOGY
+# ==============================================================================
