@@ -1,12 +1,12 @@
 # =============================================================================
-# RL1.5 Profile Declaration (DXPROF)
+# Adalbert Profile Declaration (DXPROF)
 # Version: 0.2
 # Date: 2026-02-03
 # =============================================================================
-# W3C Profiles Vocabulary metadata for RL1.5.
+# W3C Profiles Vocabulary metadata for Adalbert.
 # =============================================================================
 
-@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
+@prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
 @prefix prof:    <http://www.w3.org/ns/dx/prof/> .
 @prefix role:    <http://www.w3.org/ns/dx/prof/role/> .
 @prefix dct:     <http://purl.org/dc/terms/> .
@@ -23,63 +23,63 @@ odrl:core a dct:Standard ;
     dct:identifier <http://www.w3.org/TR/odrl-model/> .
 
 # =============================================================================
-# RL1.5 CORE PROFILE
+# Adalbert CORE PROFILE
 # =============================================================================
 
-<https://vocabulary.bigbank/rl1.5/> a prof:Profile ;
-    dct:title "RL1.5 Core"@en ;
+<https://vocabulary.bigbank/adalbert/> a prof:Profile ;
+    dct:title "Adalbert Core"@en ;
     dct:description "Deterministic policy language extending ODRL 2.2."@en ;
     prof:isProfileOf odrl:core ;
-    prof:hasToken "rl15"^^xsd:token ;
+    prof:hasToken "adalbert"^^xsd:token ;
     
     prof:hasResource [
         a prof:ResourceDescriptor ;
-        dct:title "RL1.5 Specification"@en ;
+        dct:title "Adalbert Specification"@en ;
         prof:hasRole role:specification ;
-        prof:hasArtifact <https://vocabulary.bigbank/rl1.5/docs/README.md>
+        prof:hasArtifact <https://vocabulary.bigbank/adalbert/docs/README.md>
     ] , [
         a prof:ResourceDescriptor ;
-        dct:title "RL1.5 Formal Semantics"@en ;
+        dct:title "Adalbert Formal Semantics"@en ;
         prof:hasRole role:specification ;
-        prof:hasArtifact <https://vocabulary.bigbank/rl1.5/docs/RL1_5_Semantics.md>
+        prof:hasArtifact <https://vocabulary.bigbank/adalbert/docs/Adalbert_Semantics.md>
     ] , [
         a prof:ResourceDescriptor ;
-        dct:title "RL1.5 Core Ontology"@en ;
+        dct:title "Adalbert Core Ontology"@en ;
         prof:hasRole role:vocabulary ;
         dct:conformsTo owl: ;
-        prof:hasArtifact <https://vocabulary.bigbank/rl1.5/ontology/rl1_5-core.ttl>
+        prof:hasArtifact <https://vocabulary.bigbank/adalbert/ontology/adalbert-core.ttl>
     ] , [
         a prof:ResourceDescriptor ;
-        dct:title "RL1.5 SHACL Shapes"@en ;
+        dct:title "Adalbert SHACL Shapes"@en ;
         prof:hasRole role:validation ;
         dct:conformsTo <http://www.w3.org/ns/shacl#> ;
-        prof:hasArtifact <https://vocabulary.bigbank/rl1.5/ontology/rl1_5-shacl.ttl>
+        prof:hasArtifact <https://vocabulary.bigbank/adalbert/ontology/adalbert-shacl.ttl>
     ] .
 
 # =============================================================================
 # DOMAIN PROFILES
 # =============================================================================
 
-<https://vocabulary.bigbank/rl1.5/governance/> a prof:Profile ;
-    dct:title "RL1.5 Governance Core"@en ;
-    prof:isProfileOf <https://vocabulary.bigbank/rl1.5/> ;
+<https://vocabulary.bigbank/adalbert/governance/> a prof:Profile ;
+    dct:title "Adalbert Governance Core"@en ;
+    prof:isProfileOf <https://vocabulary.bigbank/adalbert/> ;
     prof:hasToken "rl15-gov"^^xsd:token .
 
-<https://vocabulary.bigbank/rl1.5/market-data/> a prof:Profile ;
-    dct:title "RL1.5 Market Data"@en ;
-    prof:isProfileOf <https://vocabulary.bigbank/rl1.5/governance/> ;
-    prof:isTransitiveProfileOf <https://vocabulary.bigbank/rl1.5/> , odrl:core ;
+<https://vocabulary.bigbank/adalbert/market-data/> a prof:Profile ;
+    dct:title "Adalbert Market Data"@en ;
+    prof:isProfileOf <https://vocabulary.bigbank/adalbert/governance/> ;
+    prof:isTransitiveProfileOf <https://vocabulary.bigbank/adalbert/> , odrl:core ;
     prof:hasToken "rl15-md"^^xsd:token .
 
-<https://vocabulary.bigbank/rl1.5/data-use/> a prof:Profile ;
-    dct:title "RL1.5 Data Use"@en ;
-    prof:isProfileOf <https://vocabulary.bigbank/rl1.5/governance/> ;
-    prof:isTransitiveProfileOf <https://vocabulary.bigbank/rl1.5/> , odrl:core ;
+<https://vocabulary.bigbank/adalbert/data-use/> a prof:Profile ;
+    dct:title "Adalbert Data Use"@en ;
+    prof:isProfileOf <https://vocabulary.bigbank/adalbert/governance/> ;
+    prof:isTransitiveProfileOf <https://vocabulary.bigbank/adalbert/> , odrl:core ;
     prof:hasToken "rl15-du"^^xsd:token .
 
-<https://vocabulary.bigbank/rl1.5/contracts/> a prof:Profile ;
-    dct:title "RL1.5 Contracts"@en ;
-    prof:isProfileOf <https://vocabulary.bigbank/rl1.5/> ;
+<https://vocabulary.bigbank/adalbert/contracts/> a prof:Profile ;
+    dct:title "Adalbert Contracts"@en ;
+    prof:isProfileOf <https://vocabulary.bigbank/adalbert/> ;
     prof:isTransitiveProfileOf odrl:core ;
     prof:hasToken "rl15-dc"^^xsd:token .
 

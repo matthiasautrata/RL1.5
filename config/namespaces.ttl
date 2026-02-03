@@ -1,5 +1,5 @@
 # =============================================================================
-# RL1.5 Namespace Registry (Authoritative)
+# Adalbert Namespace Registry (Authoritative)
 # =============================================================================
 # Standard prefixes for all Turtle files and documentation.
 # This file is the single source of truth for namespace URIs.
@@ -24,29 +24,29 @@
 @prefix prof:    <http://www.w3.org/ns/dx/prof/> .
 
 # -----------------------------------------------------------------------------
-# RL1.5 Core Ontologies (TBox)
+# Adalbert Core Ontologies (TBox)
 # -----------------------------------------------------------------------------
 
-@prefix rl15:     <https://vocabulary.bigbank/rl1.5/> .
+@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
 # Core vocabulary: Privilege, Duty, Prohibition, Agreement, Offer, Set
 
-@prefix rl15sh:   <https://vocabulary.bigbank/rl1.5/shapes/> .
-# SHACL shapes for RL1.5 validation
+@prefix adalbertsh:   <https://vocabulary.bigbank/adalbert/shapes/> .
+# SHACL shapes for Adalbert validation
 
 # -----------------------------------------------------------------------------
-# RL1.5 Domain Profiles (TBox)
+# Adalbert Domain Profiles (TBox)
 # -----------------------------------------------------------------------------
 
-@prefix rl15-gov: <https://vocabulary.bigbank/rl1.5/governance/> .
+@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
 # Shared governance operands: purpose, classification, jurisdiction
 
-@prefix rl15-md:  <https://vocabulary.bigbank/rl1.5/market-data/> .
+@prefix adalbert-md:  <https://vocabulary.bigbank/adalbert/market-data/> .
 # Market data profile: timeliness, distribution, display
 
-@prefix rl15-du:  <https://vocabulary.bigbank/rl1.5/data-use/> .
+@prefix adalbert-du:  <https://vocabulary.bigbank/adalbert/data-use/> .
 # Data use profile: internal access control
 
-@prefix rl15-dc:  <https://vocabulary.bigbank/rl1.5/contracts/> .
+@prefix adalbert-dc:  <https://vocabulary.bigbank/adalbert/contracts/> .
 # Data contracts extension: DataContract, Subscription, lifecycle
 
 # -----------------------------------------------------------------------------
@@ -54,10 +54,10 @@
 # -----------------------------------------------------------------------------
 
 @prefix dcon:    <https://vocabulary.bigbank/dcon/> .
-# DCON vocabulary (if used alongside RL1.5)
+# DCON vocabulary (if used alongside Adalbert)
 
 @prefix rl2:     <https://vocabulary.bigbank/rl2/> .
-# RL2 full specification (superset of RL1.5)
+# RL2 full specification (superset of Adalbert)
 
 # -----------------------------------------------------------------------------
 # Instance Namespaces (ABox)

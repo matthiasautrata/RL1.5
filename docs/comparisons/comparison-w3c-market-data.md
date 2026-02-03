@@ -2,9 +2,9 @@
 
 ---
 
-## Appendix A: MDS → RL1.5 Automated Translation Assessment
+## Appendix A: MDS → Adalbert Automated Translation Assessment
 
-This appendix assesses the feasibility of automatically translating existing MDS policies to RL1.5, based on approximately **2,000 policies** requiring conversion.
+This appendix assesses the feasibility of automatically translating existing MDS policies to Adalbert, based on approximately **2,000 policies** requiring conversion.
 
 ---
 
@@ -26,20 +26,20 @@ This appendix assesses the feasibility of automatically translating existing MDS
 
 #### Fully Translateable (Mechanical)
 
-| MDS Construct | RL1.5 Translation | Transformation |
+| MDS Construct | Adalbert Translation | Transformation |
 |---------------|-------------------|----------------|
-| `odrl:permission` | `rl15:Privilege` | Type change |
-| `odrl:prohibition` | `rl15:Prohibition` | Type change |
-| `odrl:duty` | `rl15:Duty` | Type + lifecycle |
-| `md:display` | `rl15-md:display` | Namespace swap |
-| `md:distribute` | `rl15-md:distribute` | Namespace swap |
-| `md:derive` | `rl15-md:derive` | Namespace swap |
-| `md:notify` | `rl15-md:notify` | Namespace swap |
-| `md:report` | `rl15-md:report` | Namespace swap |
-| `md:timeliness` | `rl15-md:timeliness` | Namespace swap |
-| `md:assetClass` | `rl15-md:assetClass` | Namespace swap |
-| `odrl:constraint` | `rl15:condition` | Restructure |
-| `odrl:and` / `odrl:or` | `rl15:And` / `rl15:Or` | Type change |
+| `odrl:permission` | `adalbert:Privilege` | Type change |
+| `odrl:prohibition` | `adalbert:Prohibition` | Type change |
+| `odrl:duty` | `adalbert:Duty` | Type + lifecycle |
+| `md:display` | `adalbert-md:display` | Namespace swap |
+| `md:distribute` | `adalbert-md:distribute` | Namespace swap |
+| `md:derive` | `adalbert-md:derive` | Namespace swap |
+| `md:notify` | `adalbert-md:notify` | Namespace swap |
+| `md:report` | `adalbert-md:report` | Namespace swap |
+| `md:timeliness` | `adalbert-md:timeliness` | Namespace swap |
+| `md:assetClass` | `adalbert-md:assetClass` | Namespace swap |
+| `odrl:constraint` | `adalbert:condition` | Restructure |
+| `odrl:and` / `odrl:or` | `adalbert:And` / `adalbert:Or` | Type change |
 | All comparison operators | Same | Direct |
 
 #### Translateable with Warnings (Lossy)
@@ -61,7 +61,7 @@ This appendix assesses the feasibility of automatically translating existing MDS
 
 | MDS Construct | Reason | Resolution |
 |---------------|--------|------------|
-| `odrl:xone` | Not in RL1.5 | Manual rewrite to `or` + mutex |
+| `odrl:xone` | Not in Adalbert | Manual rewrite to `or` + mutex |
 | Dynamic `AssetCollection` | Non-deterministic | Expand to explicit list |
 | Dynamic `PartyCollection` | Non-deterministic | Expand to explicit list |
 | Remedy-dependent logic | Semantic dependency | Manual review; may need RL2 |
@@ -87,7 +87,7 @@ translate(mds_policy) → (rl15_policy, warnings, errors)
    - restructure constraints → condition tree
    - if Duty: add dutyState=Pending, extract/default deadline
 
-3. Validate output against RL1.5 SHACL
+3. Validate output against Adalbert SHACL
 
 4. Return (policy, warnings, errors)
 ```
@@ -130,7 +130,7 @@ translate(mds_policy) → (rl15_policy, warnings, errors)
 | Semantic equivalence testing | 3 days |
 | Final SHACL validation | 1 day |
 
-**Deliverable**: 2,000 RL1.5 policies
+**Deliverable**: 2,000 Adalbert policies
 
 #### Phase 4: Verification — 1 week
 
@@ -167,7 +167,7 @@ translate(mds_policy) → (rl15_policy, warnings, errors)
 
 1. **Sample first**: Translate 50-100 policies manually to validate mappings before building tooling.
 
-2. **Preserve originals**: Keep MDS alongside RL1.5 for audit and rollback.
+2. **Preserve originals**: Keep MDS alongside Adalbert for audit and rollback.
 
 3. **Decision testing**: For each translation, verify same request → same decision (ignoring dropped constructs).
 

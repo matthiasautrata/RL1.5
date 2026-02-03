@@ -1,17 +1,17 @@
-# RL1.5 DCON Profile vs DCON Ontology
+# Adalbert DCON Profile vs DCON Ontology
 
-**Purpose**: Analyze alignment and differences between RL1.5's DCON conformance declaration and the DCON ontology.
+**Purpose**: Analyze alignment and differences between Adalbert's DCON conformance declaration and the DCON ontology.
 
 ---
 
 ## Overview
 
-| Aspect | DCON Ontology | RL1.5 DCON Profile |
+| Aspect | DCON Ontology | Adalbert DCON Profile |
 |--------|---------------|-------------------|
-| **Purpose** | Data contract vocabulary | RL1.5 conformance for DCON |
+| **Purpose** | Data contract vocabulary | Adalbert conformance for DCON |
 | **Scope** | Full contract lifecycle | Policy semantics subset |
 | **Promise model** | Simplified lifecycle | Deferred to RL2 |
-| **Integration** | Standalone vocabulary | Profile of RL1.5 |
+| **Integration** | Standalone vocabulary | Profile of Adalbert |
 
 ---
 
@@ -23,17 +23,17 @@
           ┌──────────────┼──────────────┐
           │              │              │
           ▼              ▼              ▼
-       RL1.5          DCON          Other ODRL
+       Adalbert          DCON          Other ODRL
     (Semantics)    (Vocabulary)     Profiles
           │              │
           └──────┬───────┘
                  │
                  ▼
-          RL1.5 DCON Profile
+          Adalbert DCON Profile
          (Intersection)
 ```
 
-**Key insight**: RL1.5 DCON Profile is not a copy of DCON; it's the intersection of DCON concepts that can be expressed with RL1.5 semantics.
+**Key insight**: Adalbert DCON Profile is not a copy of DCON; it's the intersection of DCON concepts that can be expressed with Adalbert semantics.
 
 ---
 
@@ -51,9 +51,9 @@ dcon:Promise a owl:Class ;
 dcon:PromiseState ::= Pending | Fulfilled | Violated
 ```
 
-### RL1.5 Approach
+### Adalbert Approach
 
-RL1.5 defers full Promise Theory to RL2 but provides:
+Adalbert defers full Promise Theory to RL2 but provides:
 
 1. **Duty lifecycle** — Covers the "ought-to-do" semantics
 2. **Condition semantics** — Covers "ought-to-be" pre-requisites
@@ -61,14 +61,14 @@ RL1.5 defers full Promise Theory to RL2 but provides:
 
 ### Mapping
 
-| DCON Concept | RL1.5 Equivalent | Notes |
+| DCON Concept | Adalbert Equivalent | Notes |
 |--------------|------------------|-------|
-| `dcon:Promise` | Deferred to RL2 | Use `rl15:Duty` for obligations |
-| `dcon:ProviderPromise` | `rl15:Duty` on grantor | Via agreement structure |
-| `dcon:promiseState` | `rl15:dutyState` | Same lifecycle semantics |
-| `dcon:promisor` | `rl15:grantor` | Agreement-level |
-| `dcon:promisee` | `rl15:grantee` | Agreement-level |
-| `dcon:promiseContent` | `rl15:action` + conditions | Decomposed |
+| `dcon:Promise` | Deferred to RL2 | Use `adalbert:Duty` for obligations |
+| `dcon:ProviderPromise` | `adalbert:Duty` on grantor | Via agreement structure |
+| `dcon:promiseState` | `adalbert:dutyState` | Same lifecycle semantics |
+| `dcon:promisor` | `adalbert:grantor` | Agreement-level |
+| `dcon:promisee` | `adalbert:grantee` | Agreement-level |
+| `dcon:promiseContent` | `adalbert:action` + conditions | Decomposed |
 
 ---
 
@@ -84,26 +84,26 @@ dcon:DataContractSubscription rdfs:subClassOf odrl:Agreement ;
     skos:definition "An agreement recording a consumer's acceptance of a data contract."@en .
 ```
 
-### RL1.5 Policy Types
+### Adalbert Policy Types
 
 ```turtle
-rl15:Set a owl:Class ;
+adalbert:Set a owl:Class ;
     rdfs:subClassOf odrl:Set ;
     skos:definition "A named collection of rules without party binding."@en .
 
-rl15:Agreement a owl:Class ;
+adalbert:Agreement a owl:Class ;
     rdfs:subClassOf odrl:Agreement ;
     skos:definition "A binding agreement between grantor and grantee."@en .
 ```
 
 ### Mapping
 
-| DCON | RL1.5 DCON Profile | Notes |
+| DCON | Adalbert DCON Profile | Notes |
 |------|-------------------|-------|
 | `dcon:DataContract` | N/A | DCON-specific (Offer) |
-| `dcon:DataContractSubscription` | `rl15:Agreement` | When activated |
+| `dcon:DataContractSubscription` | `adalbert:Agreement` | When activated |
 
-**Key difference**: DCON distinguishes Offer (DataContract) from Agreement (Subscription). RL1.5 only models Agreement; DCON handles offer semantics.
+**Key difference**: DCON distinguishes Offer (DataContract) from Agreement (Subscription). Adalbert only models Agreement; DCON handles offer semantics.
 
 ---
 
@@ -111,30 +111,30 @@ rl15:Agreement a owl:Class ;
 
 ### Core Properties
 
-| DCON Property | RL1.5 Equivalent | Mapping Type |
+| DCON Property | Adalbert Equivalent | Mapping Type |
 |---------------|------------------|--------------|
 | `dcon:hasPromise` | N/A | Deferred |
-| `odrl:permission` | `rl15:clause` (Privilege) | Structural |
-| `odrl:obligation` | `rl15:clause` (Duty) | Structural |
-| `odrl:target` | `rl15:object` | Renamed |
+| `odrl:permission` | `adalbert:clause` (Privilege) | Structural |
+| `odrl:obligation` | `adalbert:clause` (Duty) | Structural |
+| `odrl:target` | `adalbert:object` | Renamed |
 | `dcat:distribution` | N/A | Use DCAT directly |
 
-### Promise Properties (Deferred in RL1.5)
+### Promise Properties (Deferred in Adalbert)
 
-| DCON Property | RL1.5 Status | Alternative |
+| DCON Property | Adalbert Status | Alternative |
 |---------------|--------------|-------------|
-| `dcon:promisor` | Deferred | Use `rl15:grantor` on Agreement |
-| `dcon:promisee` | Deferred | Use `rl15:grantee` on Agreement |
-| `dcon:promiseContent` | Deferred | Use `rl15:action` + `rl15:condition` |
-| `dcon:promiseState` | Partial | `rl15:dutyState` for duties |
+| `dcon:promisor` | Deferred | Use `adalbert:grantor` on Agreement |
+| `dcon:promisee` | Deferred | Use `adalbert:grantee` on Agreement |
+| `dcon:promiseContent` | Deferred | Use `adalbert:action` + `adalbert:condition` |
+| `dcon:promiseState` | Partial | `adalbert:dutyState` for duties |
 
 ### Specialized Promise Types
 
-| DCON Class | RL1.5 Alternative |
+| DCON Class | Adalbert Alternative |
 |------------|-------------------|
-| `dcon:ProviderTimelinessPromise` | `rl15:Duty` with `rl15:deadline` |
-| `dcon:ProviderSchemaPromise` | `rl15:Duty` with `dcterms:conformsTo` condition |
-| `dcon:ProviderChangeNotificationPromise` | `rl15:Duty` with `rl15-du:notify` action |
+| `dcon:ProviderTimelinessPromise` | `adalbert:Duty` with `adalbert:deadline` |
+| `dcon:ProviderSchemaPromise` | `adalbert:Duty` with `dcterms:conformsTo` condition |
+| `dcon:ProviderChangeNotificationPromise` | `adalbert:Duty` with `adalbert-du:notify` action |
 
 ---
 
@@ -147,10 +147,10 @@ rl15:Agreement a owl:Class ;
 > Duties are 'ought-to-do' obligations to perform actions.
 > Promises give rise to Duties when agreements are formed."
 
-**RL1.5**: 
+**Adalbert**: 
 > Duties directly represent obligations. Promises are deferred to RL2.
 
-**Implication**: DCON's richer semantic distinction is collapsed in RL1.5. When RL2 is available, DCON can use full Promise semantics.
+**Implication**: DCON's richer semantic distinction is collapsed in Adalbert. When RL2 is available, DCON can use full Promise semantics.
 
 ### 2. Contract Formation
 
@@ -159,12 +159,12 @@ rl15:Agreement a owl:Class ;
 DataContract (Offer) --[acceptance]--> DataContractSubscription (Agreement)
 ```
 
-**RL1.5**:
+**Adalbert**:
 ```
 Agreement (already accepted)
 ```
 
-**Implication**: RL1.5 policies represent agreed terms. DCON handles the offer→acceptance transition.
+**Implication**: Adalbert policies represent agreed terms. DCON handles the offer→acceptance transition.
 
 ### 3. Provider Commitments
 
@@ -180,17 +180,17 @@ ex:contract dcon:hasPromise [
 ] .
 ```
 
-**RL1.5** models as duties on the grantor:
+**Adalbert** models as duties on the grantor:
 
 ```turtle
-ex:agreement rl15:grantor ex:dataTeam ;
-    rl15:grantee ex:analytics ;
-    rl15:clause [
-        a rl15:Duty ;
-        rl15:subject ex:dataTeam ;  # Grantor has the duty
-        rl15:action rl15-du:deliverData ;
-        rl15:deadline "06:00:00"^^xsd:time ;
-        rl15:dutyState rl15:Pending
+ex:agreement adalbert:grantor ex:dataTeam ;
+    adalbert:grantee ex:analytics ;
+    adalbert:clause [
+        a adalbert:Duty ;
+        adalbert:subject ex:dataTeam ;  # Grantor has the duty
+        adalbert:action adalbert-du:deliverData ;
+        adalbert:deadline "06:00:00"^^xsd:time ;
+        adalbert:dutyState adalbert:Pending
     ] .
 ```
 
@@ -198,23 +198,23 @@ ex:agreement rl15:grantor ex:dataTeam ;
 
 ## Integration Pattern
 
-### Using DCON with RL1.5
+### Using DCON with Adalbert
 
 1. **DCON handles**: Contract lifecycle, offer management, versioning
-2. **RL1.5 handles**: Policy semantics, evaluation, compliance checking
+2. **Adalbert handles**: Policy semantics, evaluation, compliance checking
 
 ```turtle
-# DCON DataContractSubscription references RL1.5 policy
+# DCON DataContractSubscription references Adalbert policy
 ex:subscription a dcon:DataContractSubscription ;
     prov:wasDerivedFrom ex:contract ;
     dcon:hasAgreedPolicy ex:rl15Policy .
 
-# RL1.5 policy with formal semantics
-ex:rl15Policy a rl15:Agreement ;
-    odrl:profile <https://rl2.org/rl1.5/> ;
-    rl15:grantor ex:dataTeam ;
-    rl15:grantee ex:analytics ;
-    # ... clauses with RL1.5 semantics
+# Adalbert policy with formal semantics
+ex:rl15Policy a adalbert:Agreement ;
+    odrl:profile <https://rl2.org/adalbert/> ;
+    adalbert:grantor ex:dataTeam ;
+    adalbert:grantee ex:analytics ;
+    # ... clauses with Adalbert semantics
 ```
 
 ### Namespace Alignment
@@ -226,11 +226,11 @@ DCON2 namespaces.ttl defines:
 @prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 ```
 
-RL1.5 adds:
+Adalbert adds:
 
 ```turtle
-@prefix rl15: <https://rl2.org/rl1.5/> .
-@prefix rl15-dcon: <https://rl2.org/rl1.5/dcon/> .
+@prefix adalbert: <https://rl2.org/adalbert/> .
+@prefix rl15-dcon: <https://rl2.org/adalbert/dcon/> .
 ```
 
 **Coexistence**: Both namespaces can be used in the same document:
@@ -238,18 +238,18 @@ RL1.5 adds:
 ```turtle
 ex:subscription a dcon:DataContractSubscription ;
     dcon:hasAgreedPolicy [
-        a rl15:Agreement ;
-        # RL1.5 semantics apply to policy evaluation
+        a adalbert:Agreement ;
+        # Adalbert semantics apply to policy evaluation
     ] .
 ```
 
 ---
 
-## What RL1.5 DCON Profile Provides
+## What Adalbert DCON Profile Provides
 
 ### 1. Formal Evaluation Semantics
 
-DCON doesn't define how policies are evaluated. RL1.5 provides:
+DCON doesn't define how policies are evaluated. Adalbert provides:
 
 ```
 Eval : Request × Policy × State → Decision × DutySet
@@ -257,7 +257,7 @@ Eval : Request × Policy × State → Decision × DutySet
 
 ### 2. Deterministic Conflict Resolution
 
-DCON inherits ODRL's ambiguity. RL1.5 fixes it:
+DCON inherits ODRL's ambiguity. Adalbert fixes it:
 
 ```
 Prohibition > Privilege (fixed)
@@ -265,7 +265,7 @@ Prohibition > Privilege (fixed)
 
 ### 3. Duty Lifecycle Semantics
 
-DCON has `promiseState` but no transition rules. RL1.5 provides:
+DCON has `promiseState` but no transition rules. Adalbert provides:
 
 ```
 Pending --[condition true]--> Active --[action performed]--> Fulfilled
@@ -274,11 +274,11 @@ Pending --[condition true]--> Active --[action performed]--> Fulfilled
 
 ### 4. Verification Path
 
-RL1.5 policies can be formally verified; DCON policies cannot (without RL1.5).
+Adalbert policies can be formally verified; DCON policies cannot (without Adalbert).
 
 ---
 
-## What DCON Provides Beyond RL1.5
+## What DCON Provides Beyond Adalbert
 
 ### 1. Contract Lifecycle
 
@@ -313,10 +313,10 @@ ex:contract dcat:distribution ex:apiEndpoint .
 
 ## Migration Path
 
-### Current: RL1.5 + DCON
+### Current: Adalbert + DCON
 
 - Use DCON for contract structure
-- Use RL1.5 for policy semantics
+- Use Adalbert for policy semantics
 - Both work together via integration pattern
 
 ### Future: RL2 + DCON
@@ -326,7 +326,7 @@ ex:contract dcat:distribution ex:apiEndpoint .
 - Full semantic compatibility
 
 ```
-RL1.5 --[upgrade]--> RL2
+Adalbert --[upgrade]--> RL2
                        │
                        │ (Promise Theory alignment)
                        │
@@ -339,7 +339,7 @@ DCON ────────────────[align]
 
 ```turtle
 @prefix dcon: <https://vocabulary.jpmorgan/dcon/> .
-@prefix rl15: <https://rl2.org/rl1.5/> .
+@prefix adalbert: <https://rl2.org/adalbert/> .
 @prefix prov: <http://www.w3.org/ns/prov#> .
 
 # DCON Subscription (contract lifecycle)
@@ -349,31 +349,31 @@ ex:subscription a dcon:DataContractSubscription ;
     dcon:effectiveDate "2025-01-01"^^xsd:date ;
     dcon:hasAgreedPolicy ex:analyticsPolicy .
 
-# RL1.5 Policy (formal semantics)
-ex:analyticsPolicy a rl15:Agreement ;
-    odrl:profile <https://rl2.org/rl1.5/> ;
-    rl15:grantor ex:dataTeam ;
-    rl15:grantee ex:analyticsTeam ;
+# Adalbert Policy (formal semantics)
+ex:analyticsPolicy a adalbert:Agreement ;
+    odrl:profile <https://rl2.org/adalbert/> ;
+    adalbert:grantor ex:dataTeam ;
+    adalbert:grantee ex:analyticsTeam ;
     
-    rl15:clause [
-        a rl15:Privilege ;
-        rl15:subject ex:analyticsTeam ;
-        rl15:action rl15-du:derive ;
-        rl15:object ex:customerData ;
-        rl15:condition [
-            rl15:leftOperand rl15-du:purpose ;
-            rl15:constraintOperator rl15:eq ;
-            rl15:rightOperand ex:internalAnalytics
+    adalbert:clause [
+        a adalbert:Privilege ;
+        adalbert:subject ex:analyticsTeam ;
+        adalbert:action adalbert-du:derive ;
+        adalbert:object ex:customerData ;
+        adalbert:condition [
+            adalbert:leftOperand adalbert-du:purpose ;
+            adalbert:constraintOperator adalbert:eq ;
+            adalbert:rightOperand ex:internalAnalytics
         ]
     ] ;
     
-    rl15:clause [
-        a rl15:Duty ;
-        rl15:subject ex:dataTeam ;  # Provider duty
-        rl15:action rl15-du:deliverData ;
-        rl15:object ex:customerData ;
-        rl15:deadline "06:00:00"^^xsd:time ;
-        rl15:dutyState rl15:Pending
+    adalbert:clause [
+        a adalbert:Duty ;
+        adalbert:subject ex:dataTeam ;  # Provider duty
+        adalbert:action adalbert-du:deliverData ;
+        adalbert:object ex:customerData ;
+        adalbert:deadline "06:00:00"^^xsd:time ;
+        adalbert:dutyState adalbert:Pending
     ] .
 ```
 
@@ -383,5 +383,5 @@ ex:analyticsPolicy a rl15:Agreement ;
 
 - [DCON Ontology](../../dcon/dcon/ontology/dcon.ttl)
 - [DCON2 Namespaces](../../dcon/dcon2/config/namespaces.ttl)
-- [RL1.5 DCON Profile](../profiles/rl1_5-dcon.ttl)
+- [Adalbert DCON Profile](../profiles/adalbert-dcon.ttl)
 - [RL2 Promise Theory](../../RL2/docs/promise-theory.md)

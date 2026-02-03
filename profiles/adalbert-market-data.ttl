@@ -1,14 +1,14 @@
 # =============================================================================
-# RL1.5 Market Data Profile
+# Adalbert Market Data Profile
 # Version: 0.2
 # Date: 2026-02-03
 # =============================================================================
 # Market data licensing vocabulary for internal governance.
 # =============================================================================
 
-@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
-@prefix rl15-gov: <https://vocabulary.bigbank/rl1.5/governance/> .
-@prefix rl15-md: <https://vocabulary.bigbank/rl1.5/market-data/> .
+@prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
+@prefix adalbert-md: <https://vocabulary.bigbank/adalbert/market-data/> .
 @prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -21,8 +21,8 @@
 # PROFILE DECLARATION
 # =============================================================================
 
-<https://vocabulary.bigbank/rl1.5/market-data/> a owl:Ontology, odrl:Profile ;
-    dcterms:title "RL1.5 Market Data Profile"@en ;
+<https://vocabulary.bigbank/adalbert/market-data/> a owl:Ontology, odrl:Profile ;
+    dcterms:title "Adalbert Market Data Profile"@en ;
     dcterms:description """
         Market data licensing vocabulary for internal data governance.
         
@@ -31,139 +31,139 @@
     """@en ;
     dcterms:created "2026-02-03"^^xsd:date ;
     owl:versionInfo "0.2" ;
-    owl:imports <https://vocabulary.bigbank/rl1.5/governance/> .
+    owl:imports <https://vocabulary.bigbank/adalbert/governance/> .
 
 # =============================================================================
 # TIMELINESS OPERANDS
 # =============================================================================
 
-rl15-md:timeliness a rl15:LeftOperand ;
+adalbert-md:timeliness a adalbert:LeftOperand ;
     rdfs:label "timeliness"@en ;
     skos:definition "Data freshness category."@en ;
-    rl15:contextKey "timeliness" .
+    adalbert:contextKey "timeliness" .
 
-rl15-md:delayMinutes a rl15:LeftOperand ;
+adalbert-md:delayMinutes a adalbert:LeftOperand ;
     rdfs:label "delay minutes"@en ;
     skos:definition "Delay in minutes from real-time."@en ;
-    rl15:contextKey "delayMinutes" .
+    adalbert:contextKey "delayMinutes" .
 
 # Timeliness values
-rl15-md:realtime a skos:Concept ; rdfs:label "real-time"@en .
-rl15-md:delayed a skos:Concept ; rdfs:label "delayed"@en .
-rl15-md:endOfDay a skos:Concept ; rdfs:label "end of day"@en .
-rl15-md:historical a skos:Concept ; rdfs:label "historical"@en .
-rl15-md:embargoed a skos:Concept ; rdfs:label "embargoed"@en .
+adalbert-md:realtime a skos:Concept ; rdfs:label "real-time"@en .
+adalbert-md:delayed a skos:Concept ; rdfs:label "delayed"@en .
+adalbert-md:endOfDay a skos:Concept ; rdfs:label "end of day"@en .
+adalbert-md:historical a skos:Concept ; rdfs:label "historical"@en .
+adalbert-md:embargoed a skos:Concept ; rdfs:label "embargoed"@en .
 
 # =============================================================================
 # ASSET OPERANDS
 # =============================================================================
 
-rl15-md:assetClass a rl15:LeftOperand ;
+adalbert-md:assetClass a adalbert:LeftOperand ;
     rdfs:label "asset class"@en ;
     skos:definition "Financial instrument classification."@en ;
-    rl15:contextKey "assetClass" .
+    adalbert:contextKey "assetClass" .
 
-rl15-md:market a rl15:LeftOperand ;
+adalbert-md:market a adalbert:LeftOperand ;
     rdfs:label "market"@en ;
     skos:definition "Trading venue or market."@en ;
-    rl15:contextKey "market" .
+    adalbert:contextKey "market" .
 
-rl15-md:isBenchmark a rl15:LeftOperand ;
+adalbert-md:isBenchmark a adalbert:LeftOperand ;
     rdfs:label "is benchmark"@en ;
     skos:definition "Whether asset is a benchmark/index."@en ;
-    rl15:contextKey "isBenchmark" .
+    adalbert:contextKey "isBenchmark" .
 
-rl15-md:geographicScope a rl15:LeftOperand ;
+adalbert-md:geographicScope a adalbert:LeftOperand ;
     rdfs:label "geographic scope"@en ;
     skos:definition "Geographic coverage of the data."@en ;
-    rl15:contextKey "geographicScope" .
+    adalbert:contextKey "geographicScope" .
 
 # =============================================================================
 # RECIPIENT OPERANDS
 # =============================================================================
 
-rl15-md:recipient a rl15:LeftOperand ;
+adalbert-md:recipient a adalbert:LeftOperand ;
     rdfs:label "recipient"@en ;
     skos:definition "Data recipient identity."@en ;
-    rl15:contextKey "recipient" .
+    adalbert:contextKey "recipient" .
 
-rl15-md:recipientType a rl15:LeftOperand ;
+adalbert-md:recipientType a adalbert:LeftOperand ;
     rdfs:label "recipient type"@en ;
     skos:definition "Category of data recipient."@en ;
-    rl15:contextKey "recipientType" .
+    adalbert:contextKey "recipientType" .
 
-rl15-md:internal a skos:Concept ; rdfs:label "internal"@en .
-rl15-md:external a skos:Concept ; rdfs:label "external"@en .
-rl15-md:professional a skos:Concept ; rdfs:label "professional"@en .
-rl15-md:nonProfessional a skos:Concept ; rdfs:label "non-professional"@en .
+adalbert-md:internal a skos:Concept ; rdfs:label "internal"@en .
+adalbert-md:external a skos:Concept ; rdfs:label "external"@en .
+adalbert-md:professional a skos:Concept ; rdfs:label "professional"@en .
+adalbert-md:nonProfessional a skos:Concept ; rdfs:label "non-professional"@en .
 
 # =============================================================================
 # COUNT OPERANDS
 # =============================================================================
 
-rl15-md:userCount a rl15:LeftOperand ;
+adalbert-md:userCount a adalbert:LeftOperand ;
     rdfs:label "user count"@en ;
     skos:definition "Number of users accessing data."@en ;
-    rl15:contextKey "userCount" .
+    adalbert:contextKey "userCount" .
 
-rl15-md:deviceCount a rl15:LeftOperand ;
+adalbert-md:deviceCount a adalbert:LeftOperand ;
     rdfs:label "device count"@en ;
     skos:definition "Number of devices accessing data."@en ;
-    rl15:contextKey "deviceCount" .
+    adalbert:contextKey "deviceCount" .
 
-rl15-md:locationCount a rl15:LeftOperand ;
+adalbert-md:locationCount a adalbert:LeftOperand ;
     rdfs:label "location count"@en ;
     skos:definition "Number of locations accessing data."@en ;
-    rl15:contextKey "locationCount" .
+    adalbert:contextKey "locationCount" .
 
 # =============================================================================
 # ACTIONS
 # =============================================================================
 
-rl15-md:display a rl15:Action ;
+adalbert-md:display a adalbert:Action ;
     rdfs:label "display"@en ;
     skos:definition "Display data to users."@en ;
-    rl15:includedIn rl15-gov:use .
+    adalbert:includedIn adalbert-gov:use .
 
-rl15-md:nonDisplay a rl15:Action ;
+adalbert-md:nonDisplay a adalbert:Action ;
     rdfs:label "non-display"@en ;
     skos:definition "Use data for non-display purposes."@en ;
-    rl15:includedIn rl15-gov:use .
+    adalbert:includedIn adalbert-gov:use .
 
-rl15-md:distribute a rl15:Action ;
+adalbert-md:distribute a adalbert:Action ;
     rdfs:label "distribute"@en ;
     skos:definition "Distribute data."@en ;
-    rl15:includedIn rl15-gov:distribute .
+    adalbert:includedIn adalbert-gov:distribute .
 
-rl15-md:derive a rl15:Action ;
+adalbert-md:derive a adalbert:Action ;
     rdfs:label "derive"@en ;
     skos:definition "Create derived data products."@en ;
-    rl15:includedIn rl15-gov:derive .
+    adalbert:includedIn adalbert-gov:derive .
 
-rl15-md:calculateIndex a rl15:Action ;
+adalbert-md:calculateIndex a adalbert:Action ;
     rdfs:label "calculate index"@en ;
     skos:definition "Use for index calculation."@en ;
-    rl15:includedIn rl15-md:derive .
+    adalbert:includedIn adalbert-md:derive .
 
-rl15-md:algorithmicTrading a rl15:Action ;
+adalbert-md:algorithmicTrading a adalbert:Action ;
     rdfs:label "algorithmic trading"@en ;
     skos:definition "Use for automated trading."@en ;
-    rl15:includedIn rl15-md:nonDisplay .
+    adalbert:includedIn adalbert-md:nonDisplay .
 
-rl15-md:notify a rl15:Action ;
+adalbert-md:notify a adalbert:Action ;
     rdfs:label "notify"@en ;
     skos:definition "Send usage notifications."@en ;
-    rl15:includedIn rl15-gov:notify .
+    adalbert:includedIn adalbert-gov:notify .
 
-rl15-md:report a rl15:Action ;
+adalbert-md:report a adalbert:Action ;
     rdfs:label "report"@en ;
     skos:definition "Submit usage reports."@en .
 
-rl15-md:audit a rl15:Action ;
+adalbert-md:audit a adalbert:Action ;
     rdfs:label "audit"@en ;
     skos:definition "Permit audit of data usage."@en .
 
-rl15-md:attach a rl15:Action ;
+adalbert-md:attach a adalbert:Action ;
     rdfs:label "attach"@en ;
     skos:definition "Attach attribution to derived works."@en .
 
@@ -171,14 +171,14 @@ rl15-md:attach a rl15:Action ;
 # DERIVATION TYPE (for conditions)
 # =============================================================================
 
-rl15-md:derivationType a rl15:LeftOperand ;
+adalbert-md:derivationType a adalbert:LeftOperand ;
     rdfs:label "derivation type"@en ;
     skos:definition "Type of derivation being performed."@en ;
-    rl15:contextKey "derivationType" .
+    adalbert:contextKey "derivationType" .
 
-rl15-md:commingled a skos:Concept ; rdfs:label "commingled"@en .
-rl15-md:nonSubstitutive a skos:Concept ; rdfs:label "non-substitutive"@en .
-rl15-md:newProduct a skos:Concept ; rdfs:label "new product"@en .
+adalbert-md:commingled a skos:Concept ; rdfs:label "commingled"@en .
+adalbert-md:nonSubstitutive a skos:Concept ; rdfs:label "non-substitutive"@en .
+adalbert-md:newProduct a skos:Concept ; rdfs:label "new product"@en .
 
 # =============================================================================
 # END OF PROFILE

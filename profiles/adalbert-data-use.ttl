@@ -1,14 +1,14 @@
 # =============================================================================
-# RL1.5 Data Use Profile
+# Adalbert Data Use Profile
 # Version: 0.2
 # Date: 2026-02-03
 # =============================================================================
 # Internal data access control vocabulary.
 # =============================================================================
 
-@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
-@prefix rl15-gov: <https://vocabulary.bigbank/rl1.5/governance/> .
-@prefix rl15-du: <https://vocabulary.bigbank/rl1.5/data-use/> .
+@prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
+@prefix adalbert-du: <https://vocabulary.bigbank/adalbert/data-use/> .
 @prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -22,8 +22,8 @@
 # PROFILE DECLARATION
 # =============================================================================
 
-<https://vocabulary.bigbank/rl1.5/data-use/> a owl:Ontology, odrl:Profile ;
-    dcterms:title "RL1.5 Data Use Profile"@en ;
+<https://vocabulary.bigbank/adalbert/data-use/> a owl:Ontology, odrl:Profile ;
+    dcterms:title "Adalbert Data Use Profile"@en ;
     dcterms:description """
         Internal data access control vocabulary.
         
@@ -35,126 +35,126 @@
     """@en ;
     dcterms:created "2026-02-03"^^xsd:date ;
     owl:versionInfo "0.2" ;
-    owl:imports <https://vocabulary.bigbank/rl1.5/governance/> .
+    owl:imports <https://vocabulary.bigbank/adalbert/governance/> .
 
 # =============================================================================
 # IDENTITY OPERANDS
 # =============================================================================
 
-rl15-du:role a rl15:LeftOperand ;
+adalbert-du:role a adalbert:LeftOperand ;
     rdfs:label "role"@en ;
     skos:definition "Role of the requesting agent."@en ;
-    rl15:contextKey "role" .
+    adalbert:contextKey "role" .
 
-rl15-du:organization a rl15:LeftOperand ;
+adalbert-du:organization a adalbert:LeftOperand ;
     rdfs:label "organization"@en ;
     skos:definition "Organization of the requesting agent."@en ;
-    rl15:contextKey "organization" ;
+    adalbert:contextKey "organization" ;
     rdfs:comment "Hierarchy via org:subOrganizationOf."@en .
 
-rl15-du:costCenter a rl15:LeftOperand ;
+adalbert-du:costCenter a adalbert:LeftOperand ;
     rdfs:label "cost center"@en ;
     skos:definition "Cost center of the requesting agent."@en ;
-    rl15:contextKey "costCenter" .
+    adalbert:contextKey "costCenter" .
 
-rl15-du:project a rl15:LeftOperand ;
+adalbert-du:project a adalbert:LeftOperand ;
     rdfs:label "project"@en ;
     skos:definition "Project context of the request."@en ;
-    rl15:contextKey "project" .
+    adalbert:contextKey "project" .
 
 # =============================================================================
 # ENVIRONMENT OPERANDS
 # =============================================================================
 
-rl15-du:environment a rl15:LeftOperand ;
+adalbert-du:environment a adalbert:LeftOperand ;
     rdfs:label "environment"@en ;
     skos:definition "Execution environment."@en ;
-    rl15:contextKey "environment" .
+    adalbert:contextKey "environment" .
 
-rl15-du:production a skos:Concept ; rdfs:label "production"@en .
-rl15-du:staging a skos:Concept ; rdfs:label "staging"@en .
-rl15-du:development a skos:Concept ; rdfs:label "development"@en .
-rl15-du:sandbox a skos:Concept ; rdfs:label "sandbox"@en .
+adalbert-du:production a skos:Concept ; rdfs:label "production"@en .
+adalbert-du:staging a skos:Concept ; rdfs:label "staging"@en .
+adalbert-du:development a skos:Concept ; rdfs:label "development"@en .
+adalbert-du:sandbox a skos:Concept ; rdfs:label "sandbox"@en .
 
-rl15-du:network a rl15:LeftOperand ;
+adalbert-du:network a adalbert:LeftOperand ;
     rdfs:label "network"@en ;
     skos:definition "Network zone of the request."@en ;
-    rl15:contextKey "network" .
+    adalbert:contextKey "network" .
 
-rl15-du:internalNetwork a skos:Concept ; rdfs:label "internal network"@en .
-rl15-du:externalNetwork a skos:Concept ; rdfs:label "external network"@en .
-rl15-du:cloudNetwork a skos:Concept ; rdfs:label "cloud network"@en .
+adalbert-du:internalNetwork a skos:Concept ; rdfs:label "internal network"@en .
+adalbert-du:externalNetwork a skos:Concept ; rdfs:label "external network"@en .
+adalbert-du:cloudNetwork a skos:Concept ; rdfs:label "cloud network"@en .
 
 # =============================================================================
 # CONSENT AND LEGAL BASIS
 # =============================================================================
 
-rl15-du:legalBasis a rl15:LeftOperand ;
+adalbert-du:legalBasis a adalbert:LeftOperand ;
     rdfs:label "legal basis"@en ;
     skos:definition "Legal basis for processing."@en ;
-    rl15:contextKey "legalBasis" .
+    adalbert:contextKey "legalBasis" .
 
-rl15-du:consent a skos:Concept ; rdfs:label "consent"@en .
-rl15-du:contract a skos:Concept ; rdfs:label "contract"@en .
-rl15-du:legalObligation a skos:Concept ; rdfs:label "legal obligation"@en .
-rl15-du:vitalInterest a skos:Concept ; rdfs:label "vital interest"@en .
-rl15-du:publicTask a skos:Concept ; rdfs:label "public task"@en .
-rl15-du:legitimateInterest a skos:Concept ; rdfs:label "legitimate interest"@en .
+adalbert-du:consent a skos:Concept ; rdfs:label "consent"@en .
+adalbert-du:contract a skos:Concept ; rdfs:label "contract"@en .
+adalbert-du:legalObligation a skos:Concept ; rdfs:label "legal obligation"@en .
+adalbert-du:vitalInterest a skos:Concept ; rdfs:label "vital interest"@en .
+adalbert-du:publicTask a skos:Concept ; rdfs:label "public task"@en .
+adalbert-du:legitimateInterest a skos:Concept ; rdfs:label "legitimate interest"@en .
 
-rl15-du:consentId a rl15:LeftOperand ;
+adalbert-du:consentId a adalbert:LeftOperand ;
     rdfs:label "consent ID"@en ;
     skos:definition "Reference to consent record."@en ;
-    rl15:contextKey "consentId" .
+    adalbert:contextKey "consentId" .
 
 # =============================================================================
 # ACCESS PATTERN OPERANDS
 # =============================================================================
 
-rl15-du:accessPattern a rl15:LeftOperand ;
+adalbert-du:accessPattern a adalbert:LeftOperand ;
     rdfs:label "access pattern"@en ;
     skos:definition "Type of data access."@en ;
-    rl15:contextKey "accessPattern" .
+    adalbert:contextKey "accessPattern" .
 
-rl15-du:batch a skos:Concept ; rdfs:label "batch"@en .
-rl15-du:streaming a skos:Concept ; rdfs:label "streaming"@en .
-rl15-du:interactive a skos:Concept ; rdfs:label "interactive"@en .
-rl15-du:api a skos:Concept ; rdfs:label "API"@en .
+adalbert-du:batch a skos:Concept ; rdfs:label "batch"@en .
+adalbert-du:streaming a skos:Concept ; rdfs:label "streaming"@en .
+adalbert-du:interactive a skos:Concept ; rdfs:label "interactive"@en .
+adalbert-du:api a skos:Concept ; rdfs:label "API"@en .
 
-rl15-du:volumeLimit a rl15:LeftOperand ;
+adalbert-du:volumeLimit a adalbert:LeftOperand ;
     rdfs:label "volume limit"@en ;
     skos:definition "Maximum data volume per request."@en ;
-    rl15:contextKey "volumeLimit" .
+    adalbert:contextKey "volumeLimit" .
 
-rl15-du:rateLimit a rl15:LeftOperand ;
+adalbert-du:rateLimit a adalbert:LeftOperand ;
     rdfs:label "rate limit"@en ;
     skos:definition "Maximum requests per time period."@en ;
-    rl15:contextKey "rateLimit" .
+    adalbert:contextKey "rateLimit" .
 
 # =============================================================================
 # ACTIONS
 # =============================================================================
 
-rl15-du:query a rl15:Action ;
+adalbert-du:query a adalbert:Action ;
     rdfs:label "query"@en ;
     skos:definition "Query/select data."@en ;
-    rl15:includedIn rl15-gov:read .
+    adalbert:includedIn adalbert-gov:read .
 
-rl15-du:export a rl15:Action ;
+adalbert-du:export a adalbert:Action ;
     rdfs:label "export"@en ;
     skos:definition "Export data outside the system."@en .
 
-rl15-du:copy a rl15:Action ;
+adalbert-du:copy a adalbert:Action ;
     rdfs:label "copy"@en ;
     skos:definition "Copy data to another location."@en .
 
-rl15-du:link a rl15:Action ;
+adalbert-du:link a adalbert:Action ;
     rdfs:label "link"@en ;
     skos:definition "Link/join with other datasets."@en .
 
-rl15-du:profile a rl15:Action ;
+adalbert-du:profile a adalbert:Action ;
     rdfs:label "profile"@en ;
     skos:definition "Create profiles from data."@en ;
-    rl15:includedIn rl15-gov:derive .
+    adalbert:includedIn adalbert-gov:derive .
 
 # =============================================================================
 # END OF PROFILE

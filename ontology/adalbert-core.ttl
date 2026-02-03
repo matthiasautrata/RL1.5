@@ -1,5 +1,5 @@
 # =============================================================================
-# RL1.5 Core Ontology
+# Adalbert Core Ontology
 # Version: 0.2
 # Date: 2026-02-03
 # =============================================================================
@@ -7,7 +7,7 @@
 # Adds: duty lifecycle, bilateral agreements, formal evaluation semantics.
 # =============================================================================
 
-@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
+@prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
 @prefix rl2:     <https://vocabulary.bigbank/rl2/> .
 @prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
@@ -21,10 +21,10 @@
 # ONTOLOGY DECLARATION
 # =============================================================================
 
-<https://vocabulary.bigbank/rl1.5/> a owl:Ontology ;
-    dcterms:title "RL1.5 Core Ontology"@en ;
+<https://vocabulary.bigbank/adalbert/> a owl:Ontology ;
+    dcterms:title "Adalbert Core Ontology"@en ;
     dcterms:description """
-        RL1.5: Deterministic Rights Language for Data Governance.
+        Adalbert: Deterministic Rights Language for Data Governance.
         
         Extends ODRL 2.2 with:
         - Explicit duty lifecycle (Pending → Active → Fulfilled/Violated)
@@ -34,12 +34,12 @@
         - Formal verification target (Dafny, Why3)
         
         This is an ODRL profile/extension, not a pure subset.
-        RL1.5 policies require RL1.5-aware processors.
+        Adalbert policies require Adalbert-aware processors.
     """@en ;
     dcterms:created "2026-02-02"^^xsd:date ;
     dcterms:modified "2026-02-03"^^xsd:date ;
     owl:versionInfo "0.2" ;
-    owl:versionIRI <https://vocabulary.bigbank/rl1.5/0.2> ;
+    owl:versionIRI <https://vocabulary.bigbank/adalbert/0.2> ;
     rdfs:seeAlso <https://vocabulary.bigbank/rl2/> ,
                  <http://www.w3.org/ns/odrl/2/> .
 
@@ -47,26 +47,26 @@
 # NORM CLASSES
 # =============================================================================
 
-rl15:Norm a owl:Class ;
+adalbert:Norm a owl:Class ;
     rdfs:label "Norm"@en ;
     skos:definition "Abstract base for normative relations."@en ;
     owl:equivalentClass [
         a owl:Class ;
-        owl:unionOf (rl15:Privilege rl15:Duty rl15:Prohibition)
+        owl:unionOf (adalbert:Privilege adalbert:Duty adalbert:Prohibition)
     ] ;
-    owl:disjointUnionOf (rl15:Privilege rl15:Duty rl15:Prohibition) .
+    owl:disjointUnionOf (adalbert:Privilege adalbert:Duty adalbert:Prohibition) .
 
-rl15:Privilege a owl:Class ;
+adalbert:Privilege a owl:Class ;
     rdfs:label "Privilege"@en ;
     skos:definition "Permission to perform an action on an asset."@en ;
-    rdfs:subClassOf rl15:Norm ;
-    owl:disjointWith rl15:Duty, rl15:Prohibition .
+    rdfs:subClassOf adalbert:Norm ;
+    owl:disjointWith adalbert:Duty, adalbert:Prohibition .
 
-rl15:Duty a owl:Class ;
+adalbert:Duty a owl:Class ;
     rdfs:label "Duty"@en ;
     skos:definition "Obligation to perform an action on an asset."@en ;
-    rdfs:subClassOf rl15:Norm ;
-    owl:disjointWith rl15:Privilege, rl15:Prohibition ;
+    rdfs:subClassOf adalbert:Norm ;
+    owl:disjointWith adalbert:Privilege, adalbert:Prohibition ;
     rdfs:comment """
         Duty lifecycle: Pending → Active → Fulfilled | Violated
         
@@ -76,47 +76,47 @@ rl15:Duty a owl:Class ;
         - Violated: deadline passed without performance
     """@en .
 
-rl15:Prohibition a owl:Class ;
+adalbert:Prohibition a owl:Class ;
     rdfs:label "Prohibition"@en ;
     skos:definition "Prohibition on performing an action."@en ;
-    rdfs:subClassOf rl15:Norm ;
-    owl:disjointWith rl15:Privilege, rl15:Duty .
+    rdfs:subClassOf adalbert:Norm ;
+    owl:disjointWith adalbert:Privilege, adalbert:Duty .
 
 # =============================================================================
 # POLICY CLASSES
 # =============================================================================
 
-rl15:Policy a owl:Class ;
+adalbert:Policy a owl:Class ;
     rdfs:label "Policy"@en ;
     skos:definition "Container for normative clauses."@en ;
     owl:equivalentClass [
         a owl:Class ;
-        owl:unionOf (rl15:Set rl15:Offer rl15:Agreement)
+        owl:unionOf (adalbert:Set adalbert:Offer adalbert:Agreement)
     ] ;
-    owl:disjointUnionOf (rl15:Set rl15:Offer rl15:Agreement) .
+    owl:disjointUnionOf (adalbert:Set adalbert:Offer adalbert:Agreement) .
 
-rl15:Set a owl:Class ;
+adalbert:Set a owl:Class ;
     rdfs:label "Set"@en ;
     skos:definition "Unilateral policy without specific counterparties."@en ;
-    rdfs:subClassOf rl15:Policy ;
-    owl:disjointWith rl15:Offer, rl15:Agreement ;
+    rdfs:subClassOf adalbert:Policy ;
+    owl:disjointWith adalbert:Offer, adalbert:Agreement ;
     rdfs:comment "Use for templates, public licenses, general terms."@en .
 
-rl15:Offer a owl:Class ;
+adalbert:Offer a owl:Class ;
     rdfs:label "Offer"@en ;
     skos:definition "Policy proposal from grantor awaiting acceptance."@en ;
-    rdfs:subClassOf rl15:Policy ;
-    owl:disjointWith rl15:Set, rl15:Agreement ;
+    rdfs:subClassOf adalbert:Policy ;
+    owl:disjointWith adalbert:Set, adalbert:Agreement ;
     rdfs:comment """
         Offer requires grantor. Grantee may be specified or open.
         Acceptance converts Offer to Agreement.
     """@en .
 
-rl15:Agreement a owl:Class ;
+adalbert:Agreement a owl:Class ;
     rdfs:label "Agreement"@en ;
     skos:definition "Bilateral policy binding identified parties."@en ;
-    rdfs:subClassOf rl15:Policy ;
-    owl:disjointWith rl15:Set, rl15:Offer ;
+    rdfs:subClassOf adalbert:Policy ;
+    owl:disjointWith adalbert:Set, adalbert:Offer ;
     rdfs:comment """
         Agreement requires both grantor and grantee.
         
@@ -131,47 +131,47 @@ rl15:Agreement a owl:Class ;
 # CONDITION CLASSES
 # =============================================================================
 
-rl15:Condition a owl:Class ;
+adalbert:Condition a owl:Class ;
     rdfs:label "Condition"@en ;
     skos:definition "Constraint that must hold for norm activation."@en ;
     owl:equivalentClass [
         a owl:Class ;
-        owl:unionOf (rl15:AtomicConstraint rl15:LogicalConstraint)
+        owl:unionOf (adalbert:AtomicConstraint adalbert:LogicalConstraint)
     ] ;
     rdfs:comment "Conditions are guards, not duties. They don't have lifecycle."@en .
 
-rl15:AtomicConstraint a owl:Class ;
+adalbert:AtomicConstraint a owl:Class ;
     rdfs:label "Atomic Constraint"@en ;
     skos:definition "Simple comparison: leftOperand operator rightOperand."@en ;
-    rdfs:subClassOf rl15:Condition .
+    rdfs:subClassOf adalbert:Condition .
 
-rl15:LogicalConstraint a owl:Class ;
+adalbert:LogicalConstraint a owl:Class ;
     rdfs:label "Logical Constraint"@en ;
     skos:definition "Combines conditions via and/or/not."@en ;
-    rdfs:subClassOf rl15:Condition .
+    rdfs:subClassOf adalbert:Condition .
 
 # =============================================================================
 # DUTY STATE
 # =============================================================================
 
-rl15:DutyState a owl:Class ;
+adalbert:DutyState a owl:Class ;
     rdfs:label "Duty State"@en ;
     skos:definition "Lifecycle state of a duty."@en ;
-    owl:oneOf (rl15:Pending rl15:Active rl15:Fulfilled rl15:Violated) .
+    owl:oneOf (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) .
 
-rl15:Pending a rl15:DutyState ;
+adalbert:Pending a adalbert:DutyState ;
     rdfs:label "Pending"@en ;
     skos:definition "Condition not yet satisfied."@en .
 
-rl15:Active a rl15:DutyState ;
+adalbert:Active a adalbert:DutyState ;
     rdfs:label "Active"@en ;
     skos:definition "Condition satisfied, action required."@en .
 
-rl15:Fulfilled a rl15:DutyState ;
+adalbert:Fulfilled a adalbert:DutyState ;
     rdfs:label "Fulfilled"@en ;
     skos:definition "Action performed within constraints."@en .
 
-rl15:Violated a rl15:DutyState ;
+adalbert:Violated a adalbert:DutyState ;
     rdfs:label "Violated"@en ;
     skos:definition "Deadline passed without performance."@en .
 
@@ -179,15 +179,15 @@ rl15:Violated a rl15:DutyState ;
 # CORE ENTITY CLASSES
 # =============================================================================
 
-rl15:Agent a owl:Class ;
+adalbert:Agent a owl:Class ;
     rdfs:label "Agent"@en ;
     skos:definition "Party in normative relations."@en .
 
-rl15:Asset a owl:Class ;
+adalbert:Asset a owl:Class ;
     rdfs:label "Asset"@en ;
     skos:definition "Resource subject to normative control."@en .
 
-rl15:Action a owl:Class ;
+adalbert:Action a owl:Class ;
     rdfs:label "Action"@en ;
     skos:definition "Action that may be performed on an asset."@en .
 
@@ -195,61 +195,61 @@ rl15:Action a owl:Class ;
 # OPERATORS
 # =============================================================================
 
-rl15:ComparisonOperator a owl:Class ;
+adalbert:ComparisonOperator a owl:Class ;
     rdfs:label "Comparison Operator"@en ;
-    owl:oneOf (rl15:eq rl15:neq rl15:lt rl15:lte rl15:gt rl15:gte 
-               rl15:isAnyOf rl15:isNoneOf) .
+    owl:oneOf (adalbert:eq adalbert:neq adalbert:lt adalbert:lte adalbert:gt adalbert:gte 
+               adalbert:isAnyOf adalbert:isNoneOf) .
 
-rl15:LogicalOperator a owl:Class ;
+adalbert:LogicalOperator a owl:Class ;
     rdfs:label "Logical Operator"@en ;
-    owl:oneOf (rl15:and rl15:or rl15:not) .
+    owl:oneOf (adalbert:and adalbert:or adalbert:not) .
 
 # Operator instances
-rl15:eq a rl15:ComparisonOperator ; rdfs:label "equal"@en .
-rl15:neq a rl15:ComparisonOperator ; rdfs:label "not equal"@en .
-rl15:lt a rl15:ComparisonOperator ; rdfs:label "less than"@en .
-rl15:lte a rl15:ComparisonOperator ; rdfs:label "less than or equal"@en .
-rl15:gt a rl15:ComparisonOperator ; rdfs:label "greater than"@en .
-rl15:gte a rl15:ComparisonOperator ; rdfs:label "greater than or equal"@en .
-rl15:isAnyOf a rl15:ComparisonOperator ; rdfs:label "is any of"@en .
-rl15:isNoneOf a rl15:ComparisonOperator ; rdfs:label "is none of"@en .
+adalbert:eq a adalbert:ComparisonOperator ; rdfs:label "equal"@en .
+adalbert:neq a adalbert:ComparisonOperator ; rdfs:label "not equal"@en .
+adalbert:lt a adalbert:ComparisonOperator ; rdfs:label "less than"@en .
+adalbert:lte a adalbert:ComparisonOperator ; rdfs:label "less than or equal"@en .
+adalbert:gt a adalbert:ComparisonOperator ; rdfs:label "greater than"@en .
+adalbert:gte a adalbert:ComparisonOperator ; rdfs:label "greater than or equal"@en .
+adalbert:isAnyOf a adalbert:ComparisonOperator ; rdfs:label "is any of"@en .
+adalbert:isNoneOf a adalbert:ComparisonOperator ; rdfs:label "is none of"@en .
 
-rl15:and a rl15:LogicalOperator ; rdfs:label "and"@en .
-rl15:or a rl15:LogicalOperator ; rdfs:label "or"@en .
-rl15:not a rl15:LogicalOperator ; rdfs:label "not"@en .
+adalbert:and a adalbert:LogicalOperator ; rdfs:label "and"@en .
+adalbert:or a adalbert:LogicalOperator ; rdfs:label "or"@en .
+adalbert:not a adalbert:LogicalOperator ; rdfs:label "not"@en .
 
 # =============================================================================
 # NORM PROPERTIES
 # =============================================================================
 
-rl15:subject a owl:ObjectProperty ;
+adalbert:subject a owl:ObjectProperty ;
     rdfs:label "subject"@en ;
     skos:definition "Agent bearing the normative status."@en ;
-    rdfs:domain rl15:Norm ;
-    rdfs:range rl15:Agent .
+    rdfs:domain adalbert:Norm ;
+    rdfs:range adalbert:Agent .
 
-rl15:action a owl:ObjectProperty ;
+adalbert:action a owl:ObjectProperty ;
     rdfs:label "action"@en ;
     skos:definition "Action specified in the norm."@en ;
-    rdfs:domain rl15:Norm ;
-    rdfs:range rl15:Action .
+    rdfs:domain adalbert:Norm ;
+    rdfs:range adalbert:Action .
 
-rl15:object a owl:ObjectProperty ;
+adalbert:object a owl:ObjectProperty ;
     rdfs:label "object"@en ;
     skos:definition "Asset the norm concerns."@en ;
-    rdfs:domain rl15:Norm ;
-    rdfs:range rl15:Asset .
+    rdfs:domain adalbert:Norm ;
+    rdfs:range adalbert:Asset .
 
-rl15:condition a owl:ObjectProperty ;
+adalbert:condition a owl:ObjectProperty ;
     rdfs:label "condition"@en ;
     skos:definition "Activation condition."@en ;
-    rdfs:domain [ owl:unionOf (rl15:Norm rl15:Policy) ] ;
-    rdfs:range rl15:Condition .
+    rdfs:domain [ owl:unionOf (adalbert:Norm adalbert:Policy) ] ;
+    rdfs:range adalbert:Condition .
 
-rl15:deadline a owl:DatatypeProperty ;
+adalbert:deadline a owl:DatatypeProperty ;
     rdfs:label "deadline"@en ;
     skos:definition "Time constraint for duty fulfillment."@en ;
-    rdfs:domain rl15:Duty ;
+    rdfs:domain adalbert:Duty ;
     rdfs:comment """
         Supports two forms:
         - xsd:dateTime: absolute deadline (e.g., 2026-12-31T23:59:59Z)
@@ -258,93 +258,93 @@ rl15:deadline a owl:DatatypeProperty ;
         For duration: deadline = activationTime + duration
     """@en .
 
-rl15:dutyState a owl:ObjectProperty ;
+adalbert:dutyState a owl:ObjectProperty ;
     rdfs:label "duty state"@en ;
     skos:definition "Current lifecycle state."@en ;
-    rdfs:domain rl15:Duty ;
-    rdfs:range rl15:DutyState .
+    rdfs:domain adalbert:Duty ;
+    rdfs:range adalbert:DutyState .
 
 # =============================================================================
 # POLICY PROPERTIES
 # =============================================================================
 
-rl15:clause a owl:ObjectProperty ;
+adalbert:clause a owl:ObjectProperty ;
     rdfs:label "clause"@en ;
     skos:definition "Norm contained in the policy."@en ;
-    rdfs:domain rl15:Policy ;
-    rdfs:range rl15:Norm .
+    rdfs:domain adalbert:Policy ;
+    rdfs:range adalbert:Norm .
 
-rl15:target a owl:ObjectProperty ;
+adalbert:target a owl:ObjectProperty ;
     rdfs:label "target"@en ;
     skos:definition "Asset(s) the policy governs."@en ;
-    rdfs:domain rl15:Policy ;
-    rdfs:range rl15:Asset ;
+    rdfs:domain adalbert:Policy ;
+    rdfs:range adalbert:Asset ;
     rdfs:comment "Policy-level target; clauses may override."@en .
 
-rl15:grantor a owl:ObjectProperty ;
+adalbert:grantor a owl:ObjectProperty ;
     rdfs:label "grantor"@en ;
     skos:definition "Agent issuing the policy."@en ;
-    rdfs:domain rl15:Policy ;
-    rdfs:range rl15:Agent ;
+    rdfs:domain adalbert:Policy ;
+    rdfs:range adalbert:Agent ;
     rdfs:comment "Required for Offer and Agreement."@en .
 
-rl15:grantee a owl:ObjectProperty ;
+adalbert:grantee a owl:ObjectProperty ;
     rdfs:label "grantee"@en ;
     skos:definition "Agent receiving privileges/bearing duties."@en ;
-    rdfs:domain rl15:Policy ;
-    rdfs:range rl15:Agent ;
+    rdfs:domain adalbert:Policy ;
+    rdfs:range adalbert:Agent ;
     rdfs:comment "Required for Agreement. Optional for Offer (open offer)."@en .
 
 # =============================================================================
 # CONDITION PROPERTIES
 # =============================================================================
 
-rl15:leftOperand a owl:ObjectProperty ;
+adalbert:leftOperand a owl:ObjectProperty ;
     rdfs:label "left operand"@en ;
     skos:definition "Property being evaluated."@en ;
-    rdfs:domain rl15:AtomicConstraint ;
-    rdfs:range rl15:LeftOperand .
+    rdfs:domain adalbert:AtomicConstraint ;
+    rdfs:range adalbert:LeftOperand .
 
-rl15:constraintOperator a owl:ObjectProperty ;
+adalbert:constraintOperator a owl:ObjectProperty ;
     rdfs:label "constraint operator"@en ;
     skos:definition "Comparison or logical operator."@en ;
-    rdfs:domain rl15:Condition .
+    rdfs:domain adalbert:Condition .
 
-rl15:rightOperand a rdf:Property ;
+adalbert:rightOperand a rdf:Property ;
     rdfs:label "right operand"@en ;
     skos:definition "Value for comparison (literal or reference)."@en ;
-    rdfs:domain rl15:AtomicConstraint .
+    rdfs:domain adalbert:AtomicConstraint .
 
-rl15:rightOperandRef a owl:ObjectProperty ;
+adalbert:rightOperandRef a owl:ObjectProperty ;
     rdfs:label "right operand reference"@en ;
     skos:definition "Runtime reference for comparison."@en ;
-    rdfs:domain rl15:AtomicConstraint ;
-    rdfs:range rl15:RuntimeReference .
+    rdfs:domain adalbert:AtomicConstraint ;
+    rdfs:range adalbert:RuntimeReference .
 
-rl15:operand a owl:ObjectProperty ;
+adalbert:operand a owl:ObjectProperty ;
     rdfs:label "operand"@en ;
     skos:definition "Sub-condition in logical constraint."@en ;
-    rdfs:domain rl15:LogicalConstraint ;
-    rdfs:range rl15:Condition .
+    rdfs:domain adalbert:LogicalConstraint ;
+    rdfs:range adalbert:Condition .
 
 # =============================================================================
 # LEFT OPERAND AND RUNTIME REFERENCE
 # =============================================================================
 
-rl15:LeftOperand a owl:Class ;
+adalbert:LeftOperand a owl:Class ;
     rdfs:label "Left Operand"@en ;
     skos:definition "Property for condition evaluation."@en ;
     rdfs:comment "Profiles define domain-specific operands."@en .
 
-rl15:RuntimeReference a owl:Class ;
+adalbert:RuntimeReference a owl:Class ;
     rdfs:label "Runtime Reference"@en ;
     skos:definition "Value resolved at evaluation time."@en .
 
-rl15:currentAgent a rl15:RuntimeReference ;
+adalbert:currentAgent a adalbert:RuntimeReference ;
     rdfs:label "current agent"@en ;
     skos:definition "The requesting agent."@en .
 
-rl15:currentDateTime a rl15:LeftOperand, rl15:RuntimeReference ;
+adalbert:currentDateTime a adalbert:LeftOperand, adalbert:RuntimeReference ;
     rdfs:label "current date time"@en ;
     skos:definition "Evaluation timestamp."@en .
 
@@ -352,10 +352,10 @@ rl15:currentDateTime a rl15:LeftOperand, rl15:RuntimeReference ;
 # OPERAND RESOLUTION
 # =============================================================================
 
-rl15:contextKey a owl:DatatypeProperty ;
+adalbert:contextKey a owl:DatatypeProperty ;
     rdfs:label "context key"@en ;
     skos:definition "Key to lookup value in request context."@en ;
-    rdfs:domain rl15:LeftOperand ;
+    rdfs:domain adalbert:LeftOperand ;
     rdfs:range xsd:string ;
     rdfs:comment "Primary resolution mechanism for operands."@en .
 
@@ -363,25 +363,25 @@ rl15:contextKey a owl:DatatypeProperty ;
 # HIERARCHY PROPERTIES
 # =============================================================================
 
-rl15:includedIn a owl:ObjectProperty, owl:TransitiveProperty ;
+adalbert:includedIn a owl:ObjectProperty, owl:TransitiveProperty ;
     rdfs:label "included in"@en ;
     skos:definition "Narrower action included in broader action."@en ;
-    rdfs:domain rl15:Action ;
-    rdfs:range rl15:Action ;
+    rdfs:domain adalbert:Action ;
+    rdfs:range adalbert:Action ;
     rdfs:comment "Transitive: read includedIn use, use includedIn access."@en .
 
-rl15:partOf a owl:ObjectProperty, owl:TransitiveProperty ;
+adalbert:partOf a owl:ObjectProperty, owl:TransitiveProperty ;
     rdfs:label "part of"@en ;
     skos:definition "Asset contained in larger asset."@en ;
-    rdfs:domain rl15:Asset ;
-    rdfs:range rl15:Asset ;
+    rdfs:domain adalbert:Asset ;
+    rdfs:range adalbert:Asset ;
     rdfs:comment "Transitive: table partOf schema, schema partOf database."@en .
 
-rl15:memberOf a owl:ObjectProperty, owl:TransitiveProperty ;
+adalbert:memberOf a owl:ObjectProperty, owl:TransitiveProperty ;
     rdfs:label "member of"@en ;
     skos:definition "Agent member of group/organization."@en ;
-    rdfs:domain rl15:Agent ;
-    rdfs:range rl15:Agent ;
+    rdfs:domain adalbert:Agent ;
+    rdfs:range adalbert:Agent ;
     rdfs:comment "Transitive: person memberOf team, team memberOf division."@en .
 
 # =============================================================================

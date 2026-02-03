@@ -1,5 +1,5 @@
 # =============================================================================
-# RL1.5 Contracts Extension
+# Adalbert Contracts Extension
 # Version: 0.2
 # Date: 2026-02-03
 # =============================================================================
@@ -7,8 +7,8 @@
 # Absorbs key DCON concepts without Promise Theory complexity.
 # =============================================================================
 
-@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
-@prefix rl15-dc: <https://vocabulary.bigbank/rl1.5/contracts/> .
+@prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-dc: <https://vocabulary.bigbank/adalbert/contracts/> .
 @prefix dcon:    <https://vocabulary.bigbank/dcon/> .
 @prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
@@ -23,10 +23,10 @@
 # EXTENSION DECLARATION
 # =============================================================================
 
-<https://vocabulary.bigbank/rl1.5/contracts/> a owl:Ontology, odrl:Profile ;
-    dcterms:title "RL1.5 Contracts Extension"@en ;
+<https://vocabulary.bigbank/adalbert/contracts/> a owl:Ontology, odrl:Profile ;
+    dcterms:title "Adalbert Contracts Extension"@en ;
     dcterms:description """
-        Contract lifecycle management for RL1.5 policies.
+        Contract lifecycle management for Adalbert policies.
         
         Provides:
         - DataContract (policy offer with lifecycle)
@@ -35,22 +35,22 @@
         - Versioning via prov:wasRevisionOf
         
         Alignment with DCON:
-        - dcon:DataContract → rl15-dc:DataContract (both are Offers)
-        - dcon:DataContractSubscription → rl15-dc:Subscription (Agreements)
+        - dcon:DataContract → adalbert-dc:DataContract (both are Offers)
+        - dcon:DataContractSubscription → adalbert-dc:Subscription (Agreements)
         - State mappings via skos:closeMatch (not identity)
     """@en ;
     dcterms:created "2026-02-03"^^xsd:date ;
     owl:versionInfo "0.2" ;
-    owl:imports <https://vocabulary.bigbank/rl1.5/> .
+    owl:imports <https://vocabulary.bigbank/adalbert/> .
 
 # =============================================================================
 # CONTRACT CLASSES
 # =============================================================================
 
-rl15-dc:DataContract a owl:Class ;
+adalbert-dc:DataContract a owl:Class ;
     rdfs:label "Data Contract"@en ;
     skos:definition "Policy offer defining data access terms."@en ;
-    rdfs:subClassOf rl15:Offer ;
+    rdfs:subClassOf adalbert:Offer ;
     rdfs:comment """
         A DataContract is an Offer from a data provider.
         It defines privileges, duties, and prohibitions for data access.
@@ -58,10 +58,10 @@ rl15-dc:DataContract a owl:Class ;
         When accepted (subscribed), becomes a Subscription (Agreement).
     """@en .
 
-rl15-dc:Subscription a owl:Class ;
+adalbert-dc:Subscription a owl:Class ;
     rdfs:label "Subscription"@en ;
     skos:definition "Activated data contract binding provider and consumer."@en ;
-    rdfs:subClassOf rl15:Agreement ;
+    rdfs:subClassOf adalbert:Agreement ;
     rdfs:comment """
         A Subscription is an activated DataContract.
         - grantor: data provider (from contract)
@@ -74,28 +74,28 @@ rl15-dc:Subscription a owl:Class ;
 # CONTRACT LIFECYCLE
 # =============================================================================
 
-rl15-dc:ContractState a owl:Class ;
+adalbert-dc:ContractState a owl:Class ;
     rdfs:label "Contract State"@en ;
     skos:definition "Lifecycle state of a data contract."@en ;
-    owl:oneOf (rl15-dc:Draft rl15-dc:Published rl15-dc:Active rl15-dc:Retired rl15-dc:Cancelled) .
+    owl:oneOf (adalbert-dc:Draft adalbert-dc:Published adalbert-dc:Active adalbert-dc:Retired adalbert-dc:Cancelled) .
 
-rl15-dc:Draft a rl15-dc:ContractState ;
+adalbert-dc:Draft a adalbert-dc:ContractState ;
     rdfs:label "Draft"@en ;
     skos:definition "Contract under development, not yet available."@en .
 
-rl15-dc:Published a rl15-dc:ContractState ;
+adalbert-dc:Published a adalbert-dc:ContractState ;
     rdfs:label "Published"@en ;
     skos:definition "Contract available for subscription."@en .
 
-rl15-dc:Active a rl15-dc:ContractState ;
+adalbert-dc:Active a adalbert-dc:ContractState ;
     rdfs:label "Active"@en ;
     skos:definition "Contract has active subscriptions."@en .
 
-rl15-dc:Retired a rl15-dc:ContractState ;
+adalbert-dc:Retired a adalbert-dc:ContractState ;
     rdfs:label "Retired"@en ;
     skos:definition "Contract no longer accepts new subscriptions."@en .
 
-rl15-dc:Cancelled a rl15-dc:ContractState ;
+adalbert-dc:Cancelled a adalbert-dc:ContractState ;
     rdfs:label "Cancelled"@en ;
     skos:definition "Contract cancelled before publication."@en .
 
@@ -103,24 +103,24 @@ rl15-dc:Cancelled a rl15-dc:ContractState ;
 # CONTRACT PROPERTIES
 # =============================================================================
 
-rl15-dc:contractState a owl:ObjectProperty ;
+adalbert-dc:contractState a owl:ObjectProperty ;
     rdfs:label "contract state"@en ;
     skos:definition "Current lifecycle state of the contract."@en ;
-    rdfs:domain rl15-dc:DataContract ;
-    rdfs:range rl15-dc:ContractState .
+    rdfs:domain adalbert-dc:DataContract ;
+    rdfs:range adalbert-dc:ContractState .
 
-rl15-dc:subscribesTo a owl:ObjectProperty ;
+adalbert-dc:subscribesTo a owl:ObjectProperty ;
     rdfs:label "subscribes to"@en ;
     skos:definition "The contract this subscription activates."@en ;
-    rdfs:domain rl15-dc:Subscription ;
-    rdfs:range rl15-dc:DataContract .
+    rdfs:domain adalbert-dc:Subscription ;
+    rdfs:range adalbert-dc:DataContract .
 
-rl15-dc:effectiveDate a owl:DatatypeProperty ;
+adalbert-dc:effectiveDate a owl:DatatypeProperty ;
     rdfs:label "effective date"@en ;
     skos:definition "When the contract/subscription becomes effective."@en ;
     rdfs:range xsd:dateTime .
 
-rl15-dc:expirationDate a owl:DatatypeProperty ;
+adalbert-dc:expirationDate a owl:DatatypeProperty ;
     rdfs:label "expiration date"@en ;
     skos:definition "When the contract/subscription expires."@en ;
     rdfs:range xsd:dateTime .
@@ -137,40 +137,40 @@ rl15-dc:expirationDate a owl:DatatypeProperty ;
 # =============================================================================
 # These are close matches, NOT identity. The state machines differ.
 
-rl15-dc:DataContract skos:closeMatch dcon:DataContract ;
+adalbert-dc:DataContract skos:closeMatch dcon:DataContract ;
     rdfs:comment "DCON DataContract is also an Offer-like construct."@en .
 
-rl15-dc:Subscription skos:closeMatch dcon:DataContractSubscription ;
+adalbert-dc:Subscription skos:closeMatch dcon:DataContractSubscription ;
     rdfs:comment "DCON Subscription is also an Agreement-like construct."@en .
 
 # State mappings - close but not identical semantics
-rl15-dc:Draft skos:closeMatch dcon:Draft .
-rl15-dc:Published skos:closeMatch dcon:Published .
-rl15-dc:Active skos:closeMatch dcon:Active .
-rl15-dc:Retired skos:closeMatch dcon:Retired .
-rl15-dc:Cancelled skos:closeMatch dcon:Cancelled .
+adalbert-dc:Draft skos:closeMatch dcon:Draft .
+adalbert-dc:Published skos:closeMatch dcon:Published .
+adalbert-dc:Active skos:closeMatch dcon:Active .
+adalbert-dc:Retired skos:closeMatch dcon:Retired .
+adalbert-dc:Cancelled skos:closeMatch dcon:Cancelled .
 
 # Duty state alignment (different state machines: 4 vs 3 states)
-# RL1.5: Pending → Active → Fulfilled/Violated
+# Adalbert: Pending → Active → Fulfilled/Violated
 # DCON:  Pending → Fulfilled/Violated (no Active)
-rl15:Pending skos:closeMatch dcon:Pending ;
-    rdfs:comment "Close but not identical: RL1.5 Pending transitions to Active first."@en .
-rl15:Fulfilled skos:closeMatch dcon:Fulfilled .
-rl15:Violated skos:closeMatch dcon:Violated .
+adalbert:Pending skos:closeMatch dcon:Pending ;
+    rdfs:comment "Close but not identical: Adalbert Pending transitions to Active first."@en .
+adalbert:Fulfilled skos:closeMatch dcon:Fulfilled .
+adalbert:Violated skos:closeMatch dcon:Violated .
 
 # =============================================================================
 # CONTRACT-SPECIFIC OPERANDS
 # =============================================================================
 
-rl15-dc:contractStatus a rl15:LeftOperand ;
+adalbert-dc:contractStatus a adalbert:LeftOperand ;
     rdfs:label "contract status"@en ;
     skos:definition "Lifecycle status of the data contract."@en ;
-    rl15:contextKey "contractStatus" .
+    adalbert:contextKey "contractStatus" .
 
-rl15-dc:subscriptionStatus a rl15:LeftOperand ;
+adalbert-dc:subscriptionStatus a adalbert:LeftOperand ;
     rdfs:label "subscription status"@en ;
     skos:definition "Status of the subscription."@en ;
-    rl15:contextKey "subscriptionStatus" .
+    adalbert:contextKey "subscriptionStatus" .
 
 # =============================================================================
 # END OF EXTENSION

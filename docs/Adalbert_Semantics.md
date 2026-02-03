@@ -1,11 +1,11 @@
 ---
-title: "RL1.5 Formal Semantics"
+title: "Adalbert Formal Semantics"
 subtitle: "Deterministic Policy Evaluation for Data Governance"
 version: "0.2"
 status: "Draft"
 date: 2026-02-03
 abstract: |
-  RL1.5 extends ODRL 2.2 with deterministic, total evaluation semantics
+  Adalbert extends ODRL 2.2 with deterministic, total evaluation semantics
   and bilateral agreement support. This document specifies the formal
   semantics in a style amenable to mechanization in Dafny, Why3, or
   similar verification frameworks.
@@ -13,13 +13,13 @@ abstract: |
 
 ## 1. Introduction
 
-RL1.5 addresses semantic gaps in ODRL 2.2:
+Adalbert addresses semantic gaps in ODRL 2.2:
 
 1. **Duty Ambiguity**: ODRL conflates pre-conditions with post-obligations
 2. **Unilateral Agreements**: ODRL evaluates only from assignee perspective
 3. **Undefined States**: ODRL permits evaluation to be "undefined"
 
-RL1.5 provides:
+Adalbert provides:
 
 - Explicit duty lifecycle with state machine semantics
 - Bilateral agreement evaluation (grantor and grantee duties)
@@ -37,7 +37,7 @@ RL1.5 provides:
 
 ### 1.2 Document Status
 
-This document is **normative** for RL1.5 implementations.
+This document is **normative** for Adalbert implementations.
 
 ---
 
@@ -394,7 +394,7 @@ NormActive(norm, Env) =
 
 ### 7.1 Strategy: Prohibition Overrides
 
-RL1.5 uses a fixed conflict resolution:
+Adalbert uses a fixed conflict resolution:
 
 ```
 Prohibition > Privilege
@@ -469,22 +469,22 @@ No specificity ordering within norm types. All matching norms contribute.
 Profiles declare operands with resolution keys:
 
 ```turtle
-ex:purpose a rl15:LeftOperand ;
-    rl15:contextKey "purpose" .
+ex:purpose a adalbert:LeftOperand ;
+    adalbert:contextKey "purpose" .
 ```
 
 ### 9.2 Action Hierarchies
 
 ```turtle
-ex:read a rl15:Action ;
-    rl15:includedIn ex:use .
+ex:read a adalbert:Action ;
+    adalbert:includedIn ex:use .
 ```
 
 ### 9.3 Asset Hierarchies
 
 ```turtle
-ex:customerTable a rl15:Asset ;
-    rl15:partOf ex:customerSchema .
+ex:customerTable a adalbert:Asset ;
+    adalbert:partOf ex:customerSchema .
 ```
 
 ---
@@ -495,39 +495,39 @@ ex:customerTable a rl15:Asset ;
 
 ODRL 2.2 evaluates agreements from the assignee's perspective only. This prevents modeling provider obligations (SLAs, data quality commitments).
 
-RL1.5 fixes this: evaluation returns duties for **both** parties.
+Adalbert fixes this: evaluation returns duties for **both** parties.
 
 ### 10.2 Example
 
 ```turtle
-ex:agreement a rl15:Agreement ;
-    rl15:grantor ex:dataTeam ;
-    rl15:grantee ex:analyticsTeam ;
+ex:agreement a adalbert:Agreement ;
+    adalbert:grantor ex:dataTeam ;
+    adalbert:grantee ex:analyticsTeam ;
     
     # Grantee privilege
-    rl15:clause [
-        a rl15:Privilege ;
-        rl15:subject ex:analyticsTeam ;
-        rl15:action rl15-md:display ;
-        rl15:object ex:marketData
+    adalbert:clause [
+        a adalbert:Privilege ;
+        adalbert:subject ex:analyticsTeam ;
+        adalbert:action adalbert-md:display ;
+        adalbert:object ex:marketData
     ] ;
     
     # Grantee duty
-    rl15:clause [
-        a rl15:Duty ;
-        rl15:subject ex:analyticsTeam ;
-        rl15:action rl15-md:report ;
-        rl15:object ex:usageStats ;
-        rl15:deadline "P30D"^^xsd:duration
+    adalbert:clause [
+        a adalbert:Duty ;
+        adalbert:subject ex:analyticsTeam ;
+        adalbert:action adalbert-md:report ;
+        adalbert:object ex:usageStats ;
+        adalbert:deadline "P30D"^^xsd:duration
     ] ;
     
     # Grantor duty (provider SLA)
-    rl15:clause [
-        a rl15:Duty ;
-        rl15:subject ex:dataTeam ;
-        rl15:action rl15-md:notify ;
-        rl15:object ex:schemaChanges ;
-        rl15:deadline "P7D"^^xsd:duration
+    adalbert:clause [
+        a adalbert:Duty ;
+        adalbert:subject ex:dataTeam ;
+        adalbert:action adalbert-md:notify ;
+        adalbert:object ex:schemaChanges ;
+        adalbert:deadline "P7D"^^xsd:duration
     ] .
 ```
 

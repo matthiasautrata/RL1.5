@@ -1,13 +1,13 @@
 # =============================================================================
-# RL1.5 Data Governance Core Profile
+# Adalbert Data Governance Core Profile
 # Version: 0.2
 # Date: 2026-02-03
 # =============================================================================
 # Shared operands and actions for data governance across domains.
 # =============================================================================
 
-@prefix rl15:     <https://vocabulary.bigbank/rl1.5/> .
-@prefix rl15-gov: <https://vocabulary.bigbank/rl1.5/governance/> .
+@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
 @prefix odrl:     <http://www.w3.org/ns/odrl/2/> .
 @prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -20,8 +20,8 @@
 # PROFILE DECLARATION
 # =============================================================================
 
-<https://vocabulary.bigbank/rl1.5/governance/> a owl:Ontology, odrl:Profile ;
-    dcterms:title "RL1.5 Data Governance Core Profile"@en ;
+<https://vocabulary.bigbank/adalbert/governance/> a owl:Ontology, odrl:Profile ;
+    dcterms:title "Adalbert Data Governance Core Profile"@en ;
     dcterms:description """
         Shared vocabulary for data governance:
         - Purpose and classification constraints
@@ -32,32 +32,32 @@
     dcterms:created "2026-02-02"^^xsd:date ;
     dcterms:modified "2026-02-03"^^xsd:date ;
     owl:versionInfo "0.2" ;
-    owl:imports <https://vocabulary.bigbank/rl1.5/> .
+    owl:imports <https://vocabulary.bigbank/adalbert/> .
 
 # =============================================================================
 # PURPOSE OPERANDS
 # =============================================================================
 
-rl15-gov:purpose a rl15:LeftOperand ;
+adalbert-gov:purpose a adalbert:LeftOperand ;
     rdfs:label "purpose"@en ;
     skos:definition "Intended use of the data."@en ;
-    rl15:contextKey "purpose" ;
+    adalbert:contextKey "purpose" ;
     rdfs:comment "Purpose hierarchy uses skos:broader for subsumption."@en .
 
 # Purpose taxonomy
-rl15-gov:analytics a skos:Concept ;
+adalbert-gov:analytics a skos:Concept ;
     rdfs:label "analytics"@en ;
     skos:definition "General analytical use."@en .
 
-rl15-gov:research a skos:Concept ;
+adalbert-gov:research a skos:Concept ;
     rdfs:label "research"@en ;
     skos:definition "Research and development."@en .
 
-rl15-gov:compliance a skos:Concept ;
+adalbert-gov:compliance a skos:Concept ;
     rdfs:label "compliance"@en ;
     skos:definition "Regulatory compliance."@en .
 
-rl15-gov:operations a skos:Concept ;
+adalbert-gov:operations a skos:Concept ;
     rdfs:label "operations"@en ;
     skos:definition "Operational use."@en .
 
@@ -65,120 +65,120 @@ rl15-gov:operations a skos:Concept ;
 # CLASSIFICATION OPERANDS
 # =============================================================================
 
-rl15-gov:classification a rl15:LeftOperand ;
+adalbert-gov:classification a adalbert:LeftOperand ;
     rdfs:label "classification"@en ;
     skos:definition "Data classification level."@en ;
-    rl15:contextKey "classification" .
+    adalbert:contextKey "classification" .
 
-rl15-gov:sensitivity a rl15:LeftOperand ;
+adalbert-gov:sensitivity a adalbert:LeftOperand ;
     rdfs:label "sensitivity"@en ;
     skos:definition "Data sensitivity type."@en ;
-    rl15:contextKey "sensitivity" .
+    adalbert:contextKey "sensitivity" .
 
 # Classification values
-rl15-gov:public a skos:Concept ; rdfs:label "public"@en .
-rl15-gov:internal a skos:Concept ; rdfs:label "internal"@en .
-rl15-gov:confidential a skos:Concept ; rdfs:label "confidential"@en .
-rl15-gov:restricted a skos:Concept ; rdfs:label "restricted"@en .
+adalbert-gov:public a skos:Concept ; rdfs:label "public"@en .
+adalbert-gov:internal a skos:Concept ; rdfs:label "internal"@en .
+adalbert-gov:confidential a skos:Concept ; rdfs:label "confidential"@en .
+adalbert-gov:restricted a skos:Concept ; rdfs:label "restricted"@en .
 
 # Sensitivity values
-rl15-gov:pii a skos:Concept ; rdfs:label "PII"@en ; skos:definition "Personally Identifiable Information."@en .
-rl15-gov:mnpi a skos:Concept ; rdfs:label "MNPI"@en ; skos:definition "Material Non-Public Information."@en .
-rl15-gov:phi a skos:Concept ; rdfs:label "PHI"@en ; skos:definition "Protected Health Information."@en .
+adalbert-gov:pii a skos:Concept ; rdfs:label "PII"@en ; skos:definition "Personally Identifiable Information."@en .
+adalbert-gov:mnpi a skos:Concept ; rdfs:label "MNPI"@en ; skos:definition "Material Non-Public Information."@en .
+adalbert-gov:phi a skos:Concept ; rdfs:label "PHI"@en ; skos:definition "Protected Health Information."@en .
 
 # =============================================================================
 # JURISDICTION OPERANDS
 # =============================================================================
 
-rl15-gov:jurisdiction a rl15:LeftOperand ;
+adalbert-gov:jurisdiction a adalbert:LeftOperand ;
     rdfs:label "jurisdiction"@en ;
     skos:definition "Legal jurisdiction governing data use."@en ;
-    rl15:contextKey "jurisdiction" .
+    adalbert:contextKey "jurisdiction" .
 
-rl15-gov:residency a rl15:LeftOperand ;
+adalbert-gov:residency a adalbert:LeftOperand ;
     rdfs:label "residency"@en ;
     skos:definition "Data residency location."@en ;
-    rl15:contextKey "residency" .
+    adalbert:contextKey "residency" .
 
 # =============================================================================
 # TEMPORAL OPERANDS
 # =============================================================================
 
-rl15-gov:retentionPeriod a rl15:LeftOperand ;
+adalbert-gov:retentionPeriod a adalbert:LeftOperand ;
     rdfs:label "retention period"@en ;
     skos:definition "Maximum time data may be retained."@en ;
-    rl15:contextKey "retentionPeriod" .
+    adalbert:contextKey "retentionPeriod" .
 
-rl15-gov:expiry a rl15:LeftOperand ;
+adalbert-gov:expiry a adalbert:LeftOperand ;
     rdfs:label "expiry"@en ;
     skos:definition "Expiration date of the policy."@en ;
-    rl15:contextKey "expiry" .
+    adalbert:contextKey "expiry" .
 
 # =============================================================================
 # PROCESSING OPERANDS
 # =============================================================================
 
-rl15-gov:processingMode a rl15:LeftOperand ;
+adalbert-gov:processingMode a adalbert:LeftOperand ;
     rdfs:label "processing mode"@en ;
     skos:definition "How data is processed."@en ;
-    rl15:contextKey "processingMode" .
+    adalbert:contextKey "processingMode" .
 
-rl15-gov:human a skos:Concept ; rdfs:label "human"@en .
-rl15-gov:automated a skos:Concept ; rdfs:label "automated"@en .
-rl15-gov:modelTraining a skos:Concept ; rdfs:label "model training"@en .
-rl15-gov:inference a skos:Concept ; rdfs:label "inference"@en .
+adalbert-gov:human a skos:Concept ; rdfs:label "human"@en .
+adalbert-gov:automated a skos:Concept ; rdfs:label "automated"@en .
+adalbert-gov:modelTraining a skos:Concept ; rdfs:label "model training"@en .
+adalbert-gov:inference a skos:Concept ; rdfs:label "inference"@en .
 
 # =============================================================================
 # AUDIT OPERANDS
 # =============================================================================
 
-rl15-gov:auditRequired a rl15:LeftOperand ;
+adalbert-gov:auditRequired a adalbert:LeftOperand ;
     rdfs:label "audit required"@en ;
     skos:definition "Whether audit logging is required."@en ;
-    rl15:contextKey "auditRequired" .
+    adalbert:contextKey "auditRequired" .
 
 # =============================================================================
 # COMMON ACTIONS
 # =============================================================================
 
-rl15-gov:use a rl15:Action ;
+adalbert-gov:use a adalbert:Action ;
     rdfs:label "use"@en ;
     skos:definition "General use of the asset."@en .
 
-rl15-gov:read a rl15:Action ;
+adalbert-gov:read a adalbert:Action ;
     rdfs:label "read"@en ;
     skos:definition "Read/view the asset."@en ;
-    rl15:includedIn rl15-gov:use .
+    adalbert:includedIn adalbert-gov:use .
 
-rl15-gov:distribute a rl15:Action ;
+adalbert-gov:distribute a adalbert:Action ;
     rdfs:label "distribute"@en ;
     skos:definition "Distribute to third parties."@en .
 
-rl15-gov:delete a rl15:Action ;
+adalbert-gov:delete a adalbert:Action ;
     rdfs:label "delete"@en ;
     skos:definition "Delete the asset."@en .
 
-rl15-gov:modify a rl15:Action ;
+adalbert-gov:modify a adalbert:Action ;
     rdfs:label "modify"@en ;
     skos:definition "Modify the asset."@en .
 
-rl15-gov:aggregate a rl15:Action ;
+adalbert-gov:aggregate a adalbert:Action ;
     rdfs:label "aggregate"@en ;
     skos:definition "Aggregate with other data."@en .
 
-rl15-gov:anonymize a rl15:Action ;
+adalbert-gov:anonymize a adalbert:Action ;
     rdfs:label "anonymize"@en ;
     skos:definition "Remove identifying information."@en .
 
-rl15-gov:derive a rl15:Action ;
+adalbert-gov:derive a adalbert:Action ;
     rdfs:label "derive"@en ;
     skos:definition "Create derived data."@en .
 
-rl15-gov:log a rl15:Action ;
+adalbert-gov:log a adalbert:Action ;
     rdfs:label "log"@en ;
     skos:definition "Log access to the asset."@en .
 
-rl15-gov:notify a rl15:Action ;
+adalbert-gov:notify a adalbert:Action ;
     rdfs:label "notify"@en ;
     skos:definition "Notify relevant parties."@en .
 

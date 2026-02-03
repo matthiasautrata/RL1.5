@@ -1,12 +1,12 @@
 # LLM.md
 
-Shared context and instructions for LLMs working on RL1.5.
+Shared context and instructions for LLMs working on Adalbert.
 
 ---
 
 ## Project Overview
 
-RL1.5 is a **deterministic rights language** -- a formally specified, verification-ready subset of RL2 designed for data governance. It fixes ODRL 2.2's ambiguities (duty lifecycle, pre-conditions vs obligations, evaluation determinism) while remaining backward-compatible: every RL1.5 policy is a valid ODRL 2.2 policy.
+Adalbert is a **deterministic rights language** -- a formally specified, verification-ready subset of RL2 designed for data governance. It fixes ODRL 2.2's ambiguities (duty lifecycle, pre-conditions vs obligations, evaluation determinism) while remaining backward-compatible: every Adalbert policy is a valid ODRL 2.2 policy.
 
 The project is **specification-first**. The formal semantics document is normative. Implementations derive from the specification, not the other way around.
 
@@ -22,13 +22,13 @@ This function is total. Every evaluation terminates with a defined result. No un
 
 ## Lineage
 
-RL1.5 sits in a broader ecosystem of formal governance specifications:
+Adalbert sits in a broader ecosystem of formal governance specifications:
 
 ```
     ODRL 2.2 (W3C Standard)
          │ semantic clarification, strict subset
          ▼
-       RL1.5 ──────────────> RL2 (Full Hohfeldian Framework)
+       Adalbert ──────────────> RL2 (Full Hohfeldian Framework)
          │                        Claims, Powers, Promises
          │ domain profiles
     ┌────┼────────┐
@@ -40,12 +40,12 @@ RL1.5 sits in a broader ecosystem of formal governance specifications:
 
 Key relationships:
 
-| Project | Relationship to RL1.5 |
+| Project | Relationship to Adalbert |
 |---------|-----------------------|
-| **RL2** | RL1.5 is a strict subset; upgrade by adding capabilities |
-| **ODRL 2.2** | RL1.5 fixes semantic gaps; all RL1.5 policies are valid ODRL |
-| **DCON** | DCON contracts contain RL1.5 policies; Promise deferred to RL2 |
-| **Semantipolis** | Uses RL1.5 for governance evaluation in the semantic layer |
+| **RL2** | Adalbert is a strict subset; upgrade by adding capabilities |
+| **ODRL 2.2** | Adalbert fixes semantic gaps; all Adalbert policies are valid ODRL |
+| **DCON** | DCON contracts contain Adalbert policies; Promise deferred to RL2 |
+| **Semantipolis** | Uses Adalbert for governance evaluation in the semantic layer |
 | **Themis** | Existing ODRL runtime; backward-compatibility target |
 
 ---
@@ -57,14 +57,14 @@ Key relationships:
 | `AGENTS.md` | **Governance, personas, multi-agent coordination** |
 | `docs/RL1_5_Semantics.md` | **Formal operational semantics (normative)** |
 | `README.md` | Project overview, design principles, repository structure |
-| `ontology/rl1_5-core.ttl` | **OWL ontology -- core classes and properties** |
-| `ontology/rl1_5-shacl.ttl` | **SHACL validation shapes** |
-| `ontology/rl1_5-prof.ttl` | W3C DXPROF profile metadata |
+| `ontology/adalbert-core.ttl` | **OWL ontology -- core classes and properties** |
+| `ontology/adalbert-shacl.ttl` | **SHACL validation shapes** |
+| `ontology/adalbert-prof.ttl` | W3C DXPROF profile metadata |
 | `profiles/README.md` | Profile architecture and extension rules |
-| `profiles/rl1_5-governance-core.ttl` | Shared governance operands and actions |
-| `profiles/rl1_5-market-data.ttl` | Market data licensing vocabulary |
-| `profiles/rl1_5-data-use.ttl` | Internal access control vocabulary |
-| `profiles/rl1_5-dcon.ttl` | DCON conformance declaration |
+| `profiles/adalbert-governance-core.ttl` | Shared governance operands and actions |
+| `profiles/adalbert-market-data.ttl` | Market data licensing vocabulary |
+| `profiles/adalbert-data-use.ttl` | Internal access control vocabulary |
+| `profiles/adalbert-dcon.ttl` | DCON conformance declaration |
 | `docs/comparisons/comparison-odrl22.md` | Detailed ODRL 2.2 comparison |
 | `docs/comparisons/comparison-dcon.md` | DCON alignment analysis |
 | `docs/comparisons/comparison-odrl-profiles.md` | W3C ecosystem positioning |
@@ -110,11 +110,11 @@ Fixed precedence: **Prohibition > Privilege**. No configurable conflict strategi
 ### Profile Architecture
 
 ```
-                rl1_5-core.ttl
+                adalbert-core.ttl
                 (Norm, Condition, Policy)
                        │
                        ▼
-          rl1_5-governance-core.ttl
+          adalbert-governance-core.ttl
           (Shared: purpose, classification,
            jurisdiction, retention, audit)
                        │
@@ -126,7 +126,7 @@ Fixed precedence: **Prohibition > Privilege**. No configurable conflict strategi
    redistribution)   environment)      contract status)
 ```
 
-### What RL1.5 Defers to RL2
+### What Adalbert Defers to RL2
 
 | Concept | Reason |
 |---------|--------|
@@ -143,22 +143,22 @@ Fixed precedence: **Prohibition > Privilege**. No configurable conflict strategi
 
 | Standard | Used For | Where |
 |----------|----------|-------|
-| **ODRL 2.2** | Base standard; RL1.5 is a semantic clarification | Alignment throughout |
-| **OWL 2** | Core ontology, class/property definitions | `ontology/rl1_5-core.ttl` |
-| **SHACL** | Validation shapes for policy conformance | `ontology/rl1_5-shacl.ttl` |
+| **ODRL 2.2** | Base standard; Adalbert is a semantic clarification | Alignment throughout |
+| **OWL 2** | Core ontology, class/property definitions | `ontology/adalbert-core.ttl` |
+| **SHACL** | Validation shapes for policy conformance | `ontology/adalbert-shacl.ttl` |
 | **SKOS** | Concept hierarchies for operand values | Profile vocabularies |
-| **DXPROF** | W3C Profiles Vocabulary for metadata | `ontology/rl1_5-prof.ttl` |
+| **DXPROF** | W3C Profiles Vocabulary for metadata | `ontology/adalbert-prof.ttl` |
 | **DCAT** | Dataset/catalog references | Via DCON integration |
-| **DCON** | Data Contract Ontology | `profiles/rl1_5-dcon.ttl` |
+| **DCON** | Data Contract Ontology | `profiles/adalbert-dcon.ttl` |
 | **Dublin Core** | Metadata (title, description, date) | Throughout RDF files |
 
 ### URI Namespace
 
 ```
-rl15:      https://rl1-5.example/
-rl15gov:   https://rl1-5.example/profiles/governance#
-rl15mkt:   https://rl1-5.example/profiles/market-data#
-rl15du:    https://rl1-5.example/profiles/data-use#
+adalbert:      https://adalbert.example/
+rl15gov:   https://adalbert.example/profiles/governance#
+rl15mkt:   https://adalbert.example/profiles/market-data#
+rl15du:    https://adalbert.example/profiles/data-use#
 ```
 
 Note: Using `example` URIs during draft phase. Final namespace TBD.
@@ -170,7 +170,7 @@ Note: Using `example` URIs during draft phase. Final namespace TBD.
 ### Add a new left operand to a profile
 
 1. Determine which profile it belongs to (governance-core, market-data, data-use)
-2. Check `rl1_5-governance-core.ttl` for existing operands that may already cover it
+2. Check `adalbert-governance-core.ttl` for existing operands that may already cover it
 3. Define the operand with `contextKey`, `supportedOperators`, and SKOS hierarchy if needed
 4. If the operand needs SHACL validation, add shape constraints
 5. Update `profiles/README.md` operand table
@@ -178,17 +178,17 @@ Note: Using `example` URIs during draft phase. Final namespace TBD.
 
 ### Add a new action
 
-1. Define in the appropriate profile with `rdf:type rl15:Action`
+1. Define in the appropriate profile with `rdf:type adalbert:Action`
 2. Declare `includedIn` hierarchy (subsumption)
 3. Verify it doesn't conflict with existing actions
 4. Update profile documentation
 
 ### Add a new domain profile
 
-1. Create `profiles/rl1_5-<domain>.ttl`
-2. Import `rl1_5-governance-core.ttl`
+1. Create `profiles/adalbert-<domain>.ttl`
+2. Import `adalbert-governance-core.ttl`
 3. Define domain-specific operands and actions
-4. Add to `ontology/rl1_5-prof.ttl` as a DXPROF resource descriptor
+4. Add to `ontology/adalbert-prof.ttl` as a DXPROF resource descriptor
 5. Write a comparison document in `docs/comparisons/` if aligning to an external standard
 6. Review: Ontologist persona for vocabulary, Reviewer persona for consistency
 
@@ -206,7 +206,7 @@ Note: Using `example` URIs during draft phase. Final namespace TBD.
 1. Identify the external standard and its normative references
 2. Analyze alignment dimension by dimension
 3. Use tables for systematic comparison, prose for nuance
-4. Distinguish: what RL1.5 matches, what it clarifies, what it defers
+4. Distinguish: what Adalbert matches, what it clarifies, what it defers
 5. Review: Editor persona for clarity, Ontologist persona for technical accuracy
 
 ---
@@ -216,10 +216,10 @@ Note: Using `example` URIs during draft phase. Final namespace TBD.
 1. **Specification is normative** -- the formal semantics document defines correctness, not any implementation
 2. **Total functions** -- every evaluation terminates with a defined result
 3. **Prohibition > Privilege** -- fixed conflict resolution, no ambiguity
-4. **Strict subset of RL2** -- every RL1.5 policy is a valid RL2 policy; upgrade without migration
+4. **Strict subset of RL2** -- every Adalbert policy is a valid RL2 policy; upgrade without migration
 5. **Standards over invention** -- build on ODRL 2.2, SHACL, OWL, SKOS, DXPROF
 6. **Profiles extend vocabulary, not semantics** -- profiles add operands and actions, never new norm or policy types
-7. **Backward compatible with ODRL 2.2** -- all RL1.5 policies are valid ODRL policies
+7. **Backward compatible with ODRL 2.2** -- all Adalbert policies are valid ODRL policies
 
 ---
 
@@ -227,7 +227,7 @@ Note: Using `example` URIs during draft phase. Final namespace TBD.
 
 | Question | Context | Status |
 |----------|---------|--------|
-| Final namespace URIs | Currently using `rl1-5.example` | Open |
+| Final namespace URIs | Currently using `adalbert.example` | Open |
 | Dafny mechanization strategy | Primary verification target | Phase 2 |
 | Go extraction from Dafny | Reference implementation language | Phase 2 |
 | Themis backward compatibility | How much of existing runtime to preserve | Open |
@@ -243,8 +243,8 @@ Note: Using `example` URIs during draft phase. Final namespace TBD.
 - **Version:** 0.1 (Draft)
 - **Phase:** 1 -- Specification
 - **Formal semantics:** Complete draft (`docs/RL1_5_Semantics.md`)
-- **OWL ontology:** Complete draft (`ontology/rl1_5-core.ttl`)
-- **SHACL shapes:** Complete draft (`ontology/rl1_5-shacl.ttl`)
+- **OWL ontology:** Complete draft (`ontology/adalbert-core.ttl`)
+- **SHACL shapes:** Complete draft (`ontology/adalbert-shacl.ttl`)
 - **Profiles:** Draft 0.1 (governance-core, market-data, data-use, dcon)
 - **Comparison docs:** Complete for ODRL 2.2, W3C profiles, market data, DCON
 - **Next:** Profile review, SHACL completeness, namespace finalization, Phase 2 planning

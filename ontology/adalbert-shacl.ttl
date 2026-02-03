@@ -1,13 +1,13 @@
 # =============================================================================
-# RL1.5 SHACL Shapes
+# Adalbert SHACL Shapes
 # Version: 0.2
 # Date: 2026-02-03
 # =============================================================================
-# Validation shapes for RL1.5 policies.
+# Validation shapes for Adalbert policies.
 # =============================================================================
 
-@prefix rl15:    <https://vocabulary.bigbank/rl1.5/> .
-@prefix rl15sh:  <https://vocabulary.bigbank/rl1.5/shapes/> .
+@prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbertsh:  <https://vocabulary.bigbank/adalbert/shapes/> .
 @prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 @prefix sh:      <http://www.w3.org/ns/shacl#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
@@ -18,81 +18,81 @@
 # POLICY SHAPES
 # =============================================================================
 
-rl15sh:PolicyShape a sh:NodeShape ;
-    sh:targetClass rl15:Policy ;
+adalbertsh:PolicyShape a sh:NodeShape ;
+    sh:targetClass adalbert:Policy ;
     sh:name "Policy Shape" ;
     
     sh:property [
-        sh:path rl15:clause ;
+        sh:path adalbert:clause ;
         sh:minCount 1 ;
         sh:message "Policy must have at least one clause."
     ] ;
     
     sh:property [
-        sh:path rl15:condition ;
+        sh:path adalbert:condition ;
         sh:maxCount 1 ;
-        sh:node rl15sh:ConditionShape
+        sh:node adalbertsh:ConditionShape
     ] ;
     
     sh:property [
-        sh:path rl15:target ;
-        sh:class rl15:Asset
+        sh:path adalbert:target ;
+        sh:class adalbert:Asset
     ] .
 
-rl15sh:SetShape a sh:NodeShape ;
-    sh:targetClass rl15:Set ;
+adalbertsh:SetShape a sh:NodeShape ;
+    sh:targetClass adalbert:Set ;
     sh:name "Set Shape" ;
     
     # Set should NOT have grantor/grantee
     sh:property [
-        sh:path rl15:grantor ;
+        sh:path adalbert:grantor ;
         sh:maxCount 0 ;
         sh:message "Set should not have grantor. Use Offer or Agreement."
     ] ;
     
     sh:property [
-        sh:path rl15:grantee ;
+        sh:path adalbert:grantee ;
         sh:maxCount 0 ;
         sh:message "Set should not have grantee. Use Offer or Agreement."
     ] .
 
-rl15sh:OfferShape a sh:NodeShape ;
-    sh:targetClass rl15:Offer ;
+adalbertsh:OfferShape a sh:NodeShape ;
+    sh:targetClass adalbert:Offer ;
     sh:name "Offer Shape" ;
     
     # Offer requires grantor
     sh:property [
-        sh:path rl15:grantor ;
+        sh:path adalbert:grantor ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:Agent ;
+        sh:class adalbert:Agent ;
         sh:message "Offer must have exactly one grantor."
     ] ;
     
     # Grantee optional (open offer)
     sh:property [
-        sh:path rl15:grantee ;
+        sh:path adalbert:grantee ;
         sh:maxCount 1 ;
-        sh:class rl15:Agent
+        sh:class adalbert:Agent
     ] .
 
-rl15sh:AgreementShape a sh:NodeShape ;
-    sh:targetClass rl15:Agreement ;
+adalbertsh:AgreementShape a sh:NodeShape ;
+    sh:targetClass adalbert:Agreement ;
     sh:name "Agreement Shape" ;
     
     sh:property [
-        sh:path rl15:grantor ;
+        sh:path adalbert:grantor ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:Agent ;
+        sh:class adalbert:Agent ;
         sh:message "Agreement must have exactly one grantor."
     ] ;
     
     sh:property [
-        sh:path rl15:grantee ;
+        sh:path adalbert:grantee ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:Agent ;
+        sh:class adalbert:Agent ;
         sh:message "Agreement must have exactly one grantee."
     ] .
 
@@ -100,46 +100,46 @@ rl15sh:AgreementShape a sh:NodeShape ;
 # NORM SHAPES
 # =============================================================================
 
-rl15sh:NormShape a sh:NodeShape ;
-    sh:targetClass rl15:Norm ;
+adalbertsh:NormShape a sh:NodeShape ;
+    sh:targetClass adalbert:Norm ;
     sh:name "Norm Shape" ;
     
     sh:property [
-        sh:path rl15:subject ;
+        sh:path adalbert:subject ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:Agent ;
+        sh:class adalbert:Agent ;
         sh:message "Norm must have exactly one subject."
     ] ;
     
     sh:property [
-        sh:path rl15:action ;
+        sh:path adalbert:action ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:Action ;
+        sh:class adalbert:Action ;
         sh:message "Norm must have exactly one action."
     ] ;
     
     sh:property [
-        sh:path rl15:object ;
+        sh:path adalbert:object ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:Asset ;
+        sh:class adalbert:Asset ;
         sh:message "Norm must have exactly one object."
     ] ;
     
     sh:property [
-        sh:path rl15:condition ;
+        sh:path adalbert:condition ;
         sh:maxCount 1 ;
-        sh:node rl15sh:ConditionShape
+        sh:node adalbertsh:ConditionShape
     ] .
 
-rl15sh:DutyShape a sh:NodeShape ;
-    sh:targetClass rl15:Duty ;
+adalbertsh:DutyShape a sh:NodeShape ;
+    sh:targetClass adalbert:Duty ;
     sh:name "Duty Shape" ;
     
     sh:property [
-        sh:path rl15:deadline ;
+        sh:path adalbert:deadline ;
         sh:maxCount 1 ;
         sh:or (
             [ sh:datatype xsd:dateTime ]
@@ -149,9 +149,9 @@ rl15sh:DutyShape a sh:NodeShape ;
     ] ;
     
     sh:property [
-        sh:path rl15:dutyState ;
+        sh:path adalbert:dutyState ;
         sh:maxCount 1 ;
-        sh:in (rl15:Pending rl15:Active rl15:Fulfilled rl15:Violated) ;
+        sh:in (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
         sh:message "Duty state must be Pending, Active, Fulfilled, or Violated."
     ] .
 
@@ -159,76 +159,76 @@ rl15sh:DutyShape a sh:NodeShape ;
 # CONDITION SHAPES
 # =============================================================================
 
-rl15sh:ConditionShape a sh:NodeShape ;
+adalbertsh:ConditionShape a sh:NodeShape ;
     sh:name "Condition Shape" ;
     
     sh:or (
-        [ sh:class rl15:AtomicConstraint ]
-        [ sh:class rl15:LogicalConstraint ]
+        [ sh:class adalbert:AtomicConstraint ]
+        [ sh:class adalbert:LogicalConstraint ]
     ) ;
     sh:message "Condition must be AtomicConstraint or LogicalConstraint." .
 
-rl15sh:AtomicConstraintShape a sh:NodeShape ;
-    sh:targetClass rl15:AtomicConstraint ;
+adalbertsh:AtomicConstraintShape a sh:NodeShape ;
+    sh:targetClass adalbert:AtomicConstraint ;
     sh:name "Atomic Constraint Shape" ;
     
     sh:property [
-        sh:path rl15:leftOperand ;
+        sh:path adalbert:leftOperand ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:LeftOperand ;
+        sh:class adalbert:LeftOperand ;
         sh:message "AtomicConstraint must have exactly one leftOperand."
     ] ;
     
     sh:property [
-        sh:path rl15:constraintOperator ;
+        sh:path adalbert:constraintOperator ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:ComparisonOperator ;
+        sh:class adalbert:ComparisonOperator ;
         sh:message "AtomicConstraint must have exactly one comparison operator."
     ] ;
     
     # Must have rightOperand OR rightOperandRef
     sh:xone (
-        [ sh:property [ sh:path rl15:rightOperand ; sh:minCount 1 ] ]
-        [ sh:property [ sh:path rl15:rightOperandRef ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path adalbert:rightOperand ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path adalbert:rightOperandRef ; sh:minCount 1 ] ]
     ) ;
     sh:message "AtomicConstraint must have exactly one of: rightOperand or rightOperandRef." .
 
-rl15sh:LogicalConstraintShape a sh:NodeShape ;
-    sh:targetClass rl15:LogicalConstraint ;
+adalbertsh:LogicalConstraintShape a sh:NodeShape ;
+    sh:targetClass adalbert:LogicalConstraint ;
     sh:name "Logical Constraint Shape" ;
     
     sh:property [
-        sh:path rl15:constraintOperator ;
+        sh:path adalbert:constraintOperator ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class rl15:LogicalOperator ;
+        sh:class adalbert:LogicalOperator ;
         sh:message "LogicalConstraint must have exactly one logical operator."
     ] ;
     
     sh:property [
-        sh:path rl15:operand ;
+        sh:path adalbert:operand ;
         sh:minCount 1 ;
-        sh:node rl15sh:ConditionShape ;
+        sh:node adalbertsh:ConditionShape ;
         sh:message "LogicalConstraint must have at least one operand."
     ] .
 
-rl15sh:NotConstraintShape a sh:NodeShape ;
+adalbertsh:NotConstraintShape a sh:NodeShape ;
     sh:target [
         a sh:SPARQLTarget ;
         sh:select """
-            PREFIX rl15: <https://vocabulary.bigbank/rl1.5/>
+            PREFIX adalbert: <https://vocabulary.bigbank/adalbert/>
             SELECT ?this WHERE {
-                ?this a rl15:LogicalConstraint ;
-                      rl15:constraintOperator rl15:not .
+                ?this a adalbert:LogicalConstraint ;
+                      adalbert:constraintOperator adalbert:not .
             }
         """
     ] ;
     sh:name "Not Constraint Shape" ;
     
     sh:property [
-        sh:path rl15:operand ;
+        sh:path adalbert:operand ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:message "Not constraint must have exactly one operand."
@@ -238,21 +238,21 @@ rl15sh:NotConstraintShape a sh:NodeShape ;
 # REJECT UNSUPPORTED CONSTRUCTS
 # =============================================================================
 
-rl15sh:RejectXoneShape a sh:NodeShape ;
+adalbertsh:RejectXoneShape a sh:NodeShape ;
     sh:target [
         a sh:SPARQLTarget ;
         sh:select """
-            PREFIX rl15: <https://vocabulary.bigbank/rl1.5/>
+            PREFIX adalbert: <https://vocabulary.bigbank/adalbert/>
             PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
             SELECT ?this WHERE {
-                { ?this rl15:constraintOperator rl15:xone }
+                { ?this adalbert:constraintOperator adalbert:xone }
                 UNION
                 { ?this odrl:operator odrl:xone }
             }
         """
     ] ;
     sh:severity sh:Violation ;
-    sh:message "RL1.5 does not support xone operator." .
+    sh:message "Adalbert does not support xone operator." .
 
 # =============================================================================
 # END OF SHAPES

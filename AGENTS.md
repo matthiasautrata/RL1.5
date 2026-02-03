@@ -1,12 +1,12 @@
 # AGENTS.md
 
-AI Agent Governance for RL1.5.
+AI Agent Governance for Adalbert.
 
 ---
 
 ## Mission
 
-Develop a formally specified, verification-ready rights language for data governance. RL1.5 is a strict semantic subset of RL2 that fixes ODRL 2.2's ambiguities and provides deterministic, total evaluation semantics. The specification is normative; implementations derive from it.
+Develop a formally specified, verification-ready rights language for data governance. Adalbert is a strict semantic subset of RL2 that fixes ODRL 2.2's ambiguities and provides deterministic, total evaluation semantics. The specification is normative; implementations derive from it.
 
 This is a **cross-LLM project**. Multiple AI agents and humans collaborate on the specification, ontology, profiles, and documentation. Rigor is maintained through defined personas, review gates, and explicit decision authority.
 
@@ -17,14 +17,14 @@ This is a **cross-LLM project**. Multiple AI agents and humans collaborate on th
 * Writing style is concise and precise, with no filler.
 * Mindset is that of a mathematician and engineer.
 * Always consider at least two or more alternative solutions. Prefer to research and evaluate alternatives -- locally or by searching secondary sources, like the internet -- instead of jumping into the design right away.
-* Formal precision matters: distinguish Privilege from Permission, Duty from Obligation, Prohibition from Constraint. Use the RL1.5 vocabulary consistently.
+* Formal precision matters: distinguish Privilege from Permission, Duty from Obligation, Prohibition from Constraint. Use the Adalbert vocabulary consistently.
 
 ## Core Principles
 
 1. **Specification is normative.** `docs/RL1_5_Semantics.md` defines correctness. If the ontology or SHACL shapes disagree with the formal semantics, the semantics wins.
 2. **Total functions.** Every evaluation terminates. No undefined states.
 3. **Standards over invention.** ODRL 2.2, OWL, SHACL, SKOS, DXPROF, Dublin Core.
-4. **Strict subset of RL2.** Every RL1.5 policy is a valid RL2 policy. Never introduce concepts that would break this.
+4. **Strict subset of RL2.** Every Adalbert policy is a valid RL2 policy. Never introduce concepts that would break this.
 5. **Profiles extend vocabulary, not semantics.** Profiles add operands and actions. They never add norm types, policy types, or new evaluation rules.
 6. **Cross-check everything.** Multiple LLMs review each other's work. No artifact is final until reviewed by a different agent or human.
 
@@ -40,8 +40,8 @@ Each persona represents a discipline needed to maintain rigor on this project. A
 
 **Responsibilities:**
 
-- Design and review OWL classes and properties in `ontology/rl1_5-core.ttl`
-- Maintain SHACL validation shapes in `ontology/rl1_5-shacl.ttl`
+- Design and review OWL classes and properties in `ontology/adalbert-core.ttl`
+- Maintain SHACL validation shapes in `ontology/adalbert-shacl.ttl`
 - Ensure profile operands and actions follow the extension rules in `profiles/README.md`
 - Validate SKOS concept hierarchies (no cycles, proper broader/narrower/related)
 - Review that `owl:imports` chains, `rdfs:domain`, `rdfs:range` are correct
@@ -64,7 +64,7 @@ Each persona represents a discipline needed to maintain rigor on this project. A
 - Maintain the strict-subset relationship to RL2 (no concepts that break upward compatibility)
 - Design the duty lifecycle state machine and conflict resolution strategy
 - Evaluate mechanization targets (Dafny, Why3, Coq/Lean) and extraction strategies
-- Maintain the boundary between what RL1.5 includes and what it defers to RL2
+- Maintain the boundary between what Adalbert includes and what it defers to RL2
 - Design the integration pattern with DCON (contracts contain policies)
 - Review profile architecture for semantic soundness
 
@@ -78,7 +78,7 @@ Each persona represents a discipline needed to maintain rigor on this project. A
 
 - Verify that the formal semantics, OWL ontology, and SHACL shapes are mutually consistent
 - Check that profile vocabularies conform to extension rules (no new norm types, no semantic overrides)
-- Validate that comparison documents accurately represent both RL1.5 and the external standard
+- Validate that comparison documents accurately represent both Adalbert and the external standard
 - Ensure documentation stays current with ontology and semantics changes
 - Verify namespace consistency across all `.ttl` files and documentation
 - Flag when a decision requires human input
@@ -97,7 +97,7 @@ Each persona represents a discipline needed to maintain rigor on this project. A
 
 - Review specification language for precision and unambiguity
 - Ensure formal notation is used consistently (`×`, `→`, `∈`, `⊥`, `⟦e⟧`)
-- Maintain consistent terminology (RL1.5 vocabulary: Privilege not Permission, Duty not Obligation)
+- Maintain consistent terminology (Adalbert vocabulary: Privilege not Permission, Duty not Obligation)
 - Review comparison documents for fairness and accuracy toward external standards
 - Ensure tables, diagrams, and examples are correct and current
 - Check that README files accurately reflect repository contents
@@ -114,7 +114,7 @@ This project uses multiple AI agents for cross-checking. Each agent reads `LLM.m
 
 ### Cross-LLM Review Protocol
 
-The primary value of multi-agent collaboration on RL1.5 is **independent verification**. The formal nature of the project makes cross-checking particularly effective:
+The primary value of multi-agent collaboration on Adalbert is **independent verification**. The formal nature of the project makes cross-checking particularly effective:
 
 1. **Agent A** drafts or modifies an artifact
 2. **Agent B** reviews the artifact in a different persona
@@ -165,8 +165,8 @@ When an agent produces work for another to review or continue:
 ### Human Decides
 
 - Changes to the formal semantics (`docs/RL1_5_Semantics.md`)
-- New norm types or policy types (currently: none allowed in RL1.5)
-- What to include in RL1.5 vs defer to RL2
+- New norm types or policy types (currently: none allowed in Adalbert)
+- What to include in Adalbert vs defer to RL2
 - Conflict resolution strategy changes
 - New domain profiles (which domains to cover)
 - Namespace URIs (final, non-example)
@@ -193,16 +193,16 @@ When an agent produces work for another to review or continue:
 | Write ontology files | `ontology/` | Turtle syntax. Review with Ontologist persona |
 | Write profile files | `profiles/` | Follow extension rules. Review with Ontologist persona |
 | Write documentation | `docs/`, `*.md` | Keep current with ontology and semantics |
-| Write examples | Anywhere appropriate | For illustration; must be valid RL1.5 |
+| Write examples | Anywhere appropriate | For illustration; must be valid Adalbert |
 
 ### Prohibited
 
 | Action | Reason |
 |--------|--------|
 | Change formal semantics without human approval | Normative document; human decides |
-| Add RL2-exclusive concepts to RL1.5 | Strict subset constraint |
-| Add new norm types (beyond Privilege, Duty, Prohibition) | RL1.5 scope is fixed |
-| Add new policy types (beyond Set, Agreement) | RL1.5 scope is fixed |
+| Add RL2-exclusive concepts to Adalbert | Strict subset constraint |
+| Add new norm types (beyond Privilege, Duty, Prohibition) | Adalbert scope is fixed |
+| Add new policy types (beyond Set, Agreement) | Adalbert scope is fixed |
 | Override evaluation semantics in profiles | Profiles extend vocabulary only |
 
 ---
@@ -224,7 +224,7 @@ When an agent produces work for another to review or continue:
 2. Read the external standard carefully -- do not rely on summaries
 3. Analyze alignment dimension by dimension
 4. Use tables for systematic comparison, prose for nuance
-5. Distinguish: what RL1.5 matches, what it clarifies, what it defers
+5. Distinguish: what Adalbert matches, what it clarifies, what it defers
 6. Review: Editor persona for clarity, Ontologist persona for accuracy
 
 ### When Reviewing an Artifact
@@ -241,7 +241,7 @@ When an agent produces work for another to review or continue:
 1. Justify the domain (what governance problem does it solve?)
 2. Survey existing standards for the domain (W3C profiles, industry specs)
 3. Draft operands and actions following `profiles/README.md` extension rules
-4. Create DXPROF declaration in `ontology/rl1_5-prof.ttl`
+4. Create DXPROF declaration in `ontology/adalbert-prof.ttl`
 5. Write a comparison document if aligning to an external standard
 6. Review: Ontologist for vocabulary, Architect for semantic soundness, Editor for documentation
 
@@ -249,7 +249,7 @@ When an agent produces work for another to review or continue:
 
 ## Correctness Criteria
 
-RL1.5 maintains four correctness theorems. Any change must preserve all four:
+Adalbert maintains four correctness theorems. Any change must preserve all four:
 
 | Theorem | Statement |
 |---------|-----------|
@@ -281,9 +281,9 @@ Read these when starting a session:
 **Complete:**
 
 - Formal semantics draft (`docs/RL1_5_Semantics.md`)
-- OWL ontology (`ontology/rl1_5-core.ttl`)
-- SHACL validation shapes (`ontology/rl1_5-shacl.ttl`)
-- DXPROF profile metadata (`ontology/rl1_5-prof.ttl`)
+- OWL ontology (`ontology/adalbert-core.ttl`)
+- SHACL validation shapes (`ontology/adalbert-shacl.ttl`)
+- DXPROF profile metadata (`ontology/adalbert-prof.ttl`)
 - Four domain profiles (governance-core, market-data, data-use, dcon)
 - Comparison documents (ODRL 2.2, W3C profiles, market data, DCON)
 - Conformance documentation (W3C Best Practices, namespace alignment)

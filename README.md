@@ -1,4 +1,4 @@
-# RL1.5: Deterministic Policy Language for Data Governance
+# Adalbert: Deterministic Policy Language for Data Governance
 
 **A formally specified policy language extending ODRL 2.2 with deterministic evaluation semantics.**
 
@@ -6,20 +6,20 @@
 
 ## What This Is
 
-RL1.5 extends ODRL 2.2 to provide:
+Adalbert extends ODRL 2.2 to provide:
 
 1. **Explicit duty lifecycle**: Pending → Active → Fulfilled/Violated
 2. **Bilateral agreements**: Both grantor and grantee may have duties
 3. **Deterministic evaluation**: Total functions, no undefined states
 4. **Formal verification target**: Amenable to Dafny, Why3, Coq
 
-RL1.5 is **specification-first**. The semantics document defines what any conformant implementation must do.
+Adalbert is **specification-first**. The semantics document defines what any conformant implementation must do.
 
 ---
 
 ## Key Differences from ODRL 2.2
 
-| Aspect | ODRL 2.2 | RL1.5 |
+| Aspect | ODRL 2.2 | Adalbert |
 |--------|----------|-------|
 | Duty states | Undefined | Pending → Active → Fulfilled/Violated |
 | Agreement evaluation | Unilateral (assignee) | Bilateral (grantor + grantee duties) |
@@ -27,7 +27,7 @@ RL1.5 is **specification-first**. The semantics document defines what any confor
 | Evaluation order | Undefined | Deterministic left-to-right |
 | Policy types | Set, Offer, Agreement | Set, Offer, Agreement (with refined semantics) |
 
-**Note**: RL1.5 is an ODRL *extension*, not a pure subset. RL1.5 policies require RL1.5-aware processors.
+**Note**: Adalbert is an ODRL *extension*, not a pure subset. Adalbert policies require Adalbert-aware processors.
 
 ---
 
@@ -35,7 +35,7 @@ RL1.5 is **specification-first**. The semantics document defines what any confor
 
 ### 1. Specification Precedes Implementation
 
-The [formal semantics](docs/RL1_5_Semantics.md) is the normative reference.
+The [formal semantics](docs/Adalbert_Semantics.md) is the normative reference.
 
 ### 2. Total Functions
 
@@ -76,20 +76,20 @@ Pending ──────────────> Active
 ## Repository Structure
 
 ```
-RL1.5/
+Adalbert/
 ├── README.md
 ├── config/
 │   └── namespaces.ttl               # Authoritative namespace registry
 ├── ontology/
-│   ├── rl1_5-core.ttl               # Core classes and properties
-│   └── rl1_5-shacl.ttl              # Validation shapes
+│   ├── adalbert-core.ttl               # Core classes and properties
+│   └── adalbert-shacl.ttl              # Validation shapes
 ├── profiles/
-│   ├── rl1_5-governance-core.ttl    # Shared governance operands
-│   ├── rl1_5-market-data.ttl        # Market data licensing
-│   ├── rl1_5-data-use.ttl           # Internal access control
-│   └── rl1_5-contracts.ttl          # Contract lifecycle (DCON alignment)
+│   ├── adalbert-governance-core.ttl    # Shared governance operands
+│   ├── adalbert-market-data.ttl        # Market data licensing
+│   ├── adalbert-data-use.ttl           # Internal access control
+│   └── adalbert-contracts.ttl          # Contract lifecycle (DCON alignment)
 └── docs/
-    ├── RL1_5_Semantics.md           # Formal semantics (normative)
+    ├── Adalbert_Semantics.md           # Formal semantics (normative)
     └── comparisons/                 # ODRL, W3C, DCON comparisons
 ```
 
@@ -99,19 +99,19 @@ RL1.5/
 
 | Prefix | Namespace | Description |
 |--------|-----------|-------------|
-| `rl15:` | `https://vocabulary.bigbank/rl1.5/` | Core vocabulary |
-| `rl15-gov:` | `https://vocabulary.bigbank/rl1.5/governance/` | Governance operands |
-| `rl15-md:` | `https://vocabulary.bigbank/rl1.5/market-data/` | Market data profile |
-| `rl15-du:` | `https://vocabulary.bigbank/rl1.5/data-use/` | Data use profile |
-| `rl15-dc:` | `https://vocabulary.bigbank/rl1.5/contracts/` | Contracts extension |
+| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Core vocabulary |
+| `adalbert-gov:` | `https://vocabulary.bigbank/adalbert/governance/` | Governance operands |
+| `adalbert-md:` | `https://vocabulary.bigbank/adalbert/market-data/` | Market data profile |
+| `adalbert-du:` | `https://vocabulary.bigbank/adalbert/data-use/` | Data use profile |
+| `adalbert-dc:` | `https://vocabulary.bigbank/adalbert/contracts/` | Contracts extension |
 
 ---
 
 ## Conformance
 
-An implementation conforms to RL1.5 if:
+An implementation conforms to Adalbert if:
 
-1. It accepts policies that validate against `rl1_5-shacl.ttl`
+1. It accepts policies that validate against `adalbert-shacl.ttl`
 2. Its evaluation function produces identical results for identical inputs
 3. All functions are total (no undefined behavior)
 4. Duty state transitions match the operational semantics
