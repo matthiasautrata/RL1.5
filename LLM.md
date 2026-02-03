@@ -64,7 +64,7 @@ Key relationships:
 | `profiles/adalbert-governance-core.ttl` | Shared governance operands and actions |
 | `profiles/adalbert-market-data.ttl` | Market data licensing vocabulary |
 | `profiles/adalbert-data-use.ttl` | Internal access control vocabulary |
-| `profiles/adalbert-dcon.ttl` | DCON conformance declaration |
+| `profiles/adalbert-contracts.ttl` | DCON conformance declaration |
 | `docs/comparisons/comparison-odrl22.md` | Detailed ODRL 2.2 comparison |
 | `docs/comparisons/comparison-dcon.md` | DCON alignment analysis |
 | `docs/comparisons/comparison-odrl-profiles.md` | W3C ecosystem positioning |
@@ -149,16 +149,16 @@ Fixed precedence: **Prohibition > Privilege**. No configurable conflict strategi
 | **SKOS** | Concept hierarchies for operand values | Profile vocabularies |
 | **DXPROF** | W3C Profiles Vocabulary for metadata | `ontology/adalbert-prof.ttl` |
 | **DCAT** | Dataset/catalog references | Via DCON integration |
-| **DCON** | Data Contract Ontology | `profiles/adalbert-dcon.ttl` |
+| **DCON** | Data Contract Ontology | `profiles/adalbert-contracts.ttl` |
 | **Dublin Core** | Metadata (title, description, date) | Throughout RDF files |
 
 ### URI Namespace
 
 ```
 adalbert:      https://adalbert.example/
-rl15gov:   https://adalbert.example/profiles/governance#
+adalbert-gov:   https://adalbert.example/profiles/governance#
 rl15mkt:   https://adalbert.example/profiles/market-data#
-rl15du:    https://adalbert.example/profiles/data-use#
+adalbert-du:    https://adalbert.example/profiles/data-use#
 ```
 
 Note: Using `example` URIs during draft phase. Final namespace TBD.

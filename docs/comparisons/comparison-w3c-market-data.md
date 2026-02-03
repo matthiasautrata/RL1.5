@@ -71,7 +71,7 @@ This appendix assesses the feasibility of automatically translating existing MDS
 ### A.3 Translation Algorithm (Sketch)
 
 ```
-translate(mds_policy) → (rl15_policy, warnings, errors)
+translate(mds_policy) → (adalbert_policy, warnings, errors)
 
 1. Policy structure
    - has parties? → Agreement + grantor/grantee
@@ -108,7 +108,7 @@ translate(mds_policy) → (rl15_policy, warnings, errors)
 | SHACL validation integration | 2 days |
 | Unit tests | 3 days |
 
-**Deliverable**: `mds-to-rl15` CLI tool
+**Deliverable**: `mds-to-adalbert` CLI tool
 
 #### Phase 2: Policy Analysis — 1 week
 

@@ -180,8 +180,8 @@ Policies declare which profiles they use:
 
 ```turtle
 ex:policy a adalbert:Agreement ;
-    odrl:profile <https://rl2.org/adalbert/> ,
-                 <https://rl2.org/adalbert/market-data> ,
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ,
+                 <https://vocabulary.bigbank/adalbert/market-data> ,
                  <https://example.org/data-sovereignty> ;
     # ...
 ```

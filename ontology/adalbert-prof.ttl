@@ -63,25 +63,25 @@ odrl:core a dct:Standard ;
 <https://vocabulary.bigbank/adalbert/governance/> a prof:Profile ;
     dct:title "Adalbert Governance Core"@en ;
     prof:isProfileOf <https://vocabulary.bigbank/adalbert/> ;
-    prof:hasToken "rl15-gov"^^xsd:token .
+    prof:hasToken "adalbert-gov"^^xsd:token .
 
 <https://vocabulary.bigbank/adalbert/market-data/> a prof:Profile ;
     dct:title "Adalbert Market Data"@en ;
     prof:isProfileOf <https://vocabulary.bigbank/adalbert/governance/> ;
     prof:isTransitiveProfileOf <https://vocabulary.bigbank/adalbert/> , odrl:core ;
-    prof:hasToken "rl15-md"^^xsd:token .
+    prof:hasToken "adalbert-md"^^xsd:token .
 
 <https://vocabulary.bigbank/adalbert/data-use/> a prof:Profile ;
     dct:title "Adalbert Data Use"@en ;
     prof:isProfileOf <https://vocabulary.bigbank/adalbert/governance/> ;
     prof:isTransitiveProfileOf <https://vocabulary.bigbank/adalbert/> , odrl:core ;
-    prof:hasToken "rl15-du"^^xsd:token .
+    prof:hasToken "adalbert-du"^^xsd:token .
 
 <https://vocabulary.bigbank/adalbert/contracts/> a prof:Profile ;
     dct:title "Adalbert Contracts"@en ;
     prof:isProfileOf <https://vocabulary.bigbank/adalbert/> ;
     prof:isTransitiveProfileOf odrl:core ;
-    prof:hasToken "rl15-dc"^^xsd:token .
+    prof:hasToken "adalbert-dc"^^xsd:token .
 
 # =============================================================================
 # END

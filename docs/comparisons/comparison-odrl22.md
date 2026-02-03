@@ -198,7 +198,7 @@ If a request matches both a prohibition and a privilege for the same action/asse
 A policy conforms to Adalbert if:
 
 1. **Syntax**: Validates against `adalbert-shacl.ttl`
-2. **Profile Declaration**: Contains `odrl:profile <https://rl2.org/adalbert/>`
+2. **Profile Declaration**: Contains `odrl:profile <https://vocabulary.bigbank/adalbert/>`
 3. **No Excluded Constructs**: Does not use remedy, consequence, xone, collections
 4. **Agreement Requirements**: Agreements have exactly one grantor and grantee
 5. **Duty Requirements**: All duties have explicit lifecycle tracking
@@ -207,13 +207,13 @@ A policy conforms to Adalbert if:
 
 ```turtle
 # Reject RL2-only constructs
-rl15-sh:RejectClaimShape a sh:NodeShape ;
+adalbertsh:RejectClaimShape a sh:NodeShape ;
     sh:targetClass rl2:Claim ;
     sh:severity sh:Violation ;
     sh:message "Claims are RL2-only; not permitted in Adalbert" .
 
 # Require duty state tracking
-rl15-sh:DutyStateShape a sh:NodeShape ;
+adalbertsh:DutyStateShape a sh:NodeShape ;
     sh:targetClass adalbert:Duty ;
     sh:property [
         sh:path adalbert:dutyState ;
@@ -263,7 +263,7 @@ ex:policy a odrl:Set ;
 
 ```turtle
 ex:policy a adalbert:Set ;
-    odrl:profile <https://rl2.org/adalbert/> ;
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
     adalbert:clause [
         a adalbert:Privilege ;
         adalbert:subject ex:consumer ;

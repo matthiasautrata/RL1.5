@@ -39,7 +39,7 @@ This file defines prefixes for all W3C vocabularies, DCON ontologies, external v
 
 | Prefix | Namespace | Adalbert Usage |
 |--------|-----------|-------------|
-| `dcon:` | `https://vocabulary.jpmorgan/dcon/` | Referenced in adalbert-dcon.ttl |
+| `dcon:` | `https://vocabulary.jpmorgan/dcon/` | Referenced in adalbert-contracts.ttl |
 | `dcon-ops-shapes:` | `https://vocabulary.jpmorgan/dcon/ops/shapes/` | Not used |
 | `dcon-ui:` | `https://vocabulary.jpmorgan/dcon/ui/` | Not used |
 
@@ -47,11 +47,11 @@ This file defines prefixes for all W3C vocabularies, DCON ontologies, external v
 
 | Prefix | Namespace | Purpose |
 |--------|-----------|---------|
-| `adalbert:` | `https://rl2.org/adalbert/` | Core vocabulary |
-| `adalbert-md:` | `https://rl2.org/adalbert/market-data/` | Market data profile |
-| `adalbert-du:` | `https://rl2.org/adalbert/data-use/` | Data use profile |
-| `rl15-dcon:` | `https://rl2.org/adalbert/dcon/` | DCON conformance |
-| `adalbert-gov:` | `https://rl2.org/adalbert/governance/` | Shared governance operands |
+| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Core vocabulary |
+| `adalbert-md:` | `https://vocabulary.bigbank/adalbert/market-data/` | Market data profile |
+| `adalbert-du:` | `https://vocabulary.bigbank/adalbert/data-use/` | Data use profile |
+| `adalbert-dc:` | `https://vocabulary.bigbank/adalbert/contracts/` | Contracts extension |
+| `adalbert-gov:` | `https://vocabulary.bigbank/adalbert/governance/` | Shared governance operands |
 
 ### External Vocabularies (From DCON2)
 
@@ -81,7 +81,7 @@ These are for ABox (instance) data, not TBox (vocabulary) definitions:
 
 Adalbert defines its own vocabulary namespace:
 ```turtle
-@prefix adalbert: <https://rl2.org/adalbert/> .
+@prefix adalbert: <https://vocabulary.bigbank/adalbert/> .
 ```
 
 This is distinct from DCON:
@@ -100,7 +100,7 @@ When Adalbert policies are used within DCON contracts, instances can use DCON2 n
 subscription:abc123 a dcon:DataContractSubscription ;
     dcon:hasAgreedPolicy [
         a adalbert:Agreement ;
-        odrl:profile <https://rl2.org/adalbert/> ;
+        odrl:profile <https://vocabulary.bigbank/adalbert/> ;
         adalbert:clause [
             a adalbert:Privilege ;
             adalbert:subject jpmWorker:12345 ;  # DCON2 instance namespace
@@ -114,8 +114,8 @@ subscription:abc123 a dcon:DataContractSubscription ;
 
 Adalbert DCON profile references DCON vocabulary:
 ```turtle
-# In adalbert-dcon.ttl
-rl15-dcon:conformsToDCON rdfs:comment "Policies using this profile are compatible with DCON DataContractSubscription."@en ;
+# In adalbert-contracts.ttl
+adalbert-dc:conformsToDCON rdfs:comment "Policies using this profile are compatible with DCON DataContractSubscription."@en ;
     rdfs:seeAlso dcon:DataContractSubscription .
 ```
 
@@ -142,10 +142,10 @@ rl15-dcon:conformsToDCON rdfs:comment "Policies using this profile are compatibl
 @prefix prof:    <http://www.w3.org/ns/dx/prof/> .
 
 # --- Adalbert Vocabularies ---
-@prefix adalbert:     <https://rl2.org/adalbert/> .
-@prefix adalbert-md:  <https://rl2.org/adalbert/market-data/> .
-@prefix adalbert-du:  <https://rl2.org/adalbert/data-use/> .
-@prefix adalbert-gov: <https://rl2.org/adalbert/governance/> .
+@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-md:  <https://vocabulary.bigbank/adalbert/market-data/> .
+@prefix adalbert-du:  <https://vocabulary.bigbank/adalbert/data-use/> .
+@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
 
 # --- DCON (when integrating) ---
 @prefix dcon:    <https://vocabulary.jpmorgan/dcon/> .
@@ -158,7 +158,7 @@ rl15-dcon:conformsToDCON rdfs:comment "Policies using this profile are compatibl
 
 ### Decision 1: Separate Adalbert Namespace
 
-**Choice**: `https://rl2.org/adalbert/` (not under DCON)
+**Choice**: `https://vocabulary.bigbank/adalbert/` (not under DCON)
 
 **Rationale**:
 - Adalbert is a general ODRL profile, not DCON-specific
@@ -167,7 +167,7 @@ rl15-dcon:conformsToDCON rdfs:comment "Policies using this profile are compatibl
 
 ### Decision 2: Profile-Specific Sub-Namespaces
 
-**Choice**: `https://rl2.org/adalbert/market-data/` etc.
+**Choice**: `https://vocabulary.bigbank/adalbert/market-data/` etc.
 
 **Rationale**:
 - Clear namespace organization
@@ -191,7 +191,7 @@ rl15-dcon:conformsToDCON rdfs:comment "Policies using this profile are compatibl
 
 When RL2 is released:
 ```turtle
-@prefix rl2: <https://rl2.org/> .
+@prefix rl2: <https://vocabulary.bigbank/> .
 ```
 
 Adalbert terms would remain stable; RL2 extends them.
