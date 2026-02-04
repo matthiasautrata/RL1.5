@@ -348,24 +348,28 @@ adalbert-due:nonDisplay a odrl:Action ;
 adalbert-due:conformTo a odrl:Action ;
     rdfs:label "conform to"@en ;
     skos:definition "Conform to a schema or specification."@en ;
-    rdfs:comment "Provider duty: ensure data conforms to published schema."@en .
+    rdfs:comment "Provider duty: ensure data conforms to published schema. No odrl:includedIn — governance action with no natural ODRL parent."@en .
 
 adalbert-due:log a odrl:Action ;
     rdfs:label "log"@en ;
-    skos:definition "Log access to the asset."@en .
+    skos:definition "Log access to the asset."@en ;
+    odrl:includedIn odrl:inform .
 
 adalbert-due:notify a odrl:Action ;
     rdfs:label "notify"@en ;
-    skos:definition "Notify relevant parties."@en .
+    skos:definition "Notify relevant parties."@en ;
+    odrl:includedIn odrl:inform .
 
 adalbert-due:report a odrl:Action ;
     rdfs:label "report"@en ;
     skos:definition "Submit usage reports."@en ;
+    odrl:includedIn odrl:inform ;
     rdfs:comment "Typically an assignee duty: report usage to data owner."@en .
 
 adalbert-due:deliver a odrl:Action ;
     rdfs:label "deliver"@en ;
     skos:definition "Deliver data to consumer."@en ;
+    odrl:includedIn odrl:distribute ;
     rdfs:comment "Typically an assigner duty in data contracts."@en .
 
 # =============================================================================
@@ -393,15 +397,18 @@ adalbert-due:query a odrl:Action ;
 
 adalbert-due:export a odrl:Action ;
     rdfs:label "export"@en ;
-    skos:definition "Export data outside the system."@en .
+    skos:definition "Export data outside the system."@en ;
+    odrl:includedIn odrl:distribute .
 
 adalbert-due:copy a odrl:Action ;
     rdfs:label "copy"@en ;
-    skos:definition "Copy data to another location."@en .
+    skos:definition "Copy data to another location."@en ;
+    odrl:includedIn odrl:reproduce .
 
 adalbert-due:link a odrl:Action ;
     rdfs:label "link"@en ;
-    skos:definition "Link/join with other datasets."@en .
+    skos:definition "Link/join with other datasets."@en ;
+    odrl:includedIn odrl:aggregate .
 
 adalbert-due:profile a odrl:Action ;
     rdfs:label "profile"@en ;

@@ -162,7 +162,24 @@ Several DUE actions lack `odrl:includedIn` declarations: `conformTo`, `log`, `no
 |----------|----------|
 | DUE profile | `profiles/adalbert-due.ttl:351-407` |
 
-**Status:** Open
+**Decision:** Add `odrl:includedIn` where semantically sound (7 of 8 actions). One exception documented.
+
+| Action | Parent | Rationale |
+|--------|--------|-----------|
+| `log` | `odrl:inform` | Logging is a specific form of informing |
+| `notify` | `odrl:inform` | Direct match |
+| `report` | `odrl:inform` | Reporting is a form of informing |
+| `deliver` | `odrl:distribute` | Delivering is supplying data |
+| `export` | `odrl:distribute` | Exporting is distributing externally |
+| `copy` | `odrl:reproduce` | Making duplicates |
+| `link` | `odrl:aggregate` | Linking/joining is aggregating |
+| `conformTo` | *(none)* | Governance action with no natural ODRL parent |
+
+**Changes:**
+
+- `profiles/adalbert-due.ttl`: Added `odrl:includedIn` to 7 actions; documented `conformTo` exception
+
+**Status:** Resolved
 
 ---
 
@@ -247,3 +264,4 @@ These require human input before resolution:
 | 2026-02-04 | Issue 2 | Added RuntimeRef fallback to `resolve()` — dual-typed operands delegate to `resolveRuntime()` | -- |
 | 2026-02-04 | Issue 3, Q2 | Removed `rightOperandRef` — dead code, identity binding deferred to RL2; simplified SHACL and abstract syntax | -- |
 | 2026-02-04 | Issue 5 | Replaced `adalbert-due:purpose` with `odrl:purpose` + resolutionPath — standard ODRL profile pattern; updated 7 files | -- |
+| 2026-02-04 | Issue 6 | Added `odrl:includedIn` hierarchy to 7 DUE actions; documented `conformTo` exception | -- |
