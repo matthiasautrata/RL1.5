@@ -219,7 +219,13 @@ Several DUE actions lack `odrl:includedIn` declarations: `conformTo`, `log`, `no
 
 SHACL does not enforce ODRL's requirement that an `odrl:Set` contains an `odrl:target`. Adding a Set shape would tighten profile validation.
 
-**Status:** Open
+**Decision:** Added `adalbertsh:SetShape` requiring at least one `odrl:target` on Set policies.
+
+**Changes:**
+
+- `ontology/adalbert-shacl.ttl`: Added SetShape with `odrl:target` minCount 1
+
+**Status:** Resolved
 
 ---
 
@@ -262,3 +268,4 @@ These require human input before resolution:
 | 2026-02-04 | Issue 5 | Replaced `adalbert-due:purpose` with `odrl:purpose` + resolutionPath — standard ODRL profile pattern; updated 7 files | -- |
 | 2026-02-04 | Issue 6 | Added `odrl:includedIn` hierarchy to 7 DUE actions; documented `conformTo` exception | -- |
 | 2026-02-04 | Issue 7 | Fixed three doc inconsistencies: added `memberOf` + `xsd:time` to README, fixed `dcon:Duty` → `dcon:Promise`, removed false SKOS claims | -- |
+| 2026-02-04 | Issue 8 | Added `adalbertsh:SetShape` requiring `odrl:target` on Set policies | -- |

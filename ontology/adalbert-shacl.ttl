@@ -49,6 +49,20 @@ adalbertsh:PolicyShape a sh:NodeShape ;
     ] .
 
 # =============================================================================
+# SET SHAPE
+# =============================================================================
+
+adalbertsh:SetShape a sh:NodeShape ;
+    sh:targetClass odrl:Set ;
+    sh:name "Set Shape" ;
+
+    sh:property [
+        sh:path odrl:target ;
+        sh:minCount 1 ;
+        sh:message "Set policy must declare at least one target."
+    ] .
+
+# =============================================================================
 # OFFER SHAPE
 # =============================================================================
 
