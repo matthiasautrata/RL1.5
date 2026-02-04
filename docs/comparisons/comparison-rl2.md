@@ -222,7 +222,7 @@ Adalbert was designed as a strict subset of RL2. Translation is information-pres
 | `adalbert:resolutionPath` | `rl2:resolutionPath` | Direct |
 | `adalbert:currentAgent` | `rl2:currentAgent` | Direct |
 | `adalbert:currentDateTime` | `rl2:currentDateTime` | Direct |
-| `adalbert:rightOperandRef` | `rl2:rightOperandRef` (or equivalent) | Direct |
+| (not in Adalbert) | `rl2:rightOperandRef` | Added at RL2 (identity binding) |
 | DUE operands | Profile operands | Same resolution pattern |
 | DUE actions | Profile actions | Same hierarchy pattern |
 

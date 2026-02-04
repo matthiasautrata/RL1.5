@@ -157,7 +157,7 @@ Deadline ::= AbsoluteDeadline(time: Time)
 ```
 Condition ::= AtomicConstraint(leftOperand: LeftOperand,
                                operator: ComparisonOperator,
-                               rightOperand: Value | RuntimeRef)
+                               rightOperand: Value)
             | And(operands: Condition+)
             | Or(operands: Condition+)
             | Not(operand: Condition)
@@ -169,9 +169,9 @@ RuntimeRef ::= currentAgent | currentDateTime
 
 **Notes**:
 
-- `leftOperand` is drawn from profile-defined operands with `resolutionPath`
-- Dynamic value resolution on the left side uses `LeftOperand` with `adalbert:resolutionPath`
-- Dynamic value resolution on the right side uses `RuntimeRef` (e.g., `currentAgent`)
+- `leftOperand` is drawn from profile-defined operands with `resolutionPath`, or dual-typed `RuntimeReference` operands (e.g., `currentDateTime`)
+- Dynamic value resolution on the left side uses `LeftOperand` with `adalbert:resolutionPath` or dual-typed `RuntimeReference` operands resolved via `resolveRuntime`
+- Right operands are literal values. Identity binding via runtime references in right-operand position is deferred to RL2 (`rl2:rightOperandRef`)
 
 ### 3.4 Policies
 
@@ -417,11 +417,8 @@ performed(a, x, s, Σ) :=
 ```
 ⟦AtomicConstraint(left, op, right)⟧(Env) =
     let leftVal = resolve(left, Env)
-    let rightVal = case right of
-        RuntimeRef(r) → resolveRuntime(r, Env)
-        Literal(v)    → v
     in if leftVal = ⊥ then false
-       else apply(op, leftVal, rightVal)
+       else apply(op, leftVal, right)
 ```
 
 **Logical connectives** (short-circuit evaluation, left-to-right):
@@ -556,7 +553,7 @@ These constraints prevent path traversal attacks and unauthorized data access vi
 
 #### resolveRuntime : RuntimeRef × Env → Value
 
-Runtime references resolve to values at evaluation time. These are used in `rightOperand` for dynamic comparisons.
+Runtime references resolve to values at evaluation time. These are used by `resolve()` for dual-typed left operands (§6.2) — operands typed as both `odrl:LeftOperand` and `adalbert:RuntimeReference` (e.g., `currentDateTime`).
 
 ```
 resolveRuntime : RuntimeRef × Env → Value ∪ {⊥}

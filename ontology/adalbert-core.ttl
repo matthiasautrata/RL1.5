@@ -12,7 +12,6 @@
 #   - Asset/party hierarchy (partOf, memberOf)
 #   - Structured operand resolution (resolutionPath)
 #   - Runtime references (RuntimeReference, currentAgent, currentDateTime)
-#   - Right-operand references (rightOperandRef)
 #   - Logical negation (not)
 #
 # Everything else — Rule types, Policy types, Constraint types, operators,
@@ -229,12 +228,6 @@ adalbert:currentDateTime a odrl:LeftOperand, adalbert:RuntimeReference ;
     rdfs:label "current date time"@en ;
     skos:definition "Evaluation timestamp."@en ;
     skos:exactMatch odrl:dateTime .
-
-adalbert:rightOperandRef a owl:ObjectProperty ;
-    rdfs:label "right operand reference"@en ;
-    skos:definition "Runtime reference for comparison."@en ;
-    rdfs:domain odrl:Constraint ;
-    rdfs:range adalbert:RuntimeReference .
 
 # =============================================================================
 # LOGICAL NEGATION (genuinely new — ODRL lacks this)

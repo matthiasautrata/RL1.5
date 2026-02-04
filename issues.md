@@ -8,6 +8,12 @@ Systematic review findings from cross-LLM audit. Issues ordered by severity.
 
 `ontology/adalbert-dcon-alignment.ttl` maps Adalbert back to DCON via `skos:closeMatch`. If DCON absorption is complete and runtime interoperability with legacy DCON systems is not required, this file is documentation/metadata only. It can remain for reference or move to `docs/`. It is not strictly redundant -- it provides semantic bridging.
 
+- Do we keep dcon.ttl as a minimal extension (Contract and Subscription only)?
+- Do we have all the time handling covered?
+- Do we migrate the ../dcon folder with its examples and docs or keep it separate?
+- Need to talk with Andrew?
+
+
 **Decision needed:** Keep in `ontology/`, move to `docs/`, or remove?
 **Status:** Open
 
@@ -60,17 +66,22 @@ The correct long-term solution would be a `state.*` resolution root (as RL2 prov
 
 ### Issue 3: `rightOperandRef` underspecified and duplicates ODRL
 
-The semantics allows `RuntimeRef` in `rightOperand`, but there is no RDF mapping to `adalbert:rightOperandRef`. SHACL enforces `rightOperand` xor `adalbert:rightOperandRef`. Meanwhile, ODRL already defines `odrl:rightOperandReference` as the standard alternative to `odrl:rightOperand`, so a custom property weakens interoperability.
+`adalbert:rightOperandRef` was defined in the ontology and enforced via SHACL xone, but had zero uses in examples or documentation. The semantics allowed `RuntimeRef` in `rightOperand` but no RDF mapping existed. ODRL's `odrl:rightOperandReference` serves a different purpose (web-resource dereferencing, not evaluation-engine resolution).
 
-| Artifact | Location |
-|----------|----------|
-| Formal semantics | `docs/Adalbert_Semantics.md:157-174, 552-563` |
-| Core ontology | `ontology/adalbert-core.ttl:231-235` |
-| SHACL shapes | `ontology/adalbert-shacl.ttl:183-188` |
+**Decision:** Remove `rightOperandRef` entirely. The property was dead code -- Adalbert has no identity binding patterns (tun-sollen, separation of duty), which are the only use case for runtime references in right-operand position. Identity binding is explicitly deferred to RL2 (`rl2:rightOperandRef`). ODRL's `rightOperandReference` is not a replacement -- it has different semantics (HTTP dereferencing vs engine resolution).
 
-**Decision needed:** Keep `adalbert:rightOperandRef`, or switch to `odrl:rightOperandReference` with explicit RDF mapping?
+**Changes:**
 
-**Status:** Open
+- `ontology/adalbert-core.ttl`: Removed `adalbert:rightOperandRef` property
+- `ontology/adalbert-shacl.ttl`: Replaced xone with simple `odrl:rightOperand` minCount 1
+- `docs/Adalbert_Semantics.md`: Simplified abstract syntax (`rightOperand: Value`), removed `RuntimeRef` case from constraint evaluation, updated `resolveRuntime` description
+- `LLM.md`: Removed from extension table
+- `config/namespaces.ttl`: Removed from namespace comment
+- `docs/comparisons/namespace-alignment.md`: Removed from extension lists
+- `docs/comparisons/comparison-odrl22.md`: Removed from runtime reference table
+- `docs/comparisons/comparison-rl2.md`: Updated mapping table (identity binding added at RL2)
+
+**Status:** Resolved
 
 ---
 
@@ -178,7 +189,7 @@ These require human input before resolution:
 | # | Question | Related Issues | Status |
 |---|----------|----------------|--------|
 | Q1 | Should `adalbert:currentAgent` be the wildcard agent (`*`) or a runtime substitution for `odrl:assignee`? | Issue 1 | Resolved: neither -- omit assignee for universal rules, keep `currentAgent` for constraints only |
-| Q2 | Keep `adalbert:rightOperandRef`, or switch to `odrl:rightOperandReference` with explicit RDF mapping? | Issue 3 | Open |
+| Q2 | Keep `adalbert:rightOperandRef`, or switch to `odrl:rightOperandReference` with explicit RDF mapping? | Issue 3 | Resolved: removed -- dead code, identity binding deferred to RL2 |
 | Q3 | Keep custom `partOf`/`memberOf`, or converge on `odrl:partOf` with additional constraints? | Issue 4 | Open |
 
 ---
@@ -189,3 +200,4 @@ These require human input before resolution:
 |------|-------|--------|--------|
 | 2026-02-04 | Issue 1, Q1 | Separated concerns: `currentAgent` for constraints only (RL2-aligned); absent assignee = universal applicability; removed from 11 example rules | -- |
 | 2026-02-04 | Issue 2 | Added RuntimeRef fallback to `resolve()` — dual-typed operands delegate to `resolveRuntime()` | -- |
+| 2026-02-04 | Issue 3, Q2 | Removed `rightOperandRef` — dead code, identity binding deferred to RL2; simplified SHACL and abstract syntax | -- |

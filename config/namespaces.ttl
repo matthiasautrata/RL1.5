@@ -39,7 +39,7 @@
 #                operators, and core properties (action, target, assignee, etc.)
 # adalbert:      Adalbert extensions only (State, deadline, DataContract,
 #                Subscription, partOf, memberOf, resolutionPath,
-#                RuntimeReference, rightOperandRef, not)
+#                RuntimeReference, not)
 # adalbertsh:    SHACL validation shapes
 # adalbert-due:  Data use profile (all operands, actions, concept values)
 #

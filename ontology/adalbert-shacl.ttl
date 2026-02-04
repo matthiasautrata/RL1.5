@@ -180,12 +180,11 @@ adalbertsh:ConstraintShape a sh:NodeShape ;
         sh:message "Constraint must have exactly one operator."
     ] ;
 
-    # Must have rightOperand OR rightOperandRef
-    sh:xone (
-        [ sh:property [ sh:path odrl:rightOperand ; sh:minCount 1 ] ]
-        [ sh:property [ sh:path adalbert:rightOperandRef ; sh:minCount 1 ] ]
-    ) ;
-    sh:message "Constraint must have exactly one of: odrl:rightOperand or adalbert:rightOperandRef." .
+    sh:property [
+        sh:path odrl:rightOperand ;
+        sh:minCount 1 ;
+        sh:message "Constraint must have a rightOperand."
+    ] .
 
 # =============================================================================
 # LOGICAL CONSTRAINT SHAPE

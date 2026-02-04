@@ -126,7 +126,6 @@ Adalbert is a proper ODRL 2.2 profile. It uses ODRL's classes and properties dir
 | `adalbert:RuntimeReference` | Value resolved at evaluation time |
 | `adalbert:currentAgent` | Runtime reference: the requesting agent (dual-typed as `adalbert:RuntimeReference` and `odrl:Party`) |
 | `adalbert:currentDateTime` | Runtime reference: evaluation timestamp |
-| `adalbert:rightOperandRef` | Runtime reference for right-operand comparison |
 | `adalbert:not` | Logical negation on LogicalConstraint (ODRL lacks this) |
 
 ### DUE Action Vocabulary

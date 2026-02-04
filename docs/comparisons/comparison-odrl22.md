@@ -130,7 +130,6 @@ These are the only terms in the `adalbert:` namespace:
 | `adalbert:RuntimeReference` | Value resolved at evaluation time |
 | `adalbert:currentAgent` | The requesting agent |
 | `adalbert:currentDateTime` | Evaluation timestamp (`skos:exactMatch odrl:dateTime`) |
-| `adalbert:rightOperandRef` | Runtime reference for right-operand comparison |
 
 ### Logical Negation
 

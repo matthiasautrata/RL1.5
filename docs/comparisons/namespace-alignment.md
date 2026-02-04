@@ -49,7 +49,7 @@ The `odrl:` namespace is the **primary vocabulary** for Adalbert policies. All s
 
 | Prefix | Namespace | Purpose |
 |--------|-----------|---------|
-| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Profile extensions: State, deadline, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, currentAgent, currentDateTime, rightOperandRef, not |
+| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Profile extensions: State, deadline, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, currentAgent, currentDateTime, not |
 | `adalbert-due:` | `https://vocabulary.bigbank/adalbert/due/` | Data use vocabulary (operands, actions, concept values) |
 
 The `adalbert:` namespace contains **only terms that ODRL does not define**. All standard ODRL constructs are used directly from the `odrl:` namespace. The Adalbert extensions are:
@@ -58,7 +58,7 @@ The `adalbert:` namespace contains **only terms that ODRL does not define**. All
 - **Contracts**: `DataContract` (subClassOf `odrl:Offer`), `Subscription` (subClassOf `odrl:Agreement`), `subscribesTo`, `effectiveDate`, `expirationDate`
 - **Hierarchy**: `partOf` (on `odrl:Asset`), `memberOf` (on `odrl:Party`)
 - **Resolution**: `resolutionPath` (on `odrl:LeftOperand`)
-- **Runtime**: `RuntimeReference`, `currentAgent`, `currentDateTime`, `rightOperandRef`
+- **Runtime**: `RuntimeReference`, `currentAgent`, `currentDateTime`
 - **Logic**: `not` (on `odrl:LogicalConstraint`)
 
 ### External Vocabularies (From DCON2)
