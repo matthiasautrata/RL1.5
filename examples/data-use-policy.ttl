@@ -64,7 +64,7 @@
         odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
-            odrl:leftOperand adalbert-due:purpose ;
+            odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:eq ;
             odrl:rightOperand adalbert-due:analytics
         ]
@@ -80,7 +80,7 @@
         odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
-            odrl:leftOperand adalbert-due:purpose ;
+            odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:eq ;
             odrl:rightOperand adalbert-due:compliance
         ]
@@ -165,7 +165,7 @@
             odrl:and (
                 [
                     a odrl:Constraint ;
-                    odrl:leftOperand adalbert-due:purpose ;
+                    odrl:leftOperand odrl:purpose ;
                     odrl:operator odrl:isAnyOf ;
                     odrl:rightOperand (adalbert-due:compliance adalbert-due:operations)
                 ]
@@ -201,7 +201,7 @@
         odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [
             a odrl:Constraint ;
-            odrl:leftOperand adalbert-due:purpose ;
+            odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:eq ;
             odrl:rightOperand adalbert-due:analytics
         ]

@@ -100,7 +100,7 @@ The W3C ODRL Community Group published best practices for ODRL 2.2 profiles. Thi
 
 **Adalbert**: No new left operands in core. One runtime reference (`adalbert:currentDateTime`) has `skos:exactMatch odrl:dateTime`. Domain profiles add operands:
 - `adalbert-due:timeliness` -- Data use (market data)
-- `adalbert-due:purpose` -- Data use
+- `odrl:purpose` -- ODRL standard operand, extended with `adalbert:resolutionPath`
 
 ### Additional Operators
 

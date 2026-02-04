@@ -144,7 +144,7 @@ ex:useRule a odrl:Permission ;
     odrl:target ex:customerData ;
     odrl:constraint [
         a odrl:Constraint ;
-        odrl:leftOperand adalbert-due:purpose ;
+        odrl:leftOperand odrl:purpose ;
         odrl:operator odrl:eq ;
         odrl:rightOperand adalbert-due:analytics
     ] .

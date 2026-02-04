@@ -138,7 +138,19 @@ DUE defines `adalbert-due:purpose`, but ODRL already provides a `purpose` left o
 |----------|----------|
 | DUE profile | `profiles/adalbert-due.ttl:63-67, 224-230` |
 
-**Status:** Open
+**Decision:** Replace `adalbert-due:purpose` with `odrl:purpose` extended with `adalbert:resolutionPath "context.purpose"`. This is the standard ODRL profile pattern — profiles annotate existing ODRL operands rather than redefining them. `recipientType` is retained as genuinely different from `odrl:recipient` (classification vs party identity).
+
+**Changes:**
+
+- `profiles/adalbert-due.ttl`: Replaced `adalbert-due:purpose` definition with `odrl:purpose adalbert:resolutionPath "context.purpose"`
+- `examples/data-use-policy.ttl`: Updated 4 references from `adalbert-due:purpose` to `odrl:purpose`
+- `examples/README.md`: Updated 1 reference
+- `docs/Adalbert_Semantics.md`: Updated example in §11.1 to show both extending existing ODRL operands and declaring new ones
+- `docs/conformance-w3c-best-practices.md`: Updated operand reference
+- `docs/comparisons/comparison-odrl-profiles.md`: Updated example
+- `docs/comparisons/comparison-w3c-market-data.md`: Updated mapping table
+
+**Status:** Resolved
 
 ---
 
@@ -234,3 +246,4 @@ These require human input before resolution:
 | 2026-02-04 | Issue 1, Q1 | Separated concerns: `currentAgent` for constraints only (RL2-aligned); absent assignee = universal applicability; removed from 11 example rules | -- |
 | 2026-02-04 | Issue 2 | Added RuntimeRef fallback to `resolve()` — dual-typed operands delegate to `resolveRuntime()` | -- |
 | 2026-02-04 | Issue 3, Q2 | Removed `rightOperandRef` — dead code, identity binding deferred to RL2; simplified SHACL and abstract syntax | -- |
+| 2026-02-04 | Issue 5 | Replaced `adalbert-due:purpose` with `odrl:purpose` + resolutionPath — standard ODRL profile pattern; updated 7 files | -- |

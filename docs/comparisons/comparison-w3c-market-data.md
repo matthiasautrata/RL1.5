@@ -56,7 +56,7 @@ The translator produces:
 2. **Operand resolution** -- MDS left operands map to DUE operands with `adalbert:resolutionPath`:
    - `md:timeliness` to `adalbert-due:timeliness` (`asset.timeliness`)
    - `md:recipient` to `adalbert-due:role` (`agent.role`)
-   - `md:purpose` to `adalbert-due:purpose` (`context.purpose`)
+   - `md:purpose` to `odrl:purpose` (`context.purpose`)
 
 ---
 

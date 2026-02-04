@@ -827,13 +827,15 @@ Under these constraints, `Eval` is **total**: it terminates for all well-formed 
 
 ### 11.1 Left Operands
 
-Profiles declare operands as `odrl:LeftOperand` instances with Adalbert resolution paths:
+Profiles attach Adalbert resolution paths to operands. Standard ODRL operands (like `odrl:purpose`) are extended in-place; domain-specific operands are declared as new `odrl:LeftOperand` instances:
 
 ```turtle
-adalbert-due:purpose a odrl:LeftOperand ;
-    rdfs:label "purpose"@en ;
-    skos:definition "The declared purpose of the data usage request."@en ;
-    adalbert:resolutionPath "context.purpose" .
+# Extend an existing ODRL operand with a resolution path
+odrl:purpose adalbert:resolutionPath "context.purpose" .
+
+# Declare a new domain-specific operand
+adalbert-due:timeliness a odrl:LeftOperand ;
+    adalbert:resolutionPath "asset.timeliness" .
 ```
 
 The `resolutionPath` value must conform to the path grammar defined in §6.2 (`deref`). SHACL validation enforces that all resolution paths start with a canonical root:

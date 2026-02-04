@@ -76,7 +76,7 @@ odrl:constraint [
     odrl:and (
         [
             a odrl:Constraint ;
-            odrl:leftOperand adalbert-due:purpose ;
+            odrl:leftOperand odrl:purpose ;
             odrl:operator odrl:eq ;
             odrl:rightOperand adalbert-due:analytics
         ]

@@ -60,10 +60,7 @@
 # PURPOSE OPERANDS
 # =============================================================================
 
-adalbert-due:purpose a odrl:LeftOperand ;
-    rdfs:label "purpose"@en ;
-    skos:definition "Intended use of the data."@en ;
-    adalbert:resolutionPath "context.purpose" ;
+odrl:purpose adalbert:resolutionPath "context.purpose" ;
     rdfs:comment "Purpose hierarchy uses skos:broader for subsumption."@en .
 
 # Purpose taxonomy
