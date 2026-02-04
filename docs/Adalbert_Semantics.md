@@ -456,15 +456,20 @@ resolve(op, Env) =
         _ | op.resolutionPath ≠ ⊥ →
             deref(op.resolutionPath, Env)
 
-        -- No resolution path defined
+        -- Dual-typed operands (LeftOperand ∩ RuntimeReference)
+        _ | op ∈ RuntimeRef →
+            resolveRuntime(op, Env)
+
+        -- No resolution path and not a runtime reference
         _ → ⊥
 ```
 
 Where:
 * `op.resolutionPath` — path expression declared on the operand via `adalbert:resolutionPath`
+* `op ∈ RuntimeRef` — the operand is also typed as `adalbert:RuntimeReference` (e.g., `currentDateTime`); resolution delegates to `resolveRuntime` (§6.2). Path-based resolution takes precedence.
 * `⊥` indicates undefined (condition evaluates to `false` when encountered — see §6.1)
 
-**Architectural Principle**: All contextual data access MUST go through declared `odrl:LeftOperand` instances with explicit `adalbert:resolutionPath`. This ensures:
+**Architectural Principle**: All contextual data access MUST go through declared `odrl:LeftOperand` instances with explicit `adalbert:resolutionPath`, or through dual-typed `RuntimeReference` operands resolved via `resolveRuntime`. This ensures:
 - Type safety (operands can declare expected ranges via `rdfs:range`)
 - Validation (SHACL can verify operand usage at authoring time)
 - Mechanization (clear mapping to formal verification targets)

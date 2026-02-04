@@ -42,15 +42,17 @@ This aligns with ODRL's Set policy rules (Sets should not bind parties) and with
 
 ### Issue 2: `currentDateTime` as left operand always evaluates false
 
-`adalbert:currentDateTime` is used as a left operand in examples, but left operands only resolve via `adalbert:resolutionPath` and otherwise return bottom. Since `currentDateTime` lacks a resolution path, those constraints always evaluate false. The SLA duty in the data contract example never activates.
+`adalbert:currentDateTime` was used as a left operand in examples, but `resolve()` only handled path-based resolution and fell back to ⊥. Since `currentDateTime` has no `resolutionPath`, those constraints always evaluated false. The SLA duty never activated.
 
-| Artifact | Location |
-|----------|----------|
-| Formal semantics | `docs/Adalbert_Semantics.md:441-461` |
-| Core ontology | `ontology/adalbert-core.ttl:226-229` |
-| Data contract example | `examples/data-contract.ttl:68-80` |
+**Decision:** Add RuntimeRef fallback to `resolve()`. The ontology already dual-types `currentDateTime` as both `odrl:LeftOperand` and `adalbert:RuntimeReference`. The `resolveRuntime()` function already maps `currentDateTime → Env.Σ.clock`. The `resolve()` function now checks for RuntimeReference typing between path-based resolution and the ⊥ fallback, delegating to `resolveRuntime()`. Path-based resolution retains precedence.
 
-**Status:** Open
+The correct long-term solution would be a `state.*` resolution root (as RL2 provides), but that is RL2 territory and would complicate Adalbert's simpler model. The RuntimeRef fallback is the minimal compromise.
+
+**Changes:**
+
+- `docs/Adalbert_Semantics.md`: Added `op ∈ RuntimeRef → resolveRuntime(op, Env)` case to `resolve()`; updated architectural principle text
+
+**Status:** Resolved
 
 ---
 
@@ -186,3 +188,4 @@ These require human input before resolution:
 | Date | Issue | Action | Commit |
 |------|-------|--------|--------|
 | 2026-02-04 | Issue 1, Q1 | Separated concerns: `currentAgent` for constraints only (RL2-aligned); absent assignee = universal applicability; removed from 11 example rules | -- |
+| 2026-02-04 | Issue 2 | Added RuntimeRef fallback to `resolve()` — dual-typed operands delegate to `resolveRuntime()` | -- |
