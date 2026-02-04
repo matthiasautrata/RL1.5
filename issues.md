@@ -87,13 +87,42 @@ The correct long-term solution would be a `state.*` resolution root (as RL2 prov
 
 ### Issue 4: `partOf` and `memberOf` duplicate ODRL's `odrl:partOf`
 
-`adalbert:partOf` and `adalbert:memberOf` duplicate ODRL's existing `odrl:partOf` for asset/party membership. This directly contradicts the "use ODRL terms directly" principle.
+Adalbert defines two custom hierarchy properties where ODRL already provides one:
+
+- `adalbert:partOf` -- domain: `odrl:Asset`, range: `odrl:Asset`, transitive
+- `adalbert:memberOf` -- domain: `odrl:Party`, range: `odrl:Party`, transitive
+- `odrl:partOf` -- domain: Asset∪Party, range: AssetCollection∪PartyCollection, **not transitive**
 
 | Artifact | Location |
 |----------|----------|
-| Core ontology | `ontology/adalbert-core.ttl:179-191` |
+| Core ontology | `ontology/adalbert-core.ttl:178-190` |
+| Formal semantics | `docs/Adalbert_Semantics.md:382-393, 669, 876-892` |
+| Examples | `examples/data-use-policy.ttl:20,34,38`, `examples/data-contract.ttl:24,35` |
 
-**Decision needed:** Converge on `odrl:partOf` with additional SHACL constraints, or keep custom properties with `rdfs:subPropertyOf odrl:partOf`?
+**The differences are real, not cosmetic:**
+
+| Aspect | ODRL `partOf` | Adalbert `partOf`/`memberOf` |
+|--------|---------------|------------------------------|
+| Transitivity | Not declared | Explicit `owl:TransitiveProperty` |
+| Domain separation | One property, both domains | Separate properties, typed domains |
+| Range | AssetCollection/PartyCollection | Plain Asset/Party |
+| Collection model | Requires Collection subclasses + refinement | Direct hierarchy, no collection classes |
+
+Adalbert's semantics relies on transitive closure: `partOf⁺` in asset matching, `memberOf⁺` in NormActive and agent matching, and `performed()` checks. This is core to the evaluation model.
+
+**RL2 comparison:** RL2 uses neither `odrl:partOf` nor Adalbert's properties. RL2 has `rl2:member` (reversed direction, collection→asset) and `roles()` for party matching. No alignment concern.
+
+**Alternatives (in preference order):**
+
+**A. Declare `rdfs:subPropertyOf odrl:partOf` (recommended).** Add two lines to the ontology. Preserves transitivity, domain typing, and evaluation semantics. ODRL processors with RDFS reasoning can infer `odrl:partOf` from Adalbert triples. This is what ODRL profiles are designed to do: specialize base vocabulary terms.
+
+**B. Replace with `odrl:partOf` directly.** High disruption. ODRL's `partOf` is not transitive -- asserting transitivity on a base vocabulary term may break ODRL processors. Loses domain separation (no type-checking that parties and assets aren't mixed). Changes ontology, all examples, semantics, SHACL.
+
+**C. Replace `adalbert:partOf` only (assets), keep `adalbert:memberOf` (parties).** Partial. Same transitivity problem for assets. Inconsistent principle.
+
+**D. Keep as-is.** The properties aren't redundant (they add transitivity and domain typing). But without subproperty bridging, ODRL processors can't interpret Adalbert hierarchies at all.
+
+**Decision needed:** Which alternative? Requires discussion -- affects ODRL interoperability posture.
 
 **Status:** Open
 
@@ -181,6 +210,10 @@ Example policies use DUE vocabulary but only declare the core profile in `odrl:p
 **Status:** Open
 
 ---
+
+### Issue 10: Update the docs/comparisons/comparison-rl2.md
+
+Consider that RL2 is self-sufficient and RL1.5 lives ontop of ODRL2.2. So, a fair comparison would include the full foot-print in both cases.
 
 ## Open Questions / Decisions
 
