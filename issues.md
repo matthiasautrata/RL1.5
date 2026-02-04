@@ -187,33 +187,29 @@ Several DUE actions lack `odrl:includedIn` declarations: `conformTo`, `log`, `no
 
 #### 7a: `docs/README.md` omits extensions and deadline type
 
-`docs/README.md` omits `adalbert:memberOf` and `adalbert:rightOperandRef` from the extension list and excludes `xsd:time` from deadline semantics, but core ontology and SHACL allow it.
+`docs/README.md` omits `adalbert:memberOf` from the extension list and excludes `xsd:time` from deadline semantics, but core ontology and SHACL allow it. (`rightOperandRef` was removed in Issue 3, so its absence is now correct.)
 
-| Artifact | Location |
-|----------|----------|
-| README | `docs/README.md:32-52` |
-| Core ontology | `ontology/adalbert-core.ttl:111-124` |
-| SHACL shapes | `ontology/adalbert-shacl.ttl:148-156` |
+**Fix:** Added `memberOf` to extension list; added `xsd:time` to deadline types.
 
 #### 7b: Duty/Promise mapping inconsistency
 
-`profiles/README.md` maps `odrl:Duty` to `dcon:Duty`, while the alignment and comparison docs use `dcon:Promise`. These should be consistent.
+`profiles/README.md` maps `odrl:Duty` to `dcon:Duty`, while the alignment file and comparison doc use `dcon:Promise`. The alignment file is authoritative.
 
-| Artifact | Location |
-|----------|----------|
-| Profiles README | `profiles/README.md:73-78` |
-| DCON alignment | `ontology/adalbert-dcon-alignment.ttl:57-63` |
-| DCON comparison | `docs/comparisons/comparison-dcon.md:9-13` |
+**Fix:** Changed `profiles/README.md` from `dcon:Duty` to `dcon:Promise`.
 
 #### 7c: Conformance doc claims unsupported features
 
-`docs/conformance-w3c-best-practices.md` claims SKOS ConceptScheme/Collections and `odrl:purpose` usage that are not present in the ontology.
+`docs/conformance-w3c-best-practices.md` claims `skos:ConceptScheme` typing and `skos:Collection` structures that do not exist in the ontology.
 
-| Artifact | Location |
-|----------|----------|
-| Conformance doc | `docs/conformance-w3c-best-practices.md:19-55` |
+**Fix:** Removed `skos:ConceptScheme` from profile type assertion; replaced SKOS Collection example with a note that SKOS structuring is planned but not yet implemented.
 
-**Status:** Open
+**Changes:**
+
+- `docs/README.md`: Added `memberOf`, added `xsd:time` deadline type
+- `profiles/README.md`: Fixed `dcon:Duty` → `dcon:Promise`
+- `docs/conformance-w3c-best-practices.md`: Removed false `skos:ConceptScheme` claim; replaced aspirational SKOS Collection example with honest status note
+
+**Status:** Resolved
 
 ---
 
@@ -265,3 +261,4 @@ These require human input before resolution:
 | 2026-02-04 | Issue 3, Q2 | Removed `rightOperandRef` — dead code, identity binding deferred to RL2; simplified SHACL and abstract syntax | -- |
 | 2026-02-04 | Issue 5 | Replaced `adalbert-due:purpose` with `odrl:purpose` + resolutionPath — standard ODRL profile pattern; updated 7 files | -- |
 | 2026-02-04 | Issue 6 | Added `odrl:includedIn` hierarchy to 7 DUE actions; documented `conformTo` exception | -- |
+| 2026-02-04 | Issue 7 | Fixed three doc inconsistencies: added `memberOf` + `xsd:time` to README, fixed `dcon:Duty` → `dcon:Promise`, removed false SKOS claims | -- |

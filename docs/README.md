@@ -34,6 +34,7 @@ Adalbert is a proper **ODRL 2.2 profile**. It uses ODRL terms for all standard c
 - `adalbert:deadline` -- deadline semantics on duties
 - `adalbert:DataContract` / `adalbert:Subscription` -- data contract lifecycle
 - `adalbert:partOf` -- asset hierarchy (on `odrl:Asset`)
+- `adalbert:memberOf` -- party hierarchy (on `odrl:Party`)
 - `adalbert:resolutionPath` -- structured operand resolution (on `odrl:LeftOperand`)
 - `adalbert:RuntimeReference` -- runtime value references
 - `adalbert:not` -- logical negation of constraints
@@ -46,9 +47,10 @@ ODRL evaluates agreements from assignee perspective only. Adalbert returns dutie
 
 ### 3. Deadline Semantics
 
-Supports both:
+Supports three forms:
 - `xsd:dateTime`: absolute deadline (2026-12-31T23:59:59Z)
 - `xsd:duration`: relative to activation (P30D, PT24H)
+- `xsd:time`: daily recurring deadline (06:30:00)
 
 ### 4. ODRL Policy Types
 

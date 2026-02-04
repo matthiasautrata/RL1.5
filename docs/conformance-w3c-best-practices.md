@@ -18,7 +18,7 @@ The W3C ODRL Community Group published best practices for ODRL 2.2 profiles. Thi
 
 **Adalbert Compliance**:
 ```turtle
-<https://vocabulary.bigbank/adalbert/> a odrl:Profile, skos:ConceptScheme .
+<https://vocabulary.bigbank/adalbert/> a odrl:Profile .
 ```
 
 ### 2. Profile as Stable Web Resource
@@ -34,25 +34,7 @@ The W3C ODRL Community Group published best practices for ODRL 2.2 profiles. Thi
 
 **Requirement**: Use SKOS Collection for profile concepts.
 
-**Adalbert Compliance**: Adalbert uses ODRL types directly (not its own rule types), so SKOS collections reference ODRL classes:
-```turtle
-<https://vocabulary.bigbank/adalbert/> a skos:ConceptScheme ;
-    skos:hasTopConcept odrl:Permission, odrl:Duty, odrl:Prohibition .
-
-<https://vocabulary.bigbank/adalbert/#actions> a skos:Collection ;
-    skos:prefLabel "Adalbert Actions"@en ;
-    skos:member odrl:use, odrl:read, ... .
-
-<https://vocabulary.bigbank/adalbert/#leftOperands> a skos:Collection ;
-    skos:prefLabel "Adalbert Left Operands"@en ;
-    skos:member odrl:purpose, odrl:dateTime, ... .
-
-<https://vocabulary.bigbank/adalbert/#extensions> a skos:Collection ;
-    skos:prefLabel "Adalbert Extensions"@en ;
-    skos:member adalbert:State, adalbert:DataContract,
-               adalbert:Subscription, adalbert:deadline,
-               adalbert:not .
-```
+**Adalbert Status**: Not yet implemented. The profile does not currently declare `skos:ConceptScheme` or `skos:Collection` structures. SKOS concept values are used in the DUE profile (e.g., purpose taxonomy, classification levels), but the profile-level SKOS structuring recommended by the W3C best practices is planned for a future version.
 
 ### 4. OWL Ontology
 

@@ -74,7 +74,7 @@ DCON alignment is not a profile but a mapping file (`ontology/adalbert-dcon-alig
 |----------|------|--------------|
 | `adalbert:DataContract` | `dcon:DataContract` | `skos:closeMatch` |
 | `adalbert:Subscription` | `dcon:DataContractSubscription` | `skos:closeMatch` |
-| `odrl:Duty` | `dcon:Duty` | `skos:closeMatch` |
+| `odrl:Duty` | `dcon:Promise` | `skos:closeMatch` |
 | `adalbert:State` instances | DCON duty states | `skos:closeMatch` |
 
 Note: State mappings use `skos:closeMatch`, not `owl:sameAs`, because the state machines differ (Adalbert has 4 unified states vs DCON's separate contract/promise states).
