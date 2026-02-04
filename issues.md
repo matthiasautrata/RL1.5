@@ -238,7 +238,14 @@ Example policies use DUE vocabulary but only declare the core profile in `odrl:p
 | Data use policy | `examples/data-use-policy.ttl:34-37` |
 | Data contract | `examples/data-contract.ttl:55-61` |
 
-**Status:** Open
+**Decision:** Added DUE profile declaration alongside core profile in all four policy instances (2 in each example file).
+
+**Changes:**
+
+- `examples/data-use-policy.ttl`: Added `<https://vocabulary.bigbank/adalbert/due/>` to 2 policies
+- `examples/data-contract.ttl`: Added `<https://vocabulary.bigbank/adalbert/due/>` to 2 policies
+
+**Status:** Resolved
 
 ---
 
@@ -269,3 +276,4 @@ These require human input before resolution:
 | 2026-02-04 | Issue 6 | Added `odrl:includedIn` hierarchy to 7 DUE actions; documented `conformTo` exception | -- |
 | 2026-02-04 | Issue 7 | Fixed three doc inconsistencies: added `memberOf` + `xsd:time` to README, fixed `dcon:Duty` → `dcon:Promise`, removed false SKOS claims | -- |
 | 2026-02-04 | Issue 8 | Added `adalbertsh:SetShape` requiring `odrl:target` on Set policies | -- |
+| 2026-02-04 | Issue 9 | Added DUE profile declaration to all 4 example policy instances | -- |

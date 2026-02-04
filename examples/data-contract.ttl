@@ -54,7 +54,8 @@
 
 <https://data.bigbank/offers/market-prices-v2> a adalbert:DataContract ;
     rdfs:label "Market Price Data Contract v2" ;
-    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ,
+                 <https://vocabulary.bigbank/adalbert/due/> ;
     odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/data-platform-team> ;
     odrl:target <https://data.bigbank/assets/market-prices> ;
@@ -152,7 +153,8 @@
 
 <https://data.bigbank/agreements/quant-market-data-2026> a adalbert:Subscription ;
     rdfs:label "Quant Research Market Data 2026" ;
-    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ,
+                 <https://vocabulary.bigbank/adalbert/due/> ;
     odrl:conflict odrl:prohibit ;
     adalbert:subscribesTo <https://data.bigbank/offers/market-prices-v2> ;
     odrl:assigner <https://data.bigbank/agents/data-platform-team> ;

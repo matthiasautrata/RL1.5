@@ -50,7 +50,8 @@
 
 <https://data.bigbank/policies/hr-data-access> a odrl:Set ;
     rdfs:label "HR Data Access Policy" ;
-    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ,
+                 <https://vocabulary.bigbank/adalbert/due/> ;
     odrl:conflict odrl:prohibit ;
     odrl:target <https://data.bigbank/assets/employee-data> ;
 
@@ -149,7 +150,8 @@
 
 <https://data.bigbank/policies/compensation-access> a odrl:Set ;
     rdfs:label "Compensation Data Access Policy" ;
-    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ,
+                 <https://vocabulary.bigbank/adalbert/due/> ;
     odrl:conflict odrl:prohibit ;
     odrl:target <https://data.bigbank/assets/employee-compensation> ;
 
