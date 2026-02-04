@@ -1,19 +1,20 @@
 # Adalbert: Deterministic Policy Language for Data Governance
 
-**A formally specified policy language extending ODRL 2.2 with deterministic evaluation semantics.**
+**An ODRL 2.2 profile with deterministic evaluation semantics for data governance.**
 
 ---
 
 ## What This Is
 
-Adalbert extends ODRL 2.2 to provide:
+Adalbert is a proper ODRL 2.2 profile. It uses ODRL terms for all standard constructs (Permission, Duty, Prohibition, Agreement, etc.) and only adds extensions where ODRL 2.2 leaves behavior undefined:
 
-1. **Explicit duty lifecycle**: Pending → Active → Fulfilled/Violated
-2. **Bilateral agreements**: Both grantor and grantee may have duties
+1. **Explicit lifecycle**: Pending → Active → Fulfilled/Violated (unified for duties and contracts)
+2. **Bilateral agreements**: Both assigner and assignee may have duties
 3. **Deterministic evaluation**: Total functions, no undefined states
 4. **Formal verification target**: Amenable to Dafny, Why3, Coq
+5. **Structured operand resolution**: `resolutionPath` from canonical roots (agent, asset, context)
 
-Adalbert is **specification-first**. The semantics document defines what any conformant implementation must do.
+Adalbert is **specification-first**. The semantics document defines what any conformant implementation must do. Every Adalbert policy is a valid ODRL 2.2 policy.
 
 ---
 
@@ -21,22 +22,23 @@ Adalbert is **specification-first**. The semantics document defines what any con
 
 See [examples/](examples/) for complete working policies:
 
-- [market-data-contract.ttl](examples/market-data-contract.ttl) — DataContract, Subscription, bilateral duties
+- [data-contract.ttl](examples/data-contract.ttl) — DataContract, Subscription, bilateral duties
 - [data-use-policy.ttl](examples/data-use-policy.ttl) — Role-based access, purpose constraints
 
 ---
 
-## Key Differences from ODRL 2.2
+## What Adalbert Adds to ODRL 2.2
 
-| Aspect | ODRL 2.2 | Adalbert |
-|--------|----------|----------|
-| Duty states | Undefined | Pending → Active → Fulfilled/Violated |
-| Agreement evaluation | Unilateral (assignee) | Bilateral (grantor + grantee duties) |
-| Conflict resolution | Configurable | Fixed: Prohibition > Privilege |
+| Extension | ODRL 2.2 | What Adalbert Adds |
+|-----------|----------|--------------------|
+| Duty lifecycle | Undefined | Pending → Active → Fulfilled/Violated |
+| Bilateral duties | Unilateral (assignee only) | Assigner duties + assignee duties |
+| Conflict resolution | Configurable | Fixed: Prohibition > Permission |
 | Evaluation order | Undefined | Deterministic left-to-right |
-| Policy types | Set, Offer, Agreement | Set, Offer, Agreement (refined semantics) |
+| Operand resolution | Implicit | Explicit `resolutionPath` from canonical roots |
+| Contract types | — | `DataContract` (subclass of Offer), `Subscription` (subclass of Agreement) |
 
-**Note**: Adalbert is an ODRL *extension*, not a pure subset. Adalbert policies require Adalbert-aware processors.
+**Note**: Adalbert is an ODRL profile, not a parallel vocabulary. Standard ODRL processors can parse Adalbert policies; Adalbert-aware processors additionally enforce lifecycle, bilateral duties, and deterministic evaluation.
 
 ---
 
@@ -61,15 +63,15 @@ Agreements return duties for **both** parties:
 ```
 Result = {
     decision: Permit | Deny | NotApplicable,
-    grantorDuties: Set<Duty>,   // Provider obligations (SLAs)
-    granteeDuties: Set<Duty>,   // Consumer obligations
+    assignerDuties: Set<Duty>,   // Provider obligations (SLAs)
+    assigneeDuties: Set<Duty>,   // Consumer obligations
     violations: Set<Duty>
 }
 ```
 
-### 4. Explicit Lifecycle
+### 4. Unified Lifecycle State
 
-Duties have observable state:
+Duties and contracts share four states:
 
 ```
          condition true
@@ -78,6 +80,18 @@ Pending ──────────────> Active
           action done    │  │  deadline passed
                          ▼  ▼
                    Fulfilled  Violated
+```
+
+An `odrl:Duty` progresses through `adalbert:State` values. An `adalbert:DataContract` shares the same state machine.
+
+### 5. Structured Operand Resolution
+
+Operands resolve via `resolutionPath` — dot-separated paths from canonical roots:
+
+```
+agent.role, agent.organization, agent.costCenter
+asset.classification, asset.market, asset.isBenchmark
+context.purpose, context.environment, context.legalBasis
 ```
 
 ---
@@ -89,16 +103,14 @@ Adalbert/
 ├── config/
 │   └── namespaces.ttl               # Authoritative namespace registry
 ├── ontology/
-│   ├── adalbert-core.ttl            # Core classes and properties
+│   ├── adalbert-core.ttl            # ODRL profile extension (State, deadline, DataContract, Subscription, hierarchy, resolution)
 │   ├── adalbert-shacl.ttl           # Validation shapes
-│   └── adalbert-prof.ttl            # DXPROF profile declaration
+│   ├── adalbert-prof.ttl            # DXPROF profile declaration
+│   └── adalbert-dcon-alignment.ttl  # DCON alignment mappings (skos:closeMatch)
 ├── profiles/
-│   ├── adalbert-governance-core.ttl # Shared governance operands
-│   ├── adalbert-market-data.ttl     # Market data licensing
-│   ├── adalbert-data-use.ttl        # Internal access control
-│   └── adalbert-contracts.ttl       # Contract lifecycle (DCON alignment)
+│   └── adalbert-due.ttl             # Data use vocabulary (all operands + actions)
 ├── examples/
-│   ├── market-data-contract.ttl     # Complete contract example
+│   ├── data-contract.ttl            # Complete contract example
 │   └── data-use-policy.ttl          # Access control example
 └── docs/
     ├── Adalbert_Semantics.md        # Formal semantics (normative)
@@ -110,14 +122,14 @@ Adalbert/
 
 ## DCON Integration
 
-Adalbert's contracts extension (`adalbert-dc:`) provides full alignment with DCON:
+Adalbert's core includes `DataContract` (subclass of Offer) and `Subscription` (subclass of Agreement). DCON alignment is provided via `skos:closeMatch` mappings in `ontology/adalbert-dcon-alignment.ttl`:
 
 | DCON | Adalbert | Mapping |
 |------|----------|---------|
-| `dcon:DataContract` | `adalbert-dc:DataContract` | Both are Offers |
-| `dcon:DataContractSubscription` | `adalbert-dc:Subscription` | Both are Agreements |
-| `dcon:Promise` | `adalbert:Duty` | Partial (simplified) |
-| Contract states | Contract states | `skos:closeMatch` |
+| `dcon:DataContract` | `adalbert:DataContract` | `skos:closeMatch` |
+| `dcon:DataContractSubscription` | `adalbert:Subscription` | `skos:closeMatch` |
+| `dcon:Promise` | `odrl:Duty` | Partial (simplified) |
+| Promise/Contract states | `adalbert:State` | `skos:closeMatch` |
 
 See [comparison-dcon.md](docs/comparisons/comparison-dcon.md) for complete mapping with examples.
 
@@ -125,13 +137,11 @@ See [comparison-dcon.md](docs/comparisons/comparison-dcon.md) for complete mappi
 
 ## Namespaces
 
-| Prefix | Namespace |
-|--------|-----------|
-| `adalbert:` | `https://vocabulary.bigbank/adalbert/` |
-| `adalbert-gov:` | `https://vocabulary.bigbank/adalbert/governance/` |
-| `adalbert-md:` | `https://vocabulary.bigbank/adalbert/market-data/` |
-| `adalbert-du:` | `https://vocabulary.bigbank/adalbert/data-use/` |
-| `adalbert-dc:` | `https://vocabulary.bigbank/adalbert/contracts/` |
+| Prefix | Namespace | Role |
+|--------|-----------|------|
+| `odrl:` | `http://www.w3.org/ns/odrl/2/` | Primary — all standard constructs |
+| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Extensions only (State, DataContract, Subscription, resolutionPath, hierarchy) |
+| `adalbert-due:` | `https://vocabulary.bigbank/adalbert/due/` | Data use vocabulary (operands, actions, concept values) |
 
 ---
 
@@ -140,10 +150,11 @@ See [comparison-dcon.md](docs/comparisons/comparison-dcon.md) for complete mappi
 An implementation conforms to Adalbert if:
 
 1. It accepts policies that validate against `adalbert-shacl.ttl`
-2. Its evaluation function produces identical results for identical inputs
-3. All functions are total (no undefined behavior)
-4. Duty state transitions match the operational semantics
-5. Agreement evaluation returns duties for both parties
+2. It uses `odrl:Permission`, `odrl:Duty`, `odrl:Prohibition`, `odrl:Agreement` for standard constructs
+3. Its evaluation function produces identical results for identical inputs
+4. All functions are total (no undefined behavior)
+5. State transitions match the operational semantics
+6. Agreement evaluation returns duties for both assigner and assignee
 
 ---
 
@@ -155,4 +166,4 @@ An implementation conforms to Adalbert if:
 
 ---
 
-**Version**: 0.2 | **Date**: 2026-02-03
+**Version**: 0.5 | **Date**: 2026-02-03

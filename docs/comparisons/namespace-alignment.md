@@ -28,30 +28,38 @@ This file defines prefixes for all W3C vocabularies, DCON ontologies, external v
 | `sh:` | `http://www.w3.org/ns/shacl#` | Both |
 | `dcat:` | `http://www.w3.org/ns/dcat#` | Both |
 | `dcterms:` | `http://purl.org/dc/terms/` | Both |
-| `odrl:` | `http://www.w3.org/ns/odrl/2/` | Both |
+| `odrl:` | `http://www.w3.org/ns/odrl/2/` | Both (primary for Adalbert) |
 | `prov:` | `http://www.w3.org/ns/prov#` | Both |
 | `org:` | `http://www.w3.org/ns/org#` | Both |
 | `skos:` | `http://www.w3.org/2004/02/skos/core#` | Both |
 | `time:` | `http://www.w3.org/2006/time#` | Both |
 | `adms:` | `http://www.w3.org/ns/adms#` | Both |
 
+The `odrl:` namespace is the **primary vocabulary** for Adalbert policies. All standard rule types (`odrl:Permission`, `odrl:Duty`, `odrl:Prohibition`), policy types (`odrl:Set`, `odrl:Offer`, `odrl:Agreement`), constraint types (`odrl:Constraint`, `odrl:LogicalConstraint`), core properties (`odrl:assignee`, `odrl:assigner`, `odrl:target`, `odrl:constraint`, `odrl:action`, `odrl:leftOperand`, `odrl:operator`, `odrl:rightOperand`), and operators (`odrl:eq`, `odrl:lteq`, `odrl:and`, etc.) come from this namespace.
+
 ### DCON-Specific Namespaces
 
 | Prefix | Namespace | Adalbert Usage |
 |--------|-----------|-------------|
-| `dcon:` | `https://vocabulary.jpmorgan/dcon/` | Referenced in adalbert-contracts.ttl |
+| `dcon:` | `https://vocabulary.jpmorgan/dcon/` | Referenced in `ontology/adalbert-dcon-alignment.ttl` |
 | `dcon-ops-shapes:` | `https://vocabulary.jpmorgan/dcon/ops/shapes/` | Not used |
 | `dcon-ui:` | `https://vocabulary.jpmorgan/dcon/ui/` | Not used |
 
-### Adalbert-Specific Namespaces (New)
+### Adalbert-Specific Namespaces (Extensions Only)
 
 | Prefix | Namespace | Purpose |
 |--------|-----------|---------|
-| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Core vocabulary |
-| `adalbert-md:` | `https://vocabulary.bigbank/adalbert/market-data/` | Market data profile |
-| `adalbert-du:` | `https://vocabulary.bigbank/adalbert/data-use/` | Data use profile |
-| `adalbert-dc:` | `https://vocabulary.bigbank/adalbert/contracts/` | Contracts extension |
-| `adalbert-gov:` | `https://vocabulary.bigbank/adalbert/governance/` | Shared governance operands |
+| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Profile extensions: State, deadline, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, currentAgent, currentDateTime, rightOperandRef, not |
+| `adalbert-due:` | `https://vocabulary.bigbank/adalbert/due/` | Data use vocabulary (operands, actions, concept values) |
+
+The `adalbert:` namespace contains **only terms that ODRL does not define**. All standard ODRL constructs are used directly from the `odrl:` namespace. The Adalbert extensions are:
+
+- **Lifecycle**: `State`, `Pending`, `Active`, `Fulfilled`, `Violated`, `state`, `deadline`
+- **Contracts**: `DataContract` (subClassOf `odrl:Offer`), `Subscription` (subClassOf `odrl:Agreement`), `subscribesTo`, `effectiveDate`, `expirationDate`
+- **Hierarchy**: `partOf` (on `odrl:Asset`), `memberOf` (on `odrl:Party`)
+- **Resolution**: `resolutionPath` (on `odrl:LeftOperand`)
+- **Runtime**: `RuntimeReference`, `currentAgent`, `currentDateTime`, `rightOperandRef`
+- **Logic**: `not` (on `odrl:LogicalConstraint`)
 
 ### External Vocabularies (From DCON2)
 
@@ -71,7 +79,7 @@ These are for ABox (instance) data, not TBox (vocabulary) definitions:
 | `subscription:` | `https://cdao.data.jpmorgan/dcon/subscriptions/` | DCON subscriptions |
 | `promise:` | `https://cdao.data.jpmorgan/dcon/promises/` | DCON promises |
 | `duty:` | `https://cdao.data.jpmorgan/dcon/duties/` | Could be used for Adalbert duties |
-| `permission:` | `https://cdao.data.jpmorgan/dcon/permissions/` | Could be used for Adalbert privileges |
+| `permission:` | `https://cdao.data.jpmorgan/dcon/permissions/` | Could be used for Adalbert permissions |
 
 ---
 
@@ -79,9 +87,10 @@ These are for ABox (instance) data, not TBox (vocabulary) definitions:
 
 ### 1. Vocabulary Layer (TBox)
 
-Adalbert defines its own vocabulary namespace:
+Adalbert uses ODRL terms as its primary vocabulary and defines extensions in its own namespace:
 ```turtle
-@prefix adalbert: <https://vocabulary.bigbank/adalbert/> .
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .       # Primary vocabulary
+@prefix adalbert: <https://vocabulary.bigbank/adalbert/> . # Extensions only
 ```
 
 This is distinct from DCON:
@@ -89,7 +98,9 @@ This is distinct from DCON:
 @prefix dcon: <https://vocabulary.jpmorgan/dcon/> .
 ```
 
-**Rationale**: Adalbert is a general-purpose ODRL profile; DCON is an organization-specific data contract vocabulary. They complement each other.
+**Rationale**: Adalbert is a proper ODRL 2.2 profile; DCON is an organization-specific data contract vocabulary. They complement each other. Adalbert uses ODRL terms directly, adding only genuinely new concepts.
+
+Contract lifecycle concepts (DataContract, Subscription) live in the `adalbert:` namespace as subclasses of ODRL types. Alignment with DCON is expressed via `skos:closeMatch` in `ontology/adalbert-dcon-alignment.ttl`.
 
 ### 2. Instance Layer (ABox)
 
@@ -99,24 +110,26 @@ When Adalbert policies are used within DCON contracts, instances can use DCON2 n
 # DCON subscription with Adalbert policy semantics
 subscription:abc123 a dcon:DataContractSubscription ;
     dcon:hasAgreedPolicy [
-        a adalbert:Agreement ;
+        a adalbert:Subscription ;
         odrl:profile <https://vocabulary.bigbank/adalbert/> ;
-        adalbert:clause [
-            a adalbert:Privilege ;
-            adalbert:subject jpmWorker:12345 ;  # DCON2 instance namespace
-            adalbert:action adalbert-du:derive ;
-            adalbert:object dataresource:xyz789   # DCON2 instance namespace
+        odrl:assigner ex:dataTeam ;
+        odrl:assignee jpmWorker:12345 ;         # DCON2 instance namespace
+        odrl:permission [
+            a odrl:Permission ;
+            odrl:assignee jpmWorker:12345 ;
+            odrl:action adalbert-due:derive ;
+            odrl:target dataresource:xyz789      # DCON2 instance namespace
         ]
     ] .
 ```
 
 ### 3. Cross-References
 
-Adalbert DCON profile references DCON vocabulary:
+Adalbert DCON alignment file references DCON vocabulary:
 ```turtle
-# In adalbert-contracts.ttl
-adalbert-dc:conformsToDCON rdfs:comment "Policies using this profile are compatible with DCON DataContractSubscription."@en ;
-    rdfs:seeAlso dcon:DataContractSubscription .
+# In ontology/adalbert-dcon-alignment.ttl
+adalbert:DataContract skos:closeMatch dcon:DataContract .
+adalbert:Subscription skos:closeMatch dcon:DataContractSubscription .
 ```
 
 ---
@@ -141,11 +154,9 @@ adalbert-dc:conformsToDCON rdfs:comment "Policies using this profile are compati
 @prefix prov:    <http://www.w3.org/ns/prov#> .
 @prefix prof:    <http://www.w3.org/ns/dx/prof/> .
 
-# --- Adalbert Vocabularies ---
-@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
-@prefix adalbert-md:  <https://vocabulary.bigbank/adalbert/market-data/> .
-@prefix adalbert-du:  <https://vocabulary.bigbank/adalbert/data-use/> .
-@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
+# --- Adalbert Extensions ---
+@prefix adalbert:      <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-due:  <https://vocabulary.bigbank/adalbert/due/> .
 
 # --- DCON (when integrating) ---
 @prefix dcon:    <https://vocabulary.jpmorgan/dcon/> .
@@ -156,7 +167,16 @@ adalbert-dc:conformsToDCON rdfs:comment "Policies using this profile are compati
 
 ## Namespace Design Decisions
 
-### Decision 1: Separate Adalbert Namespace
+### Decision 1: ODRL as Primary Vocabulary
+
+**Choice**: Use `odrl:` terms directly for all standard constructs.
+
+**Rationale**:
+- Adalbert is a proper ODRL 2.2 profile, not a parallel vocabulary
+- Policies are natively compatible with any ODRL processor
+- The `adalbert:` namespace contains only genuinely new extensions
+
+### Decision 2: Separate Adalbert Namespace for Extensions
 
 **Choice**: `https://vocabulary.bigbank/adalbert/` (not under DCON)
 
@@ -165,16 +185,16 @@ adalbert-dc:conformsToDCON rdfs:comment "Policies using this profile are compati
 - Enables use outside DCON context
 - Follows W3C profile best practices (unique IRI)
 
-### Decision 2: Profile-Specific Sub-Namespaces
+### Decision 3: Single Profile Sub-Namespace
 
-**Choice**: `https://vocabulary.bigbank/adalbert/market-data/` etc.
+**Choice**: `https://vocabulary.bigbank/adalbert/due/` (data use vocabulary)
 
 **Rationale**:
-- Clear namespace organization
-- Each profile has dedicated namespace
-- Follows ODRL profile convention
+- DUE carries all vocabulary (operands, actions, concept values)
+- Contract lifecycle classes (DataContract, Subscription) live in core
+- DCON alignment is a mapping file, not a profile namespace
 
-### Decision 3: Use DCON2 Instance Namespaces
+### Decision 4: Use DCON2 Instance Namespaces
 
 **Choice**: Reuse `duty:`, `permission:`, etc. for instance data
 
@@ -196,15 +216,7 @@ When RL2 is released:
 
 Adalbert terms would remain stable; RL2 extends them.
 
-### 2. Centralized Namespace Registry
-
-Consider creating `adalbert/config/namespaces.ttl` mirroring DCON2 pattern:
-```turtle
-# Adalbert Namespace Registry (Authoritative)
-# Aligns with DCON2 namespace conventions
-```
-
-### 3. JSON-LD Context
+### 2. JSON-LD Context
 
 Create `contexts/adalbert.jsonld` with namespace mappings for JSON-LD serialization.
 

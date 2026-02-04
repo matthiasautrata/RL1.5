@@ -1,141 +1,143 @@
 # =============================================================================
 # Example: Internal Data Access Policy
 # =============================================================================
-# Shows role-based access with purpose constraints and consent tracking.
+# Shows role-based access with purpose constraints and consent tracking,
+# using ODRL terms for all standard constructs.
 # =============================================================================
 
+@prefix odrl:         <http://www.w3.org/ns/odrl/2/> .
 @prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
-@prefix adalbert-du:  <https://vocabulary.bigbank/adalbert/data-use/> .
-@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
+@prefix adalbert-due: <https://vocabulary.bigbank/adalbert/due/> .
 @prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .
 
 # =============================================================================
-# AGENTS (Hierarchy)
+# PARTIES (Hierarchy)
 # =============================================================================
 
-<https://data.bigbank/agents/hr-analytics> a adalbert:Agent ;
+<https://data.bigbank/agents/hr-analytics> a odrl:Party ;
     rdfs:label "HR Analytics Team" ;
     adalbert:memberOf <https://data.bigbank/agents/hr-division> .
 
-<https://data.bigbank/agents/hr-division> a adalbert:Agent ;
+<https://data.bigbank/agents/hr-division> a odrl:Party ;
     rdfs:label "Human Resources Division" .
 
-<https://data.bigbank/agents/compliance-team> a adalbert:Agent ;
+<https://data.bigbank/agents/compliance-team> a odrl:Party ;
     rdfs:label "Compliance Team" .
 
 # =============================================================================
 # ASSETS (Hierarchy)
 # =============================================================================
 
-<https://data.bigbank/assets/employee-compensation> a adalbert:Asset ;
+<https://data.bigbank/assets/employee-compensation> a odrl:Asset ;
     rdfs:label "Employee Compensation Data" ;
     adalbert:partOf <https://data.bigbank/assets/employee-data> .
 
-<https://data.bigbank/assets/employee-performance> a adalbert:Asset ;
+<https://data.bigbank/assets/employee-performance> a odrl:Asset ;
     rdfs:label "Employee Performance Reviews" ;
     adalbert:partOf <https://data.bigbank/assets/employee-data> .
 
-<https://data.bigbank/assets/employee-data> a adalbert:Asset ;
+<https://data.bigbank/assets/employee-data> a odrl:Asset ;
     rdfs:label "Employee Data Lake" .
 
 # =============================================================================
 # POLICY SET: HR Data Access Controls
 # =============================================================================
-# This is a Set (no parties) - applies to anyone matching the conditions.
+# This is a Set (no parties) — applies to anyone matching the conditions.
 
-<https://data.bigbank/policies/hr-data-access> a adalbert:Set ;
+<https://data.bigbank/policies/hr-data-access> a odrl:Set ;
     rdfs:label "HR Data Access Policy" ;
-    adalbert:target <https://data.bigbank/assets/employee-data> ;
-    
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:target <https://data.bigbank/assets/employee-data> ;
+
     # ===== RULE 1: HR Analytics can read for analytics purposes =====
-    
-    adalbert:clause [
-        a adalbert:Privilege ;
+
+    odrl:permission [
+        a odrl:Permission ;
         rdfs:label "HR analytics read access" ;
-        adalbert:subject <https://data.bigbank/agents/hr-analytics> ;
-        adalbert:action adalbert-gov:read ;
-        adalbert:object <https://data.bigbank/assets/employee-data> ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-gov:purpose ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-gov:analytics
+        odrl:assignee <https://data.bigbank/agents/hr-analytics> ;
+        odrl:action adalbert-due:read ;
+        odrl:target <https://data.bigbank/assets/employee-data> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:purpose ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand adalbert-due:analytics
         ]
     ] ;
-    
+
     # ===== RULE 2: Compliance can read for compliance purposes =====
-    
-    adalbert:clause [
-        a adalbert:Privilege ;
+
+    odrl:permission [
+        a odrl:Permission ;
         rdfs:label "Compliance audit access" ;
-        adalbert:subject <https://data.bigbank/agents/compliance-team> ;
-        adalbert:action adalbert-gov:read ;
-        adalbert:object <https://data.bigbank/assets/employee-data> ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-gov:purpose ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-gov:compliance
+        odrl:assignee <https://data.bigbank/agents/compliance-team> ;
+        odrl:action adalbert-due:read ;
+        odrl:target <https://data.bigbank/assets/employee-data> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:purpose ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand adalbert-due:compliance
         ]
     ] ;
-    
+
     # ===== RULE 3: Anyone reading must log access =====
-    
-    adalbert:clause [
-        a adalbert:Duty ;
+
+    odrl:obligation [
+        a odrl:Duty ;
         rdfs:label "Mandatory audit logging" ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-gov:log ;
-        adalbert:object <https://data.bigbank/assets/access-log> ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-gov:classification ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-gov:confidential
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:log ;
+        odrl:target <https://data.bigbank/assets/access-log> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:classification ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand adalbert-due:confidential
         ] ;
         adalbert:deadline "PT1H"^^xsd:duration  # Log within 1 hour
     ] ;
-    
+
     # ===== RULE 4: No external distribution =====
-    
-    adalbert:clause [
-        a adalbert:Prohibition ;
+
+    odrl:prohibition [
+        a odrl:Prohibition ;
         rdfs:label "No external sharing" ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-gov:distribute ;
-        adalbert:object <https://data.bigbank/assets/employee-data>
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:distribute ;
+        odrl:target <https://data.bigbank/assets/employee-data>
     ] ;
-    
+
     # ===== RULE 5: No use for model training =====
-    
-    adalbert:clause [
-        a adalbert:Prohibition ;
+
+    odrl:prohibition [
+        a odrl:Prohibition ;
         rdfs:label "No ML training" ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-gov:use ;
-        adalbert:object <https://data.bigbank/assets/employee-data> ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-gov:processingMode ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-gov:modelTraining
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:use ;
+        odrl:target <https://data.bigbank/assets/employee-data> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:processingMode ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand adalbert-due:modelTraining
         ]
     ] ;
-    
+
     # ===== RULE 6: Production only =====
-    
-    adalbert:clause [
-        a adalbert:Prohibition ;
+
+    odrl:prohibition [
+        a odrl:Prohibition ;
         rdfs:label "Production environment only" ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-gov:use ;
-        adalbert:object <https://data.bigbank/assets/employee-data> ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-du:environment ;
-            adalbert:constraintOperator adalbert:isNoneOf ;
-            adalbert:rightOperand (adalbert-du:production adalbert-du:staging)
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:use ;
+        odrl:target <https://data.bigbank/assets/employee-data> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:environment ;
+            odrl:operator odrl:isNoneOf ;
+            odrl:rightOperand (adalbert-due:production adalbert-due:staging)
         ]
     ] .
 
@@ -145,61 +147,63 @@
 # =============================================================================
 # More restrictive policy for sensitive compensation data.
 
-<https://data.bigbank/policies/compensation-access> a adalbert:Set ;
+<https://data.bigbank/policies/compensation-access> a odrl:Set ;
     rdfs:label "Compensation Data Access Policy" ;
-    adalbert:target <https://data.bigbank/assets/employee-compensation> ;
-    
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:target <https://data.bigbank/assets/employee-compensation> ;
+
     # Only HR Division (not just analytics sub-team)
-    adalbert:clause [
-        a adalbert:Privilege ;
+    odrl:permission [
+        a odrl:Permission ;
         rdfs:label "HR Division compensation access" ;
-        adalbert:subject <https://data.bigbank/agents/hr-division> ;
-        adalbert:action adalbert-gov:read ;
-        adalbert:object <https://data.bigbank/assets/employee-compensation> ;
-        adalbert:condition [
-            a adalbert:LogicalConstraint ;
-            adalbert:constraintOperator adalbert:and ;
-            adalbert:operand [
-                a adalbert:AtomicConstraint ;
-                adalbert:leftOperand adalbert-gov:purpose ;
-                adalbert:constraintOperator adalbert:isAnyOf ;
-                adalbert:rightOperand (adalbert-gov:compliance adalbert-gov:operations)
-            ] ;
-            adalbert:operand [
-                a adalbert:AtomicConstraint ;
-                adalbert:leftOperand adalbert-du:legalBasis ;
-                adalbert:constraintOperator adalbert:eq ;
-                adalbert:rightOperand adalbert-du:legitimateInterest
-            ]
+        odrl:assignee <https://data.bigbank/agents/hr-division> ;
+        odrl:action adalbert-due:read ;
+        odrl:target <https://data.bigbank/assets/employee-compensation> ;
+        odrl:constraint [
+            a odrl:LogicalConstraint ;
+            odrl:and (
+                [
+                    a odrl:Constraint ;
+                    odrl:leftOperand adalbert-due:purpose ;
+                    odrl:operator odrl:isAnyOf ;
+                    odrl:rightOperand (adalbert-due:compliance adalbert-due:operations)
+                ]
+                [
+                    a odrl:Constraint ;
+                    odrl:leftOperand adalbert-due:legalBasis ;
+                    odrl:operator odrl:eq ;
+                    odrl:rightOperand adalbert-due:legitimateInterest
+                ]
+            )
         ]
     ] ;
-    
+
     # Retention limit: delete after 7 years
-    adalbert:clause [
-        a adalbert:Duty ;
+    odrl:obligation [
+        a odrl:Duty ;
         rdfs:label "Retention limit" ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-gov:delete ;
-        adalbert:object <https://data.bigbank/assets/employee-compensation> ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-gov:retentionPeriod ;
-            adalbert:constraintOperator adalbert:gt ;
-            adalbert:rightOperand "P7Y"^^xsd:duration
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:delete ;
+        odrl:target <https://data.bigbank/assets/employee-compensation> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:retentionPeriod ;
+            odrl:operator odrl:gt ;
+            odrl:rightOperand "P7Y"^^xsd:duration
         ]
     ] ;
-    
+
     # Mandatory anonymization for any analytics
-    adalbert:clause [
-        a adalbert:Duty ;
+    odrl:obligation [
+        a odrl:Duty ;
         rdfs:label "Anonymization required" ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-gov:anonymize ;
-        adalbert:object <https://data.bigbank/assets/employee-compensation> ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-gov:purpose ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-gov:analytics
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:anonymize ;
+        odrl:target <https://data.bigbank/assets/employee-compensation> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:purpose ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand adalbert-due:analytics
         ]
     ] .

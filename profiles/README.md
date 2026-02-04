@@ -2,59 +2,77 @@
 
 Domain-specific vocabularies extending Adalbert Core.
 
-## Profile Hierarchy
+## Profile Architecture
 
 ```
-adalbert (core)
-├── adalbert/governance (shared operands)
-│   ├── adalbert/market-data
-│   └── adalbert/data-use
-└── adalbert/contracts (extension)
+adalbert-core.ttl
+(ODRL profile extension:
+ State, deadline,
+ DataContract, Subscription,
+ partOf, memberOf,
+ resolutionPath,
+ RuntimeReference, not)
+       │
+       ▼
+  adalbert-due.ttl
+  (all operands, actions,
+   concept values)
 ```
 
 ## Profiles
 
 | Profile | Namespace | Description |
 |---------|-----------|-------------|
-| **Governance Core** | `adalbert-gov:` | Shared operands: purpose, classification, jurisdiction |
-| **Market Data** | `adalbert-md:` | Timeliness, display/non-display, recipient types |
-| **Data Use** | `adalbert-du:` | Role-based access, environment, consent |
-| **Contracts** | `adalbert-dc:` | DataContract, Subscription, lifecycle states |
+| **Data Use (DUE)** | `adalbert-due:` | All operands, actions, concept values for data governance |
+
+## Design
+
+DUE is the single vocabulary profile — it defines what you can/can't do with data. Used in both `odrl:Set` policies (org-wide rules) and as rule content within contracts.
+
+Contract lifecycle classes (`DataContract`, `Subscription`) and their properties (`subscribesTo`, `effectiveDate`, `expirationDate`) live in core, not in a profile. DCON alignment mappings live in `ontology/adalbert-dcon-alignment.ttl`.
+
+External vendor contracts (MDS, Bloomberg, etc.) are captured as `adalbert:DataContract` offers using DUE vocabulary. Internal teams subscribe to those contracts and are additionally governed by org-wide DUE Set policies.
+
+## Extension Mechanism
+
+New domain profiles can be added for specialized vocabularies (e.g., healthcare, media licensing). The process:
+
+1. Create `profiles/adalbert-<domain>.ttl`
+2. Import `adalbert:` (core)
+3. Define domain-specific operands as `odrl:LeftOperand` with `adalbert:resolutionPath`
+4. Define actions as `odrl:Action` with `odrl:includedIn` hierarchy
+5. Define concept values as `skos:Concept`
+6. Register in `ontology/adalbert-prof.ttl`
+
+Profiles extend vocabulary only — they never add norm types, policy types, or evaluation rules.
 
 ## Creating a Profile
 
 1. Declare as `owl:Ontology` and `odrl:Profile`
-2. Import governance core (or core directly)
-3. Define operands as `adalbert:LeftOperand` with `adalbert:contextKey`
-4. Define actions as `adalbert:Action` with `adalbert:includedIn` hierarchy
+2. Import core (`adalbert:`)
+3. Define operands as `odrl:LeftOperand` with `adalbert:resolutionPath`
+4. Define actions as `odrl:Action` with `odrl:includedIn` hierarchy
 5. Define concept values as `skos:Concept`
 
-Example:
+### resolutionPath Convention
 
-```turtle
-@prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
-@prefix ex:      <https://vocabulary.bigbank/adalbert/example/> .
+Every operand must have a `resolutionPath` starting with a canonical root:
 
-<https://vocabulary.bigbank/adalbert/example/> a owl:Ontology, odrl:Profile ;
-    owl:imports <https://vocabulary.bigbank/adalbert/governance/> .
-
-ex:myOperand a adalbert:LeftOperand ;
-    rdfs:label "my operand"@en ;
-    adalbert:contextKey "myOperand" .
-
-ex:myAction a adalbert:Action ;
-    rdfs:label "my action"@en ;
-    adalbert:includedIn adalbert-gov:use .
-```
+| Root | Meaning | Examples |
+|------|---------|----------|
+| `agent` | Requesting agent | `agent.role`, `agent.organization` |
+| `asset` | Target asset | `asset.classification`, `asset.market` |
+| `context` | Request context | `context.purpose`, `context.environment` |
 
 ## DCON Alignment
 
-The Contracts extension (`adalbert-dc:`) absorbs key DCON concepts:
+DCON alignment is not a profile but a mapping file (`ontology/adalbert-dcon-alignment.ttl`). It provides `skos:closeMatch` mappings between Adalbert core concepts and DCON:
 
-| DCON | Adalbert Contracts | Relationship |
-|------|-----------------|--------------|
-| `dcon:DataContract` | `adalbert-dc:DataContract` | `skos:closeMatch` |
-| `dcon:DataContractSubscription` | `adalbert-dc:Subscription` | `skos:closeMatch` |
-| `dcon:Draft/Published/Active` | `adalbert-dc:Draft/Published/Active` | `skos:closeMatch` |
+| Adalbert | DCON | Relationship |
+|----------|------|--------------|
+| `adalbert:DataContract` | `dcon:DataContract` | `skos:closeMatch` |
+| `adalbert:Subscription` | `dcon:DataContractSubscription` | `skos:closeMatch` |
+| `odrl:Duty` | `dcon:Duty` | `skos:closeMatch` |
+| `adalbert:State` instances | DCON duty states | `skos:closeMatch` |
 
-Note: State mappings use `skos:closeMatch`, not `owl:sameAs`, because the state machines differ (Adalbert duties have 4 states vs DCON's 3).
+Note: State mappings use `skos:closeMatch`, not `owl:sameAs`, because the state machines differ (Adalbert has 4 unified states vs DCON's separate contract/promise states).

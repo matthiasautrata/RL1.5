@@ -6,7 +6,7 @@
 
 ## Overview
 
-The W3C ODRL Community Group maintains a [registry of ODRL profiles](https://www.w3.org/community/odrl/wiki/ODRL_Profiles). Adalbert is designed to complement—not compete with—these domain-specific profiles.
+The W3C ODRL Community Group maintains a [registry of ODRL profiles](https://www.w3.org/community/odrl/wiki/ODRL_Profiles). Adalbert is a proper ODRL 2.2 profile that provides semantic precision and formal verification while remaining compatible with domain-specific profiles.
 
 ---
 
@@ -31,48 +31,50 @@ The W3C ODRL Community Group maintains a [registry of ODRL profiles](https://www
 
 ### What Adalbert Is
 
-Adalbert is a **semantic foundation layer**, not a domain profile. It:
+Adalbert is a **proper ODRL 2.2 profile** that uses ODRL terms directly and adds extensions for deterministic evaluation. It:
 
-1. **Clarifies ODRL 2.2 semantics** without adding domain terms
-2. **Provides formal operational semantics** for verification
-3. **Enables domain profiles** to inherit deterministic behavior
+1. **Uses ODRL vocabulary** for all standard constructs (Permission, Duty, Prohibition, Constraint, etc.)
+2. **Adds formal operational semantics** for verification
+3. **Extends with lifecycle tracking** (State, deadline) for duties and contracts
+4. **Enables domain profiles** to inherit deterministic behavior
 
 ### What Adalbert Is Not
 
 - Not a domain-specific vocabulary
 - Not a replacement for existing profiles
-- Not an extension of ODRL (it's a subset)
+- Not a parallel vocabulary (it uses ODRL terms, not its own equivalents)
 
 ---
 
 ## Architectural Relationship
 
 ```
-                    ┌─────────────────────────────────────┐
-                    │         ODRL 2.2 Core               │
-                    │    (W3C Recommendation)             │
-                    └──────────────┬──────────────────────┘
-                                   │
-           ┌───────────────────────┼───────────────────────┐
-           │                       │                       │
-           ▼                       ▼                       ▼
-    ┌─────────────┐         ┌─────────────┐         ┌─────────────┐
-    │   Adalbert     │         │  RightsML   │         │ Data Sov.   │
-    │ (Semantic   │         │  (Domain)   │         │  (Domain)   │
-    │  Foundation)│         │             │         │             │
-    └──────┬──────┘         └─────────────┘         └─────────────┘
-           │
-    ┌──────┴──────┬────────────────┐
-    │             │                │
-    ▼             ▼                ▼
-┌────────┐  ┌──────────┐    ┌──────────┐
-│ Market │  │ Data Use │    │   DCON   │
-│  Data  │  │  Access  │    │ Profile  │
-│Profile │  │ Profile  │    │          │
-└────────┘  └──────────┘    └──────────┘
+                    +-------------------------------------+
+                    |         ODRL 2.2 Core               |
+                    |    (W3C Recommendation)              |
+                    +----------------+--------------------+
+                                     |
+           +-------------------------+-------------------------+
+           |                         |                         |
+           v                         v                         v
+    +--------------+         +--------------+         +--------------+
+    |   Adalbert   |         |  RightsML    |         | Data Sov.    |
+    | (Profile:    |         |  (Domain)    |         |  (Domain)    |
+    |  Semantic    |         |              |         |              |
+    |  Foundation) |         +--------------+         +--------------+
+    +------+-------+
+           |
+    +------+-------+
+    |              |
+    v              v
++--------+  +----------+
+|  Data  |  |   DCON   |
+|  Use   |  | Alignment|
+|Profile |  |          |
++--------+  +----------+
 ```
 
-**Key insight**: Adalbert sits between ODRL 2.2 Core and domain profiles, providing semantic precision that domain profiles can inherit.
+**Key insight**: Adalbert sits between ODRL 2.2 Core and domain profiles, providing semantic precision that domain profiles can inherit. Because Adalbert uses ODRL terms directly, policies are natively interoperable with the broader ODRL ecosystem.
 
 ---
 
@@ -86,19 +88,21 @@ Adalbert is a **semantic foundation layer**, not a domain profile. It:
 |--------|------------------|-------|
 | Purpose | Geographic policy | Semantic foundation |
 | Adds actions | Yes (transfer, localize) | No |
-| Adds operands | Yes (jurisdiction, region) | No (via profiles) |
+| Adds operands | Yes (jurisdiction, region) | No (via DUE profile) |
 | Formal semantics | No | Yes |
 | Verification target | No | Yes |
 
-**Integration**: Data sovereignty constraints can be expressed as Adalbert conditions using profile-defined operands:
+**Integration**: Data sovereignty constraints can be expressed as ODRL constraints using domain-specific operands. An Adalbert-aware processor enforces deterministic evaluation:
 
 ```turtle
-# Data Sovereignty concern expressed in Adalbert
-ex:rule adalbert:condition [
-    adalbert:leftOperand ds:dataLocation ;
-    adalbert:constraintOperator adalbert:isAnyOf ;
-    adalbert:rightOperand ( ds:EU ds:UK ds:CH )
-] .
+# Data Sovereignty concern expressed in an Adalbert policy
+ex:rule a odrl:Permission ;
+    odrl:constraint [
+        a odrl:Constraint ;
+        odrl:leftOperand ds:dataLocation ;
+        odrl:operator odrl:isAnyOf ;
+        odrl:rightOperand ( ds:EU ds:UK ds:CH )
+    ] .
 ```
 
 ### RightsML
@@ -108,7 +112,7 @@ ex:rule adalbert:condition [
 | Aspect | RightsML | Adalbert |
 |--------|----------|-------|
 | Domain | Media/publishing | Cross-domain |
-| Vocabulary | Rich (100+ terms) | Minimal |
+| Vocabulary | Rich (100+ terms) | Minimal extensions |
 | Payment modeling | Yes | No (deferred) |
 | Formal semantics | No | Yes |
 
@@ -129,13 +133,21 @@ ex:rule adalbert:condition [
 
 ```turtle
 # Technical access check (Access Control)
-ex:accessRule odrl:action ac:authenticate ;
+ex:accessRule a odrl:Permission ;
+    odrl:action ac:authenticate ;
     odrl:target ex:apiEndpoint .
 
 # Business policy check (Adalbert Data Use)
-ex:useRule adalbert:action due:derive ;
-    adalbert:object ex:customerData ;
-    adalbert:condition [ adalbert:leftOperand due:purpose ; ... ] .
+ex:useRule a odrl:Permission ;
+    odrl:assignee ex:analyticsTeam ;
+    odrl:action adalbert-due:derive ;
+    odrl:target ex:customerData ;
+    odrl:constraint [
+        a odrl:Constraint ;
+        odrl:leftOperand adalbert-due:purpose ;
+        odrl:operator odrl:eq ;
+        odrl:rightOperand adalbert-due:analytics
+    ] .
 ```
 
 ### Big Data Profile
@@ -145,18 +157,20 @@ ex:useRule adalbert:action due:derive ;
 | Aspect | Big Data | Adalbert |
 |--------|----------|-------|
 | Scale concerns | Yes (batch, stream) | No |
-| Processing modes | Yes (aggregate, analyze) | Via profiles |
+| Processing modes | Yes (aggregate, analyze) | Via DUE profile |
 | Formal semantics | No | Yes |
 
-**Integration**: Big Data processing constraints map to Adalbert conditions:
+**Integration**: Big Data processing constraints map to ODRL constraints with domain-specific operands:
 
 ```turtle
-# Big Data processing constraint
-ex:rule adalbert:condition [
-    adalbert:leftOperand bd:processingMode ;
-    adalbert:constraintOperator adalbert:eq ;
-    adalbert:rightOperand bd:aggregateOnly
-] .
+# Big Data processing constraint in Adalbert
+ex:rule a odrl:Permission ;
+    odrl:constraint [
+        a odrl:Constraint ;
+        odrl:leftOperand bd:processingMode ;
+        odrl:operator odrl:eq ;
+        odrl:rightOperand bd:aggregateOnly
+    ] .
 ```
 
 ---
@@ -167,35 +181,38 @@ Adalbert supports clean profile composition through:
 
 ### 1. Namespace Separation
 
-Each profile owns its namespace:
-- `adalbert:` — Adalbert core vocabulary
-- `adalbert-md:` — Market data operands
-- `adalbert-du:` — Data use operands
-- `ds:` — Data sovereignty (external)
-- `bd:` — Big data (external)
+The `adalbert:` namespace contains only extensions to ODRL. Domain vocabulary lives in its own namespace:
+- `odrl:` -- ODRL 2.2 standard terms (primary)
+- `adalbert:` -- Adalbert extensions (State, deadline, DataContract, etc.)
+- `adalbert-due:` -- Data use operands and actions
+- DCON alignment via `ontology/adalbert-dcon-alignment.ttl`
+- `ds:` -- Data sovereignty (external)
+- `bd:` -- Big data (external)
 
 ### 2. Profile Declaration
 
 Policies declare which profiles they use:
 
 ```turtle
-ex:policy a adalbert:Agreement ;
+ex:policy a adalbert:Subscription ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
-                 <https://vocabulary.bigbank/adalbert/market-data> ,
+                 <https://vocabulary.bigbank/adalbert/due> ,
                  <https://example.org/data-sovereignty> ;
+    odrl:assigner ex:dataTeam ;
+    odrl:assignee ex:analyticsTeam ;
     # ...
 ```
 
 ### 3. Operand Extension
 
-Domain profiles add operands to Adalbert's core:
+Domain profiles add operands to ODRL's constraint model. Adalbert adds `adalbert:resolutionPath` for structured resolution:
 
 ```turtle
-# Adalbert core constraint using domain operand
-ex:constraint a adalbert:AtomicConstraint ;
-    adalbert:leftOperand ds:transferMechanism ;    # From Data Sovereignty
-    adalbert:constraintOperator adalbert:eq ;          # From Adalbert
-    adalbert:rightOperand ds:StandardContractualClauses .  # From Data Sovereignty
+# ODRL constraint using a domain operand with Adalbert resolution
+ex:constraint a odrl:Constraint ;
+    odrl:leftOperand ds:transferMechanism ;          # From Data Sovereignty
+    odrl:operator odrl:eq ;                          # From ODRL
+    odrl:rightOperand ds:StandardContractualClauses . # From Data Sovereignty
 ```
 
 ---
@@ -205,7 +222,7 @@ ex:constraint a adalbert:AtomicConstraint ;
 ### 1. Semantic Precision
 
 Other profiles inherit Adalbert's clarifications:
-- Duty lifecycle states
+- Duty lifecycle states (Pending, Active, Fulfilled, Violated)
 - Condition vs obligation distinction
 - Deterministic evaluation order
 
@@ -220,7 +237,7 @@ Profiles built on Adalbert can leverage:
 
 Policies from different domains share:
 - Common evaluation semantics
-- Consistent conflict resolution
+- Consistent conflict resolution (Prohibition > Permission)
 - Unified audit trail format
 
 ---
@@ -231,14 +248,14 @@ Policies from different domains share:
 
 A new profile (e.g., "AI Training Data") can:
 1. Extend Adalbert (not raw ODRL 2.2)
-2. Inherit formal semantics
+2. Inherit formal semantics and lifecycle tracking
 3. Add domain-specific operands and actions
 
 ### Scenario 2: Existing Profile Alignment
 
 An existing profile (e.g., RightsML) can:
 1. Create Adalbert-aligned subset
-2. Map core constructs to Adalbert semantics
+2. Gain deterministic evaluation semantics
 3. Retain domain vocabulary
 
 ### Scenario 3: Cross-Domain Policy
@@ -254,10 +271,9 @@ Organizations using multiple domains can:
 
 Adalbert explicitly does **not** attempt to:
 
-1. **Replace domain profiles** — They add necessary vocabulary
-2. **Standardize all domains** — Each domain knows its needs
-3. **Add new ODRL features** — It's a subset, not extension
-4. **Define payment terms** — Deferred to domain profiles or RL2
+1. **Replace domain profiles** -- They add necessary vocabulary
+2. **Standardize all domains** -- Each domain knows its needs
+3. **Define payment terms** -- Deferred to domain profiles or RL2
 
 ---
 
@@ -265,5 +281,5 @@ Adalbert explicitly does **not** attempt to:
 
 - [W3C ODRL Profiles Registry](https://www.w3.org/community/odrl/wiki/ODRL_Profiles)
 - [ODRL Profile Best Practices](https://www.w3.org/community/reports/odrl/CG-FINAL-profile-bp-20240808.html)
-- [Adalbert Market Data Profile](../profiles/adalbert-market-data.ttl)
-- [Adalbert Data Use Profile](../profiles/adalbert-data-use.ttl)
+- [Adalbert Data Use Profile](../../profiles/adalbert-due.ttl)
+- [Adalbert DCON Alignment](../../ontology/adalbert-dcon-alignment.ttl)

@@ -1,0 +1,235 @@
+# =============================================================================
+# Example: Data Contract and Subscription
+# =============================================================================
+# Demonstrates bilateral agreement with assigner and assignee duties,
+# using ODRL terms for all standard constructs.
+# =============================================================================
+
+@prefix odrl:         <http://www.w3.org/ns/odrl/2/> .
+@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-due: <https://vocabulary.bigbank/adalbert/due/> .
+@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:         <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix prov:         <http://www.w3.org/ns/prov#> .
+
+# =============================================================================
+# PARTIES
+# =============================================================================
+
+<https://data.bigbank/agents/data-platform-team> a odrl:Party ;
+    rdfs:label "Data Platform Team" .
+
+<https://data.bigbank/agents/quant-research> a odrl:Party ;
+    rdfs:label "Quantitative Research" ;
+    adalbert:memberOf <https://data.bigbank/agents/trading-division> .
+
+<https://data.bigbank/agents/trading-division> a odrl:Party ;
+    rdfs:label "Trading Division" .
+
+# =============================================================================
+# ASSETS
+# =============================================================================
+
+<https://data.bigbank/assets/market-prices> a odrl:Asset ;
+    rdfs:label "Market Price Data" ;
+    adalbert:partOf <https://data.bigbank/assets/market-data-lake> .
+
+<https://data.bigbank/assets/market-data-lake> a odrl:Asset ;
+    rdfs:label "Market Data Lake" .
+
+# =============================================================================
+# DATA CONTRACT (Offer)
+# =============================================================================
+# This is the template offer from the data provider.
+# Subscribers accept this to create a Subscription (Agreement).
+
+<https://data.bigbank/offers/market-prices-v2> a adalbert:DataContract ;
+    rdfs:label "Market Price Data Contract v2" ;
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:assigner <https://data.bigbank/agents/data-platform-team> ;
+    odrl:target <https://data.bigbank/assets/market-prices> ;
+    adalbert:state adalbert:Active ;
+    adalbert:effectiveDate "2026-01-01T00:00:00Z"^^xsd:dateTime ;
+    prov:wasRevisionOf <https://data.bigbank/offers/market-prices-v1> ;
+
+    # ----- PROVIDER COMMITMENTS (Assigner Duties) -----
+
+    # SLA: Daily delivery by 6:30 AM
+    odrl:obligation [
+        a odrl:Duty ;
+        rdfs:label "Daily data delivery" ;
+        odrl:assignee <https://data.bigbank/agents/data-platform-team> ;
+        odrl:action adalbert-due:notify ;
+        odrl:target <https://data.bigbank/assets/data-ready-notification> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert:currentDateTime ;
+            odrl:operator odrl:gteq ;
+            odrl:rightOperand "06:00:00"^^xsd:time
+        ] ;
+        adalbert:deadline "06:30:00"^^xsd:time
+    ] ;
+
+    # SLA: 14-day notice for schema changes
+    odrl:obligation [
+        a odrl:Duty ;
+        rdfs:label "Schema change notification" ;
+        odrl:assignee <https://data.bigbank/agents/data-platform-team> ;
+        odrl:action adalbert-due:notify ;
+        odrl:target <https://data.bigbank/assets/schema-changes> ;
+        adalbert:deadline "P14D"^^xsd:duration
+    ] ;
+
+    # ----- CONSUMER RIGHTS (Assignee Permissions) -----
+
+    # Display data
+    odrl:permission [
+        a odrl:Permission ;
+        rdfs:label "Display access" ;
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:display ;
+        odrl:target <https://data.bigbank/assets/market-prices>
+    ] ;
+
+    # Non-display (algorithmic) use
+    odrl:permission [
+        a odrl:Permission ;
+        rdfs:label "Non-display use" ;
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:nonDisplay ;
+        odrl:target <https://data.bigbank/assets/market-prices> ;
+        odrl:constraint [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:recipientType ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand adalbert-due:internal
+        ]
+    ] ;
+
+    # Derive (create derived products)
+    odrl:permission [
+        a odrl:Permission ;
+        rdfs:label "Derivation rights" ;
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:derive ;
+        odrl:target <https://data.bigbank/assets/market-prices>
+    ] ;
+
+    # ----- CONSUMER OBLIGATIONS (Assignee Duties) -----
+
+    # Monthly usage reporting
+    odrl:obligation [
+        a odrl:Duty ;
+        rdfs:label "Usage reporting" ;
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:report ;
+        odrl:target <https://data.bigbank/assets/usage-stats> ;
+        adalbert:deadline "P30D"^^xsd:duration
+    ] ;
+
+    # ----- RESTRICTIONS (Prohibitions) -----
+
+    # No external distribution
+    odrl:prohibition [
+        a odrl:Prohibition ;
+        rdfs:label "No redistribution" ;
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:distribute ;
+        odrl:target <https://data.bigbank/assets/market-prices>
+    ] .
+
+
+# =============================================================================
+# SUBSCRIPTION (Agreement)
+# =============================================================================
+# Quant Research has subscribed to the data contract.
+# This is a bilateral agreement with duties on BOTH parties.
+
+<https://data.bigbank/agreements/quant-market-data-2026> a adalbert:Subscription ;
+    rdfs:label "Quant Research Market Data 2026" ;
+    odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    adalbert:subscribesTo <https://data.bigbank/offers/market-prices-v2> ;
+    odrl:assigner <https://data.bigbank/agents/data-platform-team> ;
+    odrl:assignee <https://data.bigbank/agents/quant-research> ;
+    adalbert:effectiveDate "2026-01-15T00:00:00Z"^^xsd:dateTime ;
+    adalbert:expirationDate "2026-12-31T23:59:59Z"^^xsd:dateTime ;
+
+    # ===== ASSIGNER DUTIES (Data Team's Obligations) =====
+
+    odrl:obligation <https://data.bigbank/duties/delivery-2026-001> ;
+    odrl:obligation <https://data.bigbank/duties/notify-2026-001> ;
+
+    # ===== ASSIGNEE PERMISSIONS (Quant's Rights) =====
+
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:assignee <https://data.bigbank/agents/quant-research> ;
+        odrl:action adalbert-due:display ;
+        odrl:target <https://data.bigbank/assets/market-prices>
+    ] ;
+
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:assignee <https://data.bigbank/agents/quant-research> ;
+        odrl:action adalbert-due:nonDisplay ;
+        odrl:target <https://data.bigbank/assets/market-prices>
+    ] ;
+
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:assignee <https://data.bigbank/agents/quant-research> ;
+        odrl:action adalbert-due:derive ;
+        odrl:target <https://data.bigbank/assets/market-prices>
+    ] ;
+
+    # ===== ASSIGNEE DUTIES (Quant's Obligations) =====
+
+    odrl:obligation <https://data.bigbank/duties/report-2026-001> ;
+
+    # ===== PROHIBITIONS =====
+
+    odrl:prohibition [
+        a odrl:Prohibition ;
+        odrl:assignee <https://data.bigbank/agents/quant-research> ;
+        odrl:action adalbert-due:distribute ;
+        odrl:target <https://data.bigbank/assets/market-prices>
+    ] .
+
+
+# =============================================================================
+# DUTY INSTANCES (with lifecycle state)
+# =============================================================================
+# These are instantiated from the contract clauses with tracked state.
+
+# Assigner duty: Daily delivery notification
+<https://data.bigbank/duties/delivery-2026-001> a odrl:Duty ;
+    rdfs:label "Daily delivery duty (2026-01-15)" ;
+    odrl:assignee <https://data.bigbank/agents/data-platform-team> ;
+    odrl:action adalbert-due:notify ;
+    odrl:target <https://data.bigbank/assets/data-ready-notification> ;
+    odrl:constraint [
+        a odrl:Constraint ;
+        odrl:leftOperand adalbert:currentDateTime ;
+        odrl:operator odrl:gteq ;
+        odrl:rightOperand "06:00:00"^^xsd:time
+    ] ;
+    adalbert:deadline "06:30:00"^^xsd:time ;
+    adalbert:state adalbert:Fulfilled .  # Successfully delivered
+
+# Assigner duty: Schema change notification
+<https://data.bigbank/duties/notify-2026-001> a odrl:Duty ;
+    rdfs:label "Schema notification duty" ;
+    odrl:assignee <https://data.bigbank/agents/data-platform-team> ;
+    odrl:action adalbert-due:notify ;
+    odrl:target <https://data.bigbank/assets/schema-changes> ;
+    adalbert:deadline "P14D"^^xsd:duration ;
+    adalbert:state adalbert:Pending .  # No schema change yet
+
+# Assignee duty: Monthly reporting
+<https://data.bigbank/duties/report-2026-001> a odrl:Duty ;
+    rdfs:label "January usage report" ;
+    odrl:assignee <https://data.bigbank/agents/quant-research> ;
+    odrl:action adalbert-due:report ;
+    odrl:target <https://data.bigbank/assets/usage-stats> ;
+    adalbert:deadline "P30D"^^xsd:duration ;
+    adalbert:state adalbert:Active .  # Due date approaching

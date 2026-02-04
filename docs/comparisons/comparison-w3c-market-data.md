@@ -1,188 +1,65 @@
+# W3C Market Data ODRL Profile to Adalbert Translation
 
-
----
-
-## Appendix A: MDS → Adalbert Automated Translation Assessment
-
-This appendix assesses the feasibility of automatically translating existing MDS policies to Adalbert, based on approximately **2,000 policies** requiring conversion.
+**Purpose**: The W3C Market Data ODRL Profile (MDS) is an external standard used by data vendors. Vendor agreements expressed in MDS are auto-translated into Adalbert `DataContract` offers and `Set` policies using DUE vocabulary.
 
 ---
 
-### A.1 Translation Feasibility Summary
+## How MDS Fits
 
-| Category | Est. % | Translateable | Automation |
-|----------|--------|---------------|------------|
-| Core permissions | ~70% | ✓ Full | Mechanical |
-| Core duties | ~15% | ✓ Full | Mechanical + lifecycle |
-| Prohibitions | ~5% | ✓ Full | Mechanical |
-| Payment terms | ~5% | ✗ Lossy | Warning + drop |
-| Complex constructs | ~5% | ◐ Partial | Manual review |
-
-**Bottom line**: ~85-90% translate mechanically; ~10-15% require warnings or manual review.
-
----
-
-### A.2 Construct Translation Matrix
-
-#### Fully Translateable (Mechanical)
-
-| MDS Construct | Adalbert Translation | Transformation |
-|---------------|-------------------|----------------|
-| `odrl:permission` | `adalbert:Privilege` | Type change |
-| `odrl:prohibition` | `adalbert:Prohibition` | Type change |
-| `odrl:duty` | `adalbert:Duty` | Type + lifecycle |
-| `md:display` | `adalbert-md:display` | Namespace swap |
-| `md:distribute` | `adalbert-md:distribute` | Namespace swap |
-| `md:derive` | `adalbert-md:derive` | Namespace swap |
-| `md:notify` | `adalbert-md:notify` | Namespace swap |
-| `md:report` | `adalbert-md:report` | Namespace swap |
-| `md:timeliness` | `adalbert-md:timeliness` | Namespace swap |
-| `md:assetClass` | `adalbert-md:assetClass` | Namespace swap |
-| `odrl:constraint` | `adalbert:condition` | Restructure |
-| `odrl:and` / `odrl:or` | `adalbert:And` / `adalbert:Or` | Type change |
-| All comparison operators | Same | Direct |
-
-#### Translateable with Warnings (Lossy)
-
-| MDS Construct | Translation | Warning |
-|---------------|-------------|---------|
-| `md:compensate` | Drop | Payment action not expressible |
-| `md:invoice` | Drop | Billing action not expressible |
-| `md:request` / `md:consent` | Drop | Procedural; handle externally |
-| `md:agree` | Drop | Contract formation; use DCON |
-| `odrl:remedy` | Drop | Requires RL2 Promise semantics |
-| `odrl:consequence` | Drop | Requires RL2 Promise semantics |
-| `md:Originator` | → grantor | Supply chain collapsed |
-| `md:ServiceFacilitator` | Drop | Intermediary not modeled |
-| `md:Controlled` | Drop | DRM semantics not modeled |
-| `md:deriveCommingled` | Condition | Subtype → constraint on derive |
-
-#### Translation Failures (Incompatible)
-
-| MDS Construct | Reason | Resolution |
-|---------------|--------|------------|
-| `odrl:xone` | Not in Adalbert | Manual rewrite to `or` + mutex |
-| Dynamic `AssetCollection` | Non-deterministic | Expand to explicit list |
-| Dynamic `PartyCollection` | Non-deterministic | Expand to explicit list |
-| Remedy-dependent logic | Semantic dependency | Manual review; may need RL2 |
-
----
-
-### A.3 Translation Algorithm (Sketch)
+MDS policies are **external input**, not native Adalbert. The translation pipeline:
 
 ```
-translate(mds_policy) → (adalbert_policy, warnings, errors)
-
-1. Policy structure
-   - has parties? → Agreement + grantor/grantee
-   - else → Set
-   - add profile declarations
-
-2. For each rule:
-   - check incompatible constructs → error, skip
-   - check lossy constructs → warning, drop or transform
-   - map rule type: permission→Privilege, duty→Duty, prohibition→Prohibition
-   - map action: namespace swap per table
-   - map parties: assignee→subject, target→object
-   - restructure constraints → condition tree
-   - if Duty: add dutyState=Pending, extract/default deadline
-
-3. Validate output against Adalbert SHACL
-
-4. Return (policy, warnings, errors)
+MDS Policy (vendor) -> translator -> adalbert:DataContract (Offer)
+                                  -> odrl:Set (org-wide rules)
 ```
 
----
-
-### A.4 Effort Estimate (2,000 Policies)
-
-#### Phase 1: Translator Development — 3-4 weeks
-
-| Task | Effort |
-|------|--------|
-| Core translator (Python/Go) | 2 weeks |
-| Namespace mapping tables | 2 days |
-| Constraint → condition restructuring | 3 days |
-| Duty lifecycle injection | 2 days |
-| Warning/error reporting | 2 days |
-| SHACL validation integration | 2 days |
-| Unit tests | 3 days |
-
-**Deliverable**: `mds-to-adalbert` CLI tool
-
-#### Phase 2: Policy Analysis — 1 week
-
-| Task | Effort |
-|------|--------|
-| Batch translate all 2,000 | 1 day |
-| Categorize warnings/errors | 2 days |
-| Identify manual review set | 1 day |
-| Sample validation | 1 day |
-
-**Deliverable**: Translation report with statistics
-
-#### Phase 3: Translation Execution — 2-3 weeks
-
-| Task | Effort |
-|------|--------|
-| Automated translation (~1,700-1,800) | 1 day |
-| Manual review/rewrite (~200-300) | 1-2 weeks |
-| Semantic equivalence testing | 3 days |
-| Final SHACL validation | 1 day |
-
-**Deliverable**: 2,000 Adalbert policies
-
-#### Phase 4: Verification — 1 week
-
-| Task | Effort |
-|------|--------|
-| Decision equivalence testing | 3 days |
-| Edge case review | 2 days |
-| Documentation | 1 day |
+Internal teams then subscribe to translated contracts (`adalbert:Subscription`) and are additionally governed by org-wide DUE Set policies.
 
 ---
 
-### A.5 Total Effort Summary
+## Core Mapping
 
-| Phase | Duration | Resources |
-|-------|----------|-----------|
-| Translator development | 3-4 weeks | 1 engineer |
-| Policy analysis | 1 week | 1 engineer |
-| Translation execution | 2-3 weeks | 1 engineer + 0.5 domain expert |
-| Verification | 1 week | 1 engineer |
-| **Total** | **7-9 weeks** | **~1.5 FTE average** |
+| MDS Construct | Adalbert Translation | Notes |
+|---------------|---------------------|-------|
+| `odrl:permission` | `odrl:Permission` | Same type |
+| `odrl:prohibition` | `odrl:Prohibition` | Same type |
+| `odrl:duty` | `odrl:Duty` | Same type + lifecycle (add `adalbert:state`) |
+| `md:display` | `adalbert-due:display` | Namespace swap |
+| `md:distribute` | `adalbert-due:distribute` | Namespace swap |
+| `md:derive` | `adalbert-due:derive` | Namespace swap |
+| `md:timeliness` | `adalbert-due:timeliness` | Namespace swap |
+| `md:assetClass` | `adalbert-due:assetClass` | Namespace swap |
+| `odrl:constraint` | `odrl:constraint` | Same property |
+| Party structure | `odrl:assigner` / `odrl:assignee` | Bilateral agreement |
 
-#### Risk Factors
+## Constructs Dropped in Translation
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Higher % complex policies | +2 weeks | Early sampling |
-| Unknown MDS extensions | +1-2 weeks | Document during analysis |
-| Semantic drift | Quality | Extensive decision testing |
-| Missing deadline data | Manual effort | Default deadline policy |
-
----
-
-### A.6 Recommendations
-
-1. **Sample first**: Translate 50-100 policies manually to validate mappings before building tooling.
-
-2. **Preserve originals**: Keep MDS alongside Adalbert for audit and rollback.
-
-3. **Decision testing**: For each translation, verify same request → same decision (ignoring dropped constructs).
-
-4. **Domain review**: Policies with payment warnings need business sign-off on acceptable loss.
-
-5. **Incremental rollout**: Migrate by policy category, not all at once.
+| MDS Construct | Reason |
+|---------------|--------|
+| `md:compensate`, `md:invoice` | Payment actions -- operational, not policy |
+| `md:ServiceFacilitator` | Intermediary role not modeled |
+| `odrl:remedy`, `odrl:consequence` | Deferred to RL2 |
+| `odrl:xone` | Not supported; manual rewrite to `or` + mutex |
 
 ---
 
-### A.7 Success Criteria
+## Translation Output
 
-| Metric | Target |
-|--------|--------|
-| Automated translation rate | ≥85% |
-| SHACL validation pass | 100% |
-| Decision equivalence (sampled) | ≥99% |
-| Warnings documented | 100% |
-| Manual review completed | 100% of flagged |
+The translator produces:
+
+1. **`adalbert:DataContract`** (subclass of `odrl:Offer`) -- the vendor's terms, with:
+   - Provider duties as `odrl:Duty` clauses (via `odrl:obligation`)
+   - Consumer permissions as `odrl:Permission` clauses (via `odrl:permission`)
+   - Prohibitions as `odrl:Prohibition` clauses (via `odrl:prohibition`)
+   - `adalbert:state adalbert:Active` when published
+
+2. **Operand resolution** -- MDS left operands map to DUE operands with `adalbert:resolutionPath`:
+   - `md:timeliness` to `adalbert-due:timeliness` (`asset.timeliness`)
+   - `md:recipient` to `adalbert-due:role` (`agent.role`)
+   - `md:purpose` to `adalbert-due:purpose` (`context.purpose`)
+
+---
+
+## Status
+
+The translator is planned for Phase 2 (implementation). The mapping tables above are validated against the current ontology and DUE profile.

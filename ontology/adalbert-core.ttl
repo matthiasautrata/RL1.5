@@ -1,10 +1,22 @@
 # =============================================================================
-# Adalbert Core Ontology
-# Version: 0.2
+# Adalbert Core Ontology — ODRL 2.2 Profile Extension
+# Version: 0.5
 # Date: 2026-02-03
 # =============================================================================
-# Deterministic policy language extending ODRL 2.2 for data governance.
-# Adds: duty lifecycle, bilateral agreements, formal evaluation semantics.
+# Adalbert is a proper ODRL 2.2 profile. It uses ODRL terms wherever ODRL
+# defines them and only adds terms for genuinely new capabilities:
+#
+#   - Duty lifecycle (State + state property)
+#   - Deadline on duties
+#   - Data contracts and subscriptions (domain subtypes)
+#   - Asset/party hierarchy (partOf, memberOf)
+#   - Structured operand resolution (resolutionPath)
+#   - Runtime references (RuntimeReference, currentAgent, currentDateTime)
+#   - Right-operand references (rightOperandRef)
+#   - Logical negation (not)
+#
+# Everything else — Rule types, Policy types, Constraint types, operators,
+# core properties — comes from ODRL 2.2 directly.
 # =============================================================================
 
 @prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
@@ -21,320 +33,176 @@
 # ONTOLOGY DECLARATION
 # =============================================================================
 
-<https://vocabulary.bigbank/adalbert/> a owl:Ontology ;
+<https://vocabulary.bigbank/adalbert/> a owl:Ontology, odrl:Profile ;
     dcterms:title "Adalbert Core Ontology"@en ;
     dcterms:description """
-        Adalbert: Deterministic Rights Language for Data Governance.
-        
-        Extends ODRL 2.2 with:
-        - Explicit duty lifecycle (Pending → Active → Fulfilled/Violated)
-        - Bilateral agreement semantics (grantor and grantee duties)
-        - Offer/Agreement/Set policy types
-        - Deterministic evaluation with total functions
-        - Formal verification target (Dafny, Why3)
-        
-        This is an ODRL profile/extension, not a pure subset.
-        Adalbert policies require Adalbert-aware processors.
+        Adalbert: a proper ODRL 2.2 profile for deterministic data governance.
+
+        Uses ODRL terms for all standard constructs (Rule types, Policy types,
+        Constraint types, operators, core properties). Adds only:
+        - Explicit duty lifecycle (Pending -> Active -> Fulfilled/Violated)
+        - Deadline property on odrl:Duty
+        - Data contract and subscription subtypes
+        - Asset/party hierarchy properties
+        - Structured operand resolution via resolutionPath
+        - Runtime references for dynamic right-operand values
+        - Logical negation (not) on LogicalConstraint
+
+        Adalbert policies are valid ODRL 2.2 policies. Any ODRL processor can
+        partially understand them; Adalbert-aware processors handle the
+        extensions.
     """@en ;
     dcterms:created "2026-02-02"^^xsd:date ;
     dcterms:modified "2026-02-03"^^xsd:date ;
-    owl:versionInfo "0.2" ;
-    owl:versionIRI <https://vocabulary.bigbank/adalbert/0.2> ;
+    owl:versionInfo "0.5" ;
+    owl:versionIRI <https://vocabulary.bigbank/adalbert/0.5> ;
     rdfs:seeAlso <https://vocabulary.bigbank/rl2/> ,
                  <http://www.w3.org/ns/odrl/2/> .
 
 # =============================================================================
-# NORM CLASSES
+# PROFILE CONSTRAINTS (documentation of ODRL usage)
+# =============================================================================
+# Adalbert fixes odrl:conflict to odrl:prohibit (prohibition overrides).
+# Adalbert does not use: odrl:Ticket, odrl:Request, odrl:AssetCollection,
+# odrl:PartyCollection, odrl:remedy, odrl:consequence, odrl:xone.
+
+# =============================================================================
+# LIFECYCLE STATE (genuinely new)
 # =============================================================================
 
-adalbert:Norm a owl:Class ;
-    rdfs:label "Norm"@en ;
-    skos:definition "Abstract base for normative relations."@en ;
-    owl:equivalentClass [
-        a owl:Class ;
-        owl:unionOf (adalbert:Privilege adalbert:Duty adalbert:Prohibition)
-    ] ;
-    owl:disjointUnionOf (adalbert:Privilege adalbert:Duty adalbert:Prohibition) .
-
-adalbert:Privilege a owl:Class ;
-    rdfs:label "Privilege"@en ;
-    skos:definition "Permission to perform an action on an asset."@en ;
-    rdfs:subClassOf adalbert:Norm ;
-    owl:disjointWith adalbert:Duty, adalbert:Prohibition .
-
-adalbert:Duty a owl:Class ;
-    rdfs:label "Duty"@en ;
-    skos:definition "Obligation to perform an action on an asset."@en ;
-    rdfs:subClassOf adalbert:Norm ;
-    owl:disjointWith adalbert:Privilege, adalbert:Prohibition ;
+adalbert:State a owl:Class ;
+    rdfs:label "State"@en ;
+    skos:definition "Unified lifecycle state for duties and contracts."@en ;
+    owl:oneOf (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
     rdfs:comment """
-        Duty lifecycle: Pending → Active → Fulfilled | Violated
-        
-        - Pending: condition not yet satisfied
-        - Active: condition satisfied, action required
-        - Fulfilled: action performed within deadline
-        - Violated: deadline passed without performance
+        Four states cover both duty and contract lifecycles:
+        - Pending: condition not yet met / not yet in force
+        - Active: condition met, action required / in force
+        - Fulfilled: action performed / obligations complete
+        - Violated: deadline passed / breached
     """@en .
 
-adalbert:Prohibition a owl:Class ;
-    rdfs:label "Prohibition"@en ;
-    skos:definition "Prohibition on performing an action."@en ;
-    rdfs:subClassOf adalbert:Norm ;
-    owl:disjointWith adalbert:Privilege, adalbert:Duty .
-
-# =============================================================================
-# POLICY CLASSES
-# =============================================================================
-
-adalbert:Policy a owl:Class ;
-    rdfs:label "Policy"@en ;
-    skos:definition "Container for normative clauses."@en ;
-    owl:equivalentClass [
-        a owl:Class ;
-        owl:unionOf (adalbert:Set adalbert:Offer adalbert:Agreement)
-    ] ;
-    owl:disjointUnionOf (adalbert:Set adalbert:Offer adalbert:Agreement) .
-
-adalbert:Set a owl:Class ;
-    rdfs:label "Set"@en ;
-    skos:definition "Unilateral policy without specific counterparties."@en ;
-    rdfs:subClassOf adalbert:Policy ;
-    owl:disjointWith adalbert:Offer, adalbert:Agreement ;
-    rdfs:comment "Use for templates, public licenses, general terms."@en .
-
-adalbert:Offer a owl:Class ;
-    rdfs:label "Offer"@en ;
-    skos:definition "Policy proposal from grantor awaiting acceptance."@en ;
-    rdfs:subClassOf adalbert:Policy ;
-    owl:disjointWith adalbert:Set, adalbert:Agreement ;
-    rdfs:comment """
-        Offer requires grantor. Grantee may be specified or open.
-        Acceptance converts Offer to Agreement.
-    """@en .
-
-adalbert:Agreement a owl:Class ;
-    rdfs:label "Agreement"@en ;
-    skos:definition "Bilateral policy binding identified parties."@en ;
-    rdfs:subClassOf adalbert:Policy ;
-    owl:disjointWith adalbert:Set, adalbert:Offer ;
-    rdfs:comment """
-        Agreement requires both grantor and grantee.
-        
-        Bilateral semantics: both parties may have duties.
-        - Grantor duties: obligations of the data provider
-        - Grantee duties: obligations of the data consumer
-        
-        Evaluation returns duties for BOTH parties, not just requester.
-    """@en .
-
-# =============================================================================
-# CONDITION CLASSES
-# =============================================================================
-
-adalbert:Condition a owl:Class ;
-    rdfs:label "Condition"@en ;
-    skos:definition "Constraint that must hold for norm activation."@en ;
-    owl:equivalentClass [
-        a owl:Class ;
-        owl:unionOf (adalbert:AtomicConstraint adalbert:LogicalConstraint)
-    ] ;
-    rdfs:comment "Conditions are guards, not duties. They don't have lifecycle."@en .
-
-adalbert:AtomicConstraint a owl:Class ;
-    rdfs:label "Atomic Constraint"@en ;
-    skos:definition "Simple comparison: leftOperand operator rightOperand."@en ;
-    rdfs:subClassOf adalbert:Condition .
-
-adalbert:LogicalConstraint a owl:Class ;
-    rdfs:label "Logical Constraint"@en ;
-    skos:definition "Combines conditions via and/or/not."@en ;
-    rdfs:subClassOf adalbert:Condition .
-
-# =============================================================================
-# DUTY STATE
-# =============================================================================
-
-adalbert:DutyState a owl:Class ;
-    rdfs:label "Duty State"@en ;
-    skos:definition "Lifecycle state of a duty."@en ;
-    owl:oneOf (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) .
-
-adalbert:Pending a adalbert:DutyState ;
+adalbert:Pending a adalbert:State ;
     rdfs:label "Pending"@en ;
-    skos:definition "Condition not yet satisfied."@en .
+    skos:definition "Condition not yet satisfied; not yet in force."@en .
 
-adalbert:Active a adalbert:DutyState ;
+adalbert:Active a adalbert:State ;
     rdfs:label "Active"@en ;
-    skos:definition "Condition satisfied, action required."@en .
+    skos:definition "Condition satisfied, action required; in force."@en .
 
-adalbert:Fulfilled a adalbert:DutyState ;
+adalbert:Fulfilled a adalbert:State ;
     rdfs:label "Fulfilled"@en ;
-    skos:definition "Action performed within constraints."@en .
+    skos:definition "Action performed; obligations complete."@en .
 
-adalbert:Violated a adalbert:DutyState ;
+adalbert:Violated a adalbert:State ;
     rdfs:label "Violated"@en ;
-    skos:definition "Deadline passed without performance."@en .
+    skos:definition "Deadline passed without performance; breached."@en .
+
+adalbert:state a owl:ObjectProperty ;
+    rdfs:label "state"@en ;
+    skos:definition "Current lifecycle state."@en ;
+    rdfs:domain [ owl:unionOf (odrl:Duty adalbert:DataContract adalbert:Subscription) ] ;
+    rdfs:range adalbert:State .
 
 # =============================================================================
-# CORE ENTITY CLASSES
+# DEADLINE (genuinely new)
 # =============================================================================
-
-adalbert:Agent a owl:Class ;
-    rdfs:label "Agent"@en ;
-    skos:definition "Party in normative relations."@en .
-
-adalbert:Asset a owl:Class ;
-    rdfs:label "Asset"@en ;
-    skos:definition "Resource subject to normative control."@en .
-
-adalbert:Action a owl:Class ;
-    rdfs:label "Action"@en ;
-    skos:definition "Action that may be performed on an asset."@en .
-
-# =============================================================================
-# OPERATORS
-# =============================================================================
-
-adalbert:ComparisonOperator a owl:Class ;
-    rdfs:label "Comparison Operator"@en ;
-    owl:oneOf (adalbert:eq adalbert:neq adalbert:lt adalbert:lte adalbert:gt adalbert:gte 
-               adalbert:isAnyOf adalbert:isNoneOf) .
-
-adalbert:LogicalOperator a owl:Class ;
-    rdfs:label "Logical Operator"@en ;
-    owl:oneOf (adalbert:and adalbert:or adalbert:not) .
-
-# Operator instances
-adalbert:eq a adalbert:ComparisonOperator ; rdfs:label "equal"@en .
-adalbert:neq a adalbert:ComparisonOperator ; rdfs:label "not equal"@en .
-adalbert:lt a adalbert:ComparisonOperator ; rdfs:label "less than"@en .
-adalbert:lte a adalbert:ComparisonOperator ; rdfs:label "less than or equal"@en .
-adalbert:gt a adalbert:ComparisonOperator ; rdfs:label "greater than"@en .
-adalbert:gte a adalbert:ComparisonOperator ; rdfs:label "greater than or equal"@en .
-adalbert:isAnyOf a adalbert:ComparisonOperator ; rdfs:label "is any of"@en .
-adalbert:isNoneOf a adalbert:ComparisonOperator ; rdfs:label "is none of"@en .
-
-adalbert:and a adalbert:LogicalOperator ; rdfs:label "and"@en .
-adalbert:or a adalbert:LogicalOperator ; rdfs:label "or"@en .
-adalbert:not a adalbert:LogicalOperator ; rdfs:label "not"@en .
-
-# =============================================================================
-# NORM PROPERTIES
-# =============================================================================
-
-adalbert:subject a owl:ObjectProperty ;
-    rdfs:label "subject"@en ;
-    skos:definition "Agent bearing the normative status."@en ;
-    rdfs:domain adalbert:Norm ;
-    rdfs:range adalbert:Agent .
-
-adalbert:action a owl:ObjectProperty ;
-    rdfs:label "action"@en ;
-    skos:definition "Action specified in the norm."@en ;
-    rdfs:domain adalbert:Norm ;
-    rdfs:range adalbert:Action .
-
-adalbert:object a owl:ObjectProperty ;
-    rdfs:label "object"@en ;
-    skos:definition "Asset the norm concerns."@en ;
-    rdfs:domain adalbert:Norm ;
-    rdfs:range adalbert:Asset .
-
-adalbert:condition a owl:ObjectProperty ;
-    rdfs:label "condition"@en ;
-    skos:definition "Activation condition."@en ;
-    rdfs:domain [ owl:unionOf (adalbert:Norm adalbert:Policy) ] ;
-    rdfs:range adalbert:Condition .
 
 adalbert:deadline a owl:DatatypeProperty ;
     rdfs:label "deadline"@en ;
     skos:definition "Time constraint for duty fulfillment."@en ;
-    rdfs:domain adalbert:Duty ;
+    rdfs:domain odrl:Duty ;
     rdfs:comment """
         Supports two forms:
         - xsd:dateTime: absolute deadline (e.g., 2026-12-31T23:59:59Z)
         - xsd:duration: relative to activation (e.g., P30D, PT24H)
-        
+
         For duration: deadline = activationTime + duration
     """@en .
 
-adalbert:dutyState a owl:ObjectProperty ;
-    rdfs:label "duty state"@en ;
-    skos:definition "Current lifecycle state."@en ;
-    rdfs:domain adalbert:Duty ;
-    rdfs:range adalbert:DutyState .
-
 # =============================================================================
-# POLICY PROPERTIES
+# CONTRACT CLASSES (genuinely new — domain subtypes)
 # =============================================================================
 
-adalbert:clause a owl:ObjectProperty ;
-    rdfs:label "clause"@en ;
-    skos:definition "Norm contained in the policy."@en ;
-    rdfs:domain adalbert:Policy ;
-    rdfs:range adalbert:Norm .
+adalbert:DataContract a owl:Class ;
+    rdfs:label "Data Contract"@en ;
+    skos:definition "Policy offer defining data access terms."@en ;
+    rdfs:subClassOf odrl:Offer ;
+    rdfs:comment """
+        A DataContract is an Offer from a data provider.
+        It defines permissions, duties, and prohibitions for data access.
 
-adalbert:target a owl:ObjectProperty ;
-    rdfs:label "target"@en ;
-    skos:definition "Asset(s) the policy governs."@en ;
-    rdfs:domain adalbert:Policy ;
-    rdfs:range adalbert:Asset ;
-    rdfs:comment "Policy-level target; clauses may override."@en .
+        When accepted (subscribed), becomes a Subscription (Agreement).
+    """@en .
 
-adalbert:grantor a owl:ObjectProperty ;
-    rdfs:label "grantor"@en ;
-    skos:definition "Agent issuing the policy."@en ;
-    rdfs:domain adalbert:Policy ;
-    rdfs:range adalbert:Agent ;
-    rdfs:comment "Required for Offer and Agreement."@en .
+adalbert:Subscription a owl:Class ;
+    rdfs:label "Subscription"@en ;
+    skos:definition "Activated data contract binding provider and consumer."@en ;
+    rdfs:subClassOf odrl:Agreement ;
+    rdfs:comment """
+        A Subscription is an activated DataContract.
+        - assigner: data provider (from contract)
+        - assignee: data consumer (subscriber)
 
-adalbert:grantee a owl:ObjectProperty ;
-    rdfs:label "grantee"@en ;
-    skos:definition "Agent receiving privileges/bearing duties."@en ;
-    rdfs:domain adalbert:Policy ;
-    rdfs:range adalbert:Agent ;
-    rdfs:comment "Required for Agreement. Optional for Offer (open offer)."@en .
+        Bilateral: both parties may have active duties.
+    """@en .
 
 # =============================================================================
-# CONDITION PROPERTIES
+# CONTRACT PROPERTIES (genuinely new)
 # =============================================================================
 
-adalbert:leftOperand a owl:ObjectProperty ;
-    rdfs:label "left operand"@en ;
-    skos:definition "Property being evaluated."@en ;
-    rdfs:domain adalbert:AtomicConstraint ;
-    rdfs:range adalbert:LeftOperand .
+adalbert:subscribesTo a owl:ObjectProperty ;
+    rdfs:label "subscribes to"@en ;
+    skos:definition "The contract this subscription activates."@en ;
+    rdfs:domain adalbert:Subscription ;
+    rdfs:range adalbert:DataContract .
 
-adalbert:constraintOperator a owl:ObjectProperty ;
-    rdfs:label "constraint operator"@en ;
-    skos:definition "Comparison or logical operator."@en ;
-    rdfs:domain adalbert:Condition .
+adalbert:effectiveDate a owl:DatatypeProperty ;
+    rdfs:label "effective date"@en ;
+    skos:definition "When the contract/subscription becomes effective."@en ;
+    rdfs:range xsd:dateTime .
 
-adalbert:rightOperand a rdf:Property ;
-    rdfs:label "right operand"@en ;
-    skos:definition "Value for comparison (literal or reference)."@en ;
-    rdfs:domain adalbert:AtomicConstraint .
-
-adalbert:rightOperandRef a owl:ObjectProperty ;
-    rdfs:label "right operand reference"@en ;
-    skos:definition "Runtime reference for comparison."@en ;
-    rdfs:domain adalbert:AtomicConstraint ;
-    rdfs:range adalbert:RuntimeReference .
-
-adalbert:operand a owl:ObjectProperty ;
-    rdfs:label "operand"@en ;
-    skos:definition "Sub-condition in logical constraint."@en ;
-    rdfs:domain adalbert:LogicalConstraint ;
-    rdfs:range adalbert:Condition .
+adalbert:expirationDate a owl:DatatypeProperty ;
+    rdfs:label "expiration date"@en ;
+    skos:definition "When the contract/subscription expires."@en ;
+    rdfs:range xsd:dateTime .
 
 # =============================================================================
-# LEFT OPERAND AND RUNTIME REFERENCE
+# HIERARCHY EXTENSIONS (genuinely new)
 # =============================================================================
 
-adalbert:LeftOperand a owl:Class ;
-    rdfs:label "Left Operand"@en ;
-    skos:definition "Property for condition evaluation."@en ;
-    rdfs:comment "Profiles define domain-specific operands."@en .
+adalbert:partOf a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:label "part of"@en ;
+    skos:definition "Asset contained in larger asset."@en ;
+    rdfs:domain odrl:Asset ;
+    rdfs:range odrl:Asset ;
+    rdfs:comment "Transitive: table partOf schema, schema partOf database."@en .
+
+adalbert:memberOf a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:label "member of"@en ;
+    skos:definition "Party member of group/organization."@en ;
+    rdfs:domain odrl:Party ;
+    rdfs:range odrl:Party ;
+    rdfs:comment "Transitive: person memberOf team, team memberOf division."@en .
+
+# =============================================================================
+# OPERAND RESOLUTION (genuinely new)
+# =============================================================================
+
+adalbert:resolutionPath a owl:DatatypeProperty ;
+    rdfs:label "resolution path"@en ;
+    skos:definition "Dot-separated path from canonical root to value."@en ;
+    rdfs:domain odrl:LeftOperand ;
+    rdfs:range xsd:string ;
+    rdfs:comment """
+        Path must start with a canonical root: agent, asset, context.
+        Examples: agent.role, asset.classification, context.purpose.
+        Resolution: resolve(path, Env) -> Value
+    """@en .
+
+# =============================================================================
+# RUNTIME REFERENCES (genuinely new)
+# =============================================================================
 
 adalbert:RuntimeReference a owl:Class ;
     rdfs:label "Runtime Reference"@en ;
@@ -344,45 +212,32 @@ adalbert:currentAgent a adalbert:RuntimeReference ;
     rdfs:label "current agent"@en ;
     skos:definition "The requesting agent."@en .
 
-adalbert:currentDateTime a adalbert:LeftOperand, adalbert:RuntimeReference ;
+adalbert:currentDateTime a odrl:LeftOperand, adalbert:RuntimeReference ;
     rdfs:label "current date time"@en ;
-    skos:definition "Evaluation timestamp."@en .
+    skos:definition "Evaluation timestamp."@en ;
+    skos:exactMatch odrl:dateTime .
+
+adalbert:rightOperandRef a owl:ObjectProperty ;
+    rdfs:label "right operand reference"@en ;
+    skos:definition "Runtime reference for comparison."@en ;
+    rdfs:domain odrl:Constraint ;
+    rdfs:range adalbert:RuntimeReference .
 
 # =============================================================================
-# OPERAND RESOLUTION
+# LOGICAL NEGATION (genuinely new — ODRL lacks this)
 # =============================================================================
 
-adalbert:contextKey a owl:DatatypeProperty ;
-    rdfs:label "context key"@en ;
-    skos:definition "Key to lookup value in request context."@en ;
-    rdfs:domain adalbert:LeftOperand ;
-    rdfs:range xsd:string ;
-    rdfs:comment "Primary resolution mechanism for operands."@en .
-
-# =============================================================================
-# HIERARCHY PROPERTIES
-# =============================================================================
-
-adalbert:includedIn a owl:ObjectProperty, owl:TransitiveProperty ;
-    rdfs:label "included in"@en ;
-    skos:definition "Narrower action included in broader action."@en ;
-    rdfs:domain adalbert:Action ;
-    rdfs:range adalbert:Action ;
-    rdfs:comment "Transitive: read includedIn use, use includedIn access."@en .
-
-adalbert:partOf a owl:ObjectProperty, owl:TransitiveProperty ;
-    rdfs:label "part of"@en ;
-    skos:definition "Asset contained in larger asset."@en ;
-    rdfs:domain adalbert:Asset ;
-    rdfs:range adalbert:Asset ;
-    rdfs:comment "Transitive: table partOf schema, schema partOf database."@en .
-
-adalbert:memberOf a owl:ObjectProperty, owl:TransitiveProperty ;
-    rdfs:label "member of"@en ;
-    skos:definition "Agent member of group/organization."@en ;
-    rdfs:domain adalbert:Agent ;
-    rdfs:range adalbert:Agent ;
-    rdfs:comment "Transitive: person memberOf team, team memberOf division."@en .
+adalbert:not a owl:ObjectProperty ;
+    rdfs:label "not"@en ;
+    skos:definition "Logical negation on a constraint."@en ;
+    rdfs:domain odrl:LogicalConstraint ;
+    rdfs:range [ owl:unionOf (odrl:Constraint odrl:LogicalConstraint) ] ;
+    rdfs:comment """
+        ODRL defines odrl:and and odrl:or on LogicalConstraint but lacks
+        negation. Adalbert adds adalbert:not following the same pattern:
+          _:lc a odrl:LogicalConstraint ;
+              adalbert:not _:c1 .
+    """@en .
 
 # =============================================================================
 # END OF ONTOLOGY

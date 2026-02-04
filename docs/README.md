@@ -24,21 +24,24 @@
 
 ---
 
-## Key Design Decisions (v0.2)
+## Key Design Decisions (v0.4)
 
-### 1. ODRL Extension, Not Subset
+### 1. Proper ODRL 2.2 Profile
 
-Adalbert **extends** ODRL 2.2, not restricts it. Key additions:
-- Duty lifecycle states (Pending/Active/Fulfilled/Violated)
-- Bilateral agreement evaluation
-- `adalbert:target` for policy-level assets
-- `adalbert:partOf` for asset hierarchies
+Adalbert is a proper **ODRL 2.2 profile**. It uses ODRL terms for all standard constructs (`odrl:Permission`, `odrl:Duty`, `odrl:Prohibition`, `odrl:target`, `odrl:Set`, `odrl:Offer`, `odrl:Agreement`, `odrl:LeftOperand`, etc.) and only introduces extensions where ODRL has no equivalent:
+- `adalbert:State` -- unified lifecycle states (Pending/Active/Fulfilled/Violated)
+- `adalbert:deadline` -- deadline semantics on duties
+- `adalbert:DataContract` / `adalbert:Subscription` -- data contract lifecycle
+- `adalbert:partOf` -- asset hierarchy (on `odrl:Asset`)
+- `adalbert:resolutionPath` -- structured operand resolution (on `odrl:LeftOperand`)
+- `adalbert:RuntimeReference` -- runtime value references
+- `adalbert:not` -- logical negation of constraints
 
-Adalbert policies require Adalbert-aware processors.
+Adalbert policies are valid ODRL 2.2 policies. Adalbert-aware processors are needed only for the extensions above.
 
 ### 2. Bilateral Agreements
 
-ODRL evaluates agreements from assignee perspective only. Adalbert returns duties for **both** grantor and grantee, enabling provider SLAs.
+ODRL evaluates agreements from assignee perspective only. Adalbert returns duties for **both** assigner and assignee, enabling provider SLAs alongside consumer obligations.
 
 ### 3. Deadline Semantics
 
@@ -46,27 +49,37 @@ Supports both:
 - `xsd:dateTime`: absolute deadline (2026-12-31T23:59:59Z)
 - `xsd:duration`: relative to activation (P30D, PT24H)
 
-### 4. Offer Policy Type
+### 4. ODRL Policy Types
 
-Added `adalbert:Offer` between Set and Agreement:
-- Set: no parties
-- Offer: grantor required, grantee optional
-- Agreement: both required
+Policies use standard ODRL types directly:
+- `odrl:Set`: no parties
+- `odrl:Offer`: assigner required, assignee optional
+- `odrl:Agreement`: both required
 
-### 5. DCON Alignment
+`adalbert:DataContract` subclasses `odrl:Offer`; `adalbert:Subscription` subclasses `odrl:Agreement`.
 
-Contracts extension (`adalbert-dc:`) uses `skos:closeMatch` for DCON mappings, not `owl:sameAs`, because state machines differ.
+### 5. Unified State
+
+`adalbert:State` replaces separate duty and contract state enums. Four states (Pending, Active, Fulfilled, Violated) apply to both `odrl:Duty` instances and contracts. Draft/Published are pre-normative workflow metadata, not modeled in the ontology.
+
+### 6. DCON Alignment
+
+DCON concepts (`DataContract`, `Subscription`) are absorbed into core. Alignment with external DCON uses `skos:closeMatch` mappings in `ontology/adalbert-dcon-alignment.ttl`.
+
+### 7. Structured Operand Resolution
+
+`adalbert:resolutionPath` (on `odrl:LeftOperand`) replaces `contextKey`. Paths are dot-separated from canonical roots (`agent`, `asset`, `context`), validated by SHACL.
 
 ---
 
 ## Namespaces
 
 ```
-adalbert:     https://vocabulary.bigbank/adalbert/
-adalbert-gov: https://vocabulary.bigbank/adalbert/governance/
-adalbert-md:  https://vocabulary.bigbank/adalbert/market-data/
-adalbert-du:  https://vocabulary.bigbank/adalbert/data-use/
-adalbert-dc:  https://vocabulary.bigbank/adalbert/contracts/
+odrl:          http://www.w3.org/ns/odrl/2/        (primary -- all standard constructs)
+adalbert:      https://vocabulary.bigbank/adalbert/  (extensions only)
+adalbert-due:  https://vocabulary.bigbank/adalbert/due/
 ```
+
+`odrl:` is the primary namespace. Adalbert uses ODRL terms wherever possible. The `adalbert:` namespace is reserved for extensions that have no ODRL equivalent (lifecycle state, deadline, data contracts, hierarchy, operand resolution, runtime references, logical negation).
 
 See [../config/namespaces.ttl](../config/namespaces.ttl) for authoritative registry.

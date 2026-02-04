@@ -1,4 +1,4 @@
-# Adalbert ↔ DCON Integration Guide
+# Adalbert and DCON Integration Guide
 
 **Purpose**: Complete mapping between DCON ontology and Adalbert, with migration examples.
 
@@ -8,19 +8,21 @@
 
 | DCON Concept | Adalbert Equivalent | Relationship |
 |--------------|---------------------|--------------|
-| `dcon:DataContract` | `adalbert-dc:DataContract` | `skos:closeMatch` |
-| `dcon:DataContractSubscription` | `adalbert-dc:Subscription` | `skos:closeMatch` |
-| `dcon:Promise` | `adalbert:Duty` | Partial (see §3) |
-| `dcon:Permission` | `adalbert:Privilege` | `skos:closeMatch` |
-| Promise states | Duty states | Different state machines |
+| `dcon:DataContract` | `adalbert:DataContract` | `skos:closeMatch` |
+| `dcon:DataContractSubscription` | `adalbert:Subscription` | `skos:closeMatch` |
+| `dcon:Promise` | `odrl:Duty` | Partial (see section 3) |
+| `dcon:Permission` | `odrl:Permission` | `skos:closeMatch` |
+| Promise states | `adalbert:State` | Different state machines |
 
-**Key difference**: DCON has 3 duty states (Pending→Fulfilled/Violated), Adalbert has 4 (Pending→Active→Fulfilled/Violated). The extra `Active` state represents "condition satisfied, awaiting performance."
+**Key difference**: DCON has 3 duty states (Pending to Fulfilled/Violated), Adalbert has 4 unified states (Pending to Active to Fulfilled/Violated) shared by duties and contracts.
+
+**Architecture**: DataContract and Subscription live in `adalbert-core.ttl`. DCON alignment mappings live in `ontology/adalbert-dcon-alignment.ttl`.
 
 ---
 
 ## 1. Policy Type Mapping
 
-### 1.1 DataContract → adalbert-dc:DataContract
+### 1.1 DataContract to adalbert:DataContract
 
 Both are Offers from a data provider.
 
@@ -38,31 +40,32 @@ ex:marketDataContract a dcon:DataContract ;
 
 **Adalbert**:
 ```turtle
-@prefix adalbert: <https://vocabulary.bigbank/adalbert/> .
-@prefix adalbert-dc: <https://vocabulary.bigbank/adalbert/contracts/> .
+@prefix odrl:         <http://www.w3.org/ns/odrl/2/> .
+@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-due: <https://vocabulary.bigbank/adalbert/due/> .
 
-ex:marketDataContract a adalbert-dc:DataContract ;
-    adalbert:grantor ex:dataTeam ;
-    adalbert:target ex:marketDataFeed ;
-    adalbert-dc:contractState adalbert-dc:Published ;
-    
-    adalbert:clause [
-        a adalbert:Privilege ;
-        adalbert:subject adalbert:currentAgent ;  # Any subscriber
-        adalbert:action adalbert-md:display ;
-        adalbert:object ex:marketDataFeed
+ex:marketDataContract a adalbert:DataContract ;
+    odrl:assigner ex:dataTeam ;
+    odrl:target ex:marketDataFeed ;
+    adalbert:state adalbert:Active ;
+
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:assignee adalbert:currentAgent ;
+        odrl:action adalbert-due:display ;
+        odrl:target ex:marketDataFeed
     ] ;
-    
-    adalbert:clause [
-        a adalbert:Duty ;
-        adalbert:subject ex:dataTeam ;  # Provider duty
-        adalbert:action adalbert-md:notify ;
-        adalbert:object ex:schemaChanges ;
+
+    odrl:obligation [
+        a odrl:Duty ;
+        odrl:assignee ex:dataTeam ;
+        odrl:action adalbert-due:notify ;
+        odrl:target ex:schemaChanges ;
         adalbert:deadline "P7D"^^xsd:duration
     ] .
 ```
 
-### 1.2 DataContractSubscription → adalbert-dc:Subscription
+### 1.2 DataContractSubscription to adalbert:Subscription
 
 Both are Agreements binding provider and consumer.
 
@@ -77,171 +80,132 @@ ex:analyticsSubscription a dcon:DataContractSubscription ;
 
 **Adalbert**:
 ```turtle
-ex:analyticsSubscription a adalbert-dc:Subscription ;
-    adalbert-dc:subscribesTo ex:marketDataContract ;
-    adalbert:grantor ex:dataTeam ;      # Inherited from contract
-    adalbert:grantee ex:analyticsTeam ;
-    adalbert-dc:effectiveDate "2026-01-15T00:00:00Z"^^xsd:dateTime ;
-    
-    # Clauses copied/instantiated from contract
-    adalbert:clause [
-        a adalbert:Privilege ;
-        adalbert:subject ex:analyticsTeam ;
-        adalbert:action adalbert-md:display ;
-        adalbert:object ex:marketDataFeed
+ex:analyticsSubscription a adalbert:Subscription ;
+    adalbert:subscribesTo ex:marketDataContract ;
+    odrl:assigner ex:dataTeam ;
+    odrl:assignee ex:analyticsTeam ;
+    adalbert:effectiveDate "2026-01-15T00:00:00Z"^^xsd:dateTime ;
+
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:assignee ex:analyticsTeam ;
+        odrl:action adalbert-due:display ;
+        odrl:target ex:marketDataFeed
     ] ;
-    
-    adalbert:clause [
-        a adalbert:Duty ;
-        adalbert:subject ex:dataTeam ;
-        adalbert:action adalbert-md:notify ;
-        adalbert:object ex:schemaChanges ;
+
+    odrl:obligation [
+        a odrl:Duty ;
+        odrl:assignee ex:dataTeam ;
+        odrl:action adalbert-due:notify ;
+        odrl:target ex:schemaChanges ;
         adalbert:deadline "P7D"^^xsd:duration ;
-        adalbert:dutyState adalbert:Pending
+        adalbert:state adalbert:Pending
     ] ;
-    
-    # Consumer duty (not in contract template)
-    adalbert:clause [
-        a adalbert:Duty ;
-        adalbert:subject ex:analyticsTeam ;
-        adalbert:action adalbert-md:report ;
-        adalbert:object ex:usageStatistics ;
+
+    odrl:obligation [
+        a odrl:Duty ;
+        odrl:assignee ex:analyticsTeam ;
+        odrl:action adalbert-due:report ;
+        odrl:target ex:usageStatistics ;
         adalbert:deadline "P30D"^^xsd:duration ;
-        adalbert:dutyState adalbert:Pending
+        adalbert:state adalbert:Pending
     ] .
 ```
 
 ---
 
-## 2. Contract State Mapping
+## 2. State Mapping
 
-| DCON State | Adalbert State | Notes |
-|------------|----------------|-------|
-| `dcon:Draft` | `adalbert-dc:Draft` | Under development |
-| `dcon:Published` | `adalbert-dc:Published` | Available for subscription |
-| `dcon:Active` | `adalbert-dc:Active` | Has active subscriptions |
-| `dcon:Retired` | `adalbert-dc:Retired` | No new subscriptions |
-| `dcon:Cancelled` | `adalbert-dc:Cancelled` | Cancelled before publish |
+Adalbert uses a unified `adalbert:State` for both duties and contracts. DCON has separate contract states and promise states.
 
-These are `skos:closeMatch` — same lifecycle, possibly different transition rules.
+### 2.1 Unified State (Adalbert) vs Contract State (DCON)
 
----
+| Adalbert State | Duty meaning | Contract meaning | DCON equivalent |
+|----------------|-------------|------------------|-----------------|
+| Pending | Condition not yet met | Not yet in force | Close to `dcon:Pending` |
+| Active | Condition met, action required | In force | Close to `dcon:Active` |
+| Fulfilled | Action performed | Obligations complete | `dcon:Fulfilled` |
+| Violated | Deadline passed | Breached | `dcon:Violated` |
 
-## 3. Promise → Duty Translation
+DCON's `Draft` and `Published` are pre-normative workflow metadata -- not modeled in Adalbert's ontology.
 
-DCON distinguishes Promises (ought-to-be commitments) from Duties (ought-to-do obligations). Adalbert collapses this distinction: **all obligations are Duties**.
-
-### 3.1 State Machine Difference
+### 2.2 Promise State Machine Difference
 
 **DCON Promise States** (3 states):
 ```
-Pending ──────────────> Fulfilled
-    │                       
-    └──────────────────> Violated
+Pending ----------------> Fulfilled
+    |
+    +-------------------> Violated
 ```
 
-**Adalbert Duty States** (4 states):
+**Adalbert State** (4 states):
 ```
-Pending ──[condition]──> Active ──[action]──> Fulfilled
-                           │
-                           └──[deadline]──> Violated
+Pending --[condition]--> Active --[action]--> Fulfilled
+                           |
+                           +--[deadline]--> Violated
 ```
 
 **Mapping**:
-- DCON `Pending` ≈ Adalbert `Pending` OR `Active` (condition may not be explicit in DCON)
+- DCON `Pending` maps to Adalbert `Pending` OR `Active` (condition may not be explicit in DCON)
 - DCON `Fulfilled` = Adalbert `Fulfilled`
 - DCON `Violated` = Adalbert `Violated`
 
-### 3.2 Provider Promise Types
+---
 
-**DCON ProviderTimelinessPromise**:
-```turtle
-ex:timelinessPromise a dcon:ProviderTimelinessPromise ;
-    dcon:promisor ex:dataTeam ;
-    dcon:promisee ex:analyticsTeam ;
-    dcon:promisedDeliveryTime "06:00:00"^^xsd:time ;
-    dcon:promiseState dcon:Pending .
-```
+## 3. Promise to Duty Translation
 
-**Adalbert equivalent**:
+DCON distinguishes Promises (ought-to-be commitments) from Duties (ought-to-do obligations). Adalbert collapses this distinction: **all obligations are `odrl:Duty`**.
+
+### 3.1 Provider Promise Types
+
+**DCON ProviderTimelinessPromise** to `odrl:Duty`:
 ```turtle
-[   a adalbert:Duty ;
-    adalbert:subject ex:dataTeam ;
-    adalbert:action adalbert-md:deliver ;
-    adalbert:object ex:dailyData ;
-    adalbert:condition [
-        a adalbert:AtomicConstraint ;
-        adalbert:leftOperand adalbert:currentDateTime ;
-        adalbert:constraintOperator adalbert:gte ;
-        adalbert:rightOperand "06:00:00"^^xsd:time
+[   a odrl:Duty ;
+    odrl:assignee ex:dataTeam ;
+    odrl:action adalbert-due:deliver ;
+    odrl:target ex:dailyData ;
+    odrl:constraint [
+        a odrl:Constraint ;
+        odrl:leftOperand adalbert:currentDateTime ;
+        odrl:operator odrl:gteq ;
+        odrl:rightOperand "06:00:00"^^xsd:time
     ] ;
-    adalbert:deadline "07:00:00"^^xsd:time ;  # 1 hour grace
-    adalbert:dutyState adalbert:Pending
+    adalbert:deadline "07:00:00"^^xsd:time ;
+    adalbert:state adalbert:Pending
 ] .
 ```
 
-**DCON ProviderSchemaPromise**:
+**DCON ProviderSchemaPromise** to `odrl:Duty`:
 ```turtle
-ex:schemaPromise a dcon:ProviderSchemaPromise ;
-    dcon:promisor ex:dataTeam ;
-    dcon:promisedSchema ex:marketDataSchema ;
-    dcon:promiseState dcon:Pending .
-```
-
-**Adalbert equivalent**:
-```turtle
-[   a adalbert:Duty ;
-    adalbert:subject ex:dataTeam ;
-    adalbert:action adalbert-gov:conformTo ;
-    adalbert:object ex:marketDataSchema ;
-    adalbert:dutyState adalbert:Active  # Always active once subscribed
+[   a odrl:Duty ;
+    odrl:assignee ex:dataTeam ;
+    odrl:action adalbert-due:conformTo ;
+    odrl:target ex:marketDataSchema ;
+    adalbert:state adalbert:Active
 ] .
 ```
 
-**DCON ProviderChangeNotificationPromise**:
+**DCON ProviderChangeNotificationPromise** to `odrl:Duty`:
 ```turtle
-ex:notifyPromise a dcon:ProviderChangeNotificationPromise ;
-    dcon:promisor ex:dataTeam ;
-    dcon:notificationLeadTime "P7D"^^xsd:duration ;
-    dcon:promiseState dcon:Pending .
-```
-
-**Adalbert equivalent**:
-```turtle
-[   a adalbert:Duty ;
-    adalbert:subject ex:dataTeam ;
-    adalbert:action adalbert-md:notify ;
-    adalbert:object ex:schemaChanges ;
-    adalbert:condition [
-        a adalbert:AtomicConstraint ;
-        adalbert:leftOperand adalbert-dc:schemaChangeDetected ;
-        adalbert:constraintOperator adalbert:eq ;
-        adalbert:rightOperand true
-    ] ;
-    adalbert:deadline "P7D"^^xsd:duration ;  # 7 days from detection
-    adalbert:dutyState adalbert:Pending
+[   a odrl:Duty ;
+    odrl:assignee ex:dataTeam ;
+    odrl:action adalbert-due:notify ;
+    odrl:target ex:schemaChanges ;
+    adalbert:deadline "P7D"^^xsd:duration ;
+    adalbert:state adalbert:Pending
 ] .
 ```
 
-### 3.3 Consumer Promise Types
+### 3.2 Consumer Promise Types
 
-**DCON ConsumerUsageReportingPromise**:
+**DCON ConsumerUsageReportingPromise** to `odrl:Duty`:
 ```turtle
-ex:reportingPromise a dcon:ConsumerUsageReportingPromise ;
-    dcon:promisor ex:analyticsTeam ;
-    dcon:promisee ex:dataTeam ;
-    dcon:reportingFrequency "P1M"^^xsd:duration ;
-    dcon:promiseState dcon:Pending .
-```
-
-**Adalbert equivalent**:
-```turtle
-[   a adalbert:Duty ;
-    adalbert:subject ex:analyticsTeam ;
-    adalbert:action adalbert-md:report ;
-    adalbert:object ex:usageStatistics ;
-    adalbert:deadline "P30D"^^xsd:duration ;  # Monthly
-    adalbert:dutyState adalbert:Pending
+[   a odrl:Duty ;
+    odrl:assignee ex:analyticsTeam ;
+    odrl:action adalbert-due:report ;
+    odrl:target ex:usageStatistics ;
+    adalbert:deadline "P30D"^^xsd:duration ;
+    adalbert:state adalbert:Pending
 ] .
 ```
 
@@ -249,7 +213,7 @@ ex:reportingPromise a dcon:ConsumerUsageReportingPromise ;
 
 ## 4. Permission Mapping
 
-Straightforward: `odrl:Permission` → `adalbert:Privilege`.
+Straightforward: `dcon:Permission` / `odrl:Permission` maps directly to `odrl:Permission`.
 
 **DCON**:
 ```turtle
@@ -265,15 +229,15 @@ ex:displayPermission a odrl:Permission ;
 
 **Adalbert**:
 ```turtle
-[   a adalbert:Privilege ;
-    adalbert:subject ex:analyticsTeam ;
-    adalbert:action adalbert-md:display ;
-    adalbert:object ex:marketDataFeed ;
-    adalbert:condition [
-        a adalbert:AtomicConstraint ;
-        adalbert:leftOperand adalbert-md:recipientType ;
-        adalbert:constraintOperator adalbert:eq ;
-        adalbert:rightOperand adalbert-md:professional
+[   a odrl:Permission ;
+    odrl:assignee ex:analyticsTeam ;
+    odrl:action adalbert-due:display ;
+    odrl:target ex:marketDataFeed ;
+    odrl:constraint [
+        a odrl:Constraint ;
+        odrl:leftOperand adalbert-due:recipientType ;
+        odrl:operator odrl:eq ;
+        odrl:rightOperand adalbert-due:professional
     ]
 ] .
 ```
@@ -286,21 +250,21 @@ ex:displayPermission a odrl:Permission ;
 
 | DCON Property | Adalbert Property | Notes |
 |---------------|-------------------|-------|
-| `dcon:provider` | `adalbert:grantor` | Data provider |
-| `dcon:subscriber` | `adalbert:grantee` | Data consumer |
-| `odrl:target` | `adalbert:target` | Policy-level asset |
-| `dcon:contractState` | `adalbert-dc:contractState` | Lifecycle state |
-| `dcon:effectiveDate` | `adalbert-dc:effectiveDate` | Start date |
-| `dcon:expirationDate` | `adalbert-dc:expirationDate` | End date |
-| `dcon:subscribesTo` | `adalbert-dc:subscribesTo` | Contract reference |
+| `dcon:provider` | `odrl:assigner` | Data provider |
+| `dcon:subscriber` | `odrl:assignee` | Data consumer |
+| `odrl:target` | `odrl:target` | Policy-level asset |
+| `dcon:contractState` | `adalbert:state` | Unified lifecycle state |
+| `dcon:effectiveDate` | `adalbert:effectiveDate` | Start date |
+| `dcon:expirationDate` | `adalbert:expirationDate` | End date |
+| `dcon:subscribesTo` | `adalbert:subscribesTo` | Contract reference |
 
 ### 5.2 Promise/Duty Properties
 
 | DCON Property | Adalbert Property | Notes |
 |---------------|-------------------|-------|
-| `dcon:promisor` | `adalbert:subject` | Who bears the duty |
+| `dcon:promisor` | `odrl:assignee` | Who bears the duty |
 | `dcon:promisee` | (implicit) | The other party |
-| `dcon:promiseState` | `adalbert:dutyState` | Different state machines |
+| `dcon:promiseState` | `adalbert:state` | Unified state (different machines) |
 | `dcon:promisedDeliveryTime` | `adalbert:deadline` | As time or duration |
 | `dcon:notificationLeadTime` | `adalbert:deadline` | As duration |
 
@@ -308,311 +272,52 @@ ex:displayPermission a odrl:Permission ;
 
 | DCON Property | Adalbert Property | Notes |
 |---------------|-------------------|-------|
-| `odrl:leftOperand` | `adalbert:leftOperand` | Same |
-| `odrl:operator` | `adalbert:constraintOperator` | Same operators |
-| `odrl:rightOperand` | `adalbert:rightOperand` | Same |
-| `odrl:constraint` | `adalbert:condition` | Renamed |
+| `odrl:leftOperand` | `odrl:leftOperand` | Same |
+| `odrl:operator` | `odrl:operator` | Same |
+| `odrl:rightOperand` | `odrl:rightOperand` | Same |
+| `odrl:constraint` | `odrl:constraint` | Same |
 
 ---
 
-## 6. Complete Migration Example
-
-### 6.1 DCON Source
-
-```turtle
-@prefix dcon: <https://vocabulary.bigbank/dcon/> .
-@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
-@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
-
-# Data Contract (Offer)
-ex:equityFeedContract a dcon:DataContract ;
-    rdfs:label "Equity Market Data Feed Contract" ;
-    dcon:provider ex:marketDataTeam ;
-    odrl:target ex:equityPrices ;
-    dcon:contractState dcon:Published ;
-    
-    # Provider promises
-    dcon:hasPromise [
-        a dcon:ProviderTimelinessPromise ;
-        dcon:promisor ex:marketDataTeam ;
-        dcon:promisedDeliveryTime "06:00:00"^^xsd:time ;
-        dcon:promiseState dcon:Pending
-    ] ;
-    
-    dcon:hasPromise [
-        a dcon:ProviderChangeNotificationPromise ;
-        dcon:promisor ex:marketDataTeam ;
-        dcon:notificationLeadTime "P14D"^^xsd:duration ;
-        dcon:promiseState dcon:Pending
-    ] ;
-    
-    # Permissions
-    odrl:permission [
-        odrl:action odrl:display ;
-        odrl:target ex:equityPrices ;
-        odrl:constraint [
-            odrl:leftOperand dcon:timeliness ;
-            odrl:operator odrl:eq ;
-            odrl:rightOperand dcon:Realtime
-        ]
-    ] ;
-    
-    odrl:permission [
-        odrl:action dcon:derive ;
-        odrl:target ex:equityPrices ;
-        odrl:constraint [
-            odrl:leftOperand dcon:derivationType ;
-            odrl:operator odrl:eq ;
-            odrl:rightOperand dcon:NonSubstitutive
-        ]
-    ] ;
-    
-    # Prohibition
-    odrl:prohibition [
-        odrl:action odrl:distribute ;
-        odrl:target ex:equityPrices
-    ] .
-
-# Subscription (Agreement)
-ex:analyticsSubscription a dcon:DataContractSubscription ;
-    dcon:subscribesTo ex:equityFeedContract ;
-    dcon:subscriber ex:quantTeam ;
-    dcon:subscriptionState dcon:Active ;
-    dcon:effectiveDate "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    dcon:expirationDate "2026-12-31T23:59:59Z"^^xsd:dateTime ;
-    
-    # Consumer promise
-    dcon:hasPromise [
-        a dcon:ConsumerUsageReportingPromise ;
-        dcon:promisor ex:quantTeam ;
-        dcon:promisee ex:marketDataTeam ;
-        dcon:reportingFrequency "P1M"^^xsd:duration ;
-        dcon:promiseState dcon:Pending
-    ] .
-```
-
-### 6.2 Adalbert Target
-
-```turtle
-@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
-@prefix adalbert-dc:  <https://vocabulary.bigbank/adalbert/contracts/> .
-@prefix adalbert-md:  <https://vocabulary.bigbank/adalbert/market-data/> .
-@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
-@prefix xsd:          <http://www.w3.org/2001/XMLSchema#> .
-
-# Data Contract (Offer)
-ex:equityFeedContract a adalbert-dc:DataContract ;
-    rdfs:label "Equity Market Data Feed Contract" ;
-    adalbert:grantor ex:marketDataTeam ;
-    adalbert:target ex:equityPrices ;
-    adalbert-dc:contractState adalbert-dc:Published ;
-    
-    # Provider duty: timeliness
-    adalbert:clause [
-        a adalbert:Duty ;
-        adalbert:subject ex:marketDataTeam ;
-        adalbert:action adalbert-md:deliver ;
-        adalbert:object ex:equityPrices ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert:currentDateTime ;
-            adalbert:constraintOperator adalbert:gte ;
-            adalbert:rightOperand "06:00:00"^^xsd:time
-        ] ;
-        adalbert:deadline "07:00:00"^^xsd:time
-    ] ;
-    
-    # Provider duty: change notification
-    adalbert:clause [
-        a adalbert:Duty ;
-        adalbert:subject ex:marketDataTeam ;
-        adalbert:action adalbert-md:notify ;
-        adalbert:object ex:schemaChanges ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-dc:schemaChangeDetected ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand true
-        ] ;
-        adalbert:deadline "P14D"^^xsd:duration
-    ] ;
-    
-    # Privilege: real-time display
-    adalbert:clause [
-        a adalbert:Privilege ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-md:display ;
-        adalbert:object ex:equityPrices ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-md:timeliness ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-md:realtime
-        ]
-    ] ;
-    
-    # Privilege: non-substitutive derivation
-    adalbert:clause [
-        a adalbert:Privilege ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-md:derive ;
-        adalbert:object ex:equityPrices ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-md:derivationType ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-md:nonSubstitutive
-        ]
-    ] ;
-    
-    # Prohibition: no distribution
-    adalbert:clause [
-        a adalbert:Prohibition ;
-        adalbert:subject adalbert:currentAgent ;
-        adalbert:action adalbert-gov:distribute ;
-        adalbert:object ex:equityPrices
-    ] .
-
-
-# Subscription (Agreement)
-ex:analyticsSubscription a adalbert-dc:Subscription ;
-    rdfs:label "Quant Team Equity Feed Subscription" ;
-    adalbert-dc:subscribesTo ex:equityFeedContract ;
-    adalbert:grantor ex:marketDataTeam ;
-    adalbert:grantee ex:quantTeam ;
-    adalbert-dc:effectiveDate "2026-01-01T00:00:00Z"^^xsd:dateTime ;
-    adalbert-dc:expirationDate "2026-12-31T23:59:59Z"^^xsd:dateTime ;
-    
-    # === GRANTOR DUTIES (Provider SLA) ===
-    
-    adalbert:clause [
-        a adalbert:Duty ;
-        rdfs:label "Daily delivery by 7am" ;
-        adalbert:subject ex:marketDataTeam ;
-        adalbert:action adalbert-md:deliver ;
-        adalbert:object ex:equityPrices ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert:currentDateTime ;
-            adalbert:constraintOperator adalbert:gte ;
-            adalbert:rightOperand "06:00:00"^^xsd:time
-        ] ;
-        adalbert:deadline "07:00:00"^^xsd:time ;
-        adalbert:dutyState adalbert:Pending
-    ] ;
-    
-    adalbert:clause [
-        a adalbert:Duty ;
-        rdfs:label "14-day schema change notice" ;
-        adalbert:subject ex:marketDataTeam ;
-        adalbert:action adalbert-md:notify ;
-        adalbert:object ex:schemaChanges ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-dc:schemaChangeDetected ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand true
-        ] ;
-        adalbert:deadline "P14D"^^xsd:duration ;
-        adalbert:dutyState adalbert:Pending
-    ] ;
-    
-    # === GRANTEE PRIVILEGES (Consumer Rights) ===
-    
-    adalbert:clause [
-        a adalbert:Privilege ;
-        rdfs:label "Real-time display" ;
-        adalbert:subject ex:quantTeam ;
-        adalbert:action adalbert-md:display ;
-        adalbert:object ex:equityPrices ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-md:timeliness ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-md:realtime
-        ]
-    ] ;
-    
-    adalbert:clause [
-        a adalbert:Privilege ;
-        rdfs:label "Non-substitutive derivation" ;
-        adalbert:subject ex:quantTeam ;
-        adalbert:action adalbert-md:derive ;
-        adalbert:object ex:equityPrices ;
-        adalbert:condition [
-            a adalbert:AtomicConstraint ;
-            adalbert:leftOperand adalbert-md:derivationType ;
-            adalbert:constraintOperator adalbert:eq ;
-            adalbert:rightOperand adalbert-md:nonSubstitutive
-        ]
-    ] ;
-    
-    # === GRANTEE DUTIES (Consumer Obligations) ===
-    
-    adalbert:clause [
-        a adalbert:Duty ;
-        rdfs:label "Monthly usage reporting" ;
-        adalbert:subject ex:quantTeam ;
-        adalbert:action adalbert-md:report ;
-        adalbert:object ex:usageStatistics ;
-        adalbert:deadline "P30D"^^xsd:duration ;
-        adalbert:dutyState adalbert:Pending
-    ] ;
-    
-    # === GRANTEE PROHIBITIONS ===
-    
-    adalbert:clause [
-        a adalbert:Prohibition ;
-        rdfs:label "No redistribution" ;
-        adalbert:subject ex:quantTeam ;
-        adalbert:action adalbert-gov:distribute ;
-        adalbert:object ex:equityPrices
-    ] .
-```
-
----
-
-## 7. What Adalbert Does NOT Model
+## 6. What Adalbert Does NOT Model
 
 | DCON Feature | Adalbert Status | Rationale |
 |--------------|-----------------|-----------|
 | Promise Theory semantics | Duties only | Simpler; RL2 will have full Promise support |
-| Promisor/promisee distinction | Subject only | Implicit from agreement parties |
+| Promisor/promisee distinction | `odrl:assignee` only | Implicit from agreement parties |
 | dcat:Distribution | Use DCAT directly | Not policy semantics |
 | Subscription billing | Out of scope | Operational concern |
 | Multi-party contracts | Two parties only | Bilateral model |
+| Draft/Published states | Not modeled | Pre-normative workflow metadata |
 
 ---
 
-## 8. SPARQL Transformation
+## 7. SPARQL Transformation
 
 For bulk migration, this CONSTRUCT query transforms DCON to Adalbert:
 
 ```sparql
 PREFIX dcon: <https://vocabulary.bigbank/dcon/>
 PREFIX adalbert: <https://vocabulary.bigbank/adalbert/>
-PREFIX adalbert-dc: <https://vocabulary.bigbank/adalbert/contracts/>
+PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
 
 CONSTRUCT {
-    ?contract a adalbert-dc:DataContract ;
-        adalbert:grantor ?provider ;
-        adalbert:target ?target ;
-        adalbert-dc:contractState ?state .
-    
-    ?subscription a adalbert-dc:Subscription ;
-        adalbert-dc:subscribesTo ?contract ;
-        adalbert:grantor ?provider ;
-        adalbert:grantee ?subscriber ;
-        adalbert-dc:effectiveDate ?effective ;
-        adalbert-dc:expirationDate ?expiry .
+    ?contract a adalbert:DataContract ;
+        odrl:assigner ?provider ;
+        odrl:target ?target .
+
+    ?subscription a adalbert:Subscription ;
+        adalbert:subscribesTo ?contract ;
+        odrl:assigner ?provider ;
+        odrl:assignee ?subscriber ;
+        adalbert:effectiveDate ?effective ;
+        adalbert:expirationDate ?expiry .
 }
 WHERE {
     ?contract a dcon:DataContract ;
         dcon:provider ?provider .
     OPTIONAL { ?contract odrl:target ?target }
-    OPTIONAL { ?contract dcon:contractState ?dconState }
-    BIND(IRI(REPLACE(STR(?dconState), "dcon:", "adalbert-dc:")) AS ?state)
-    
+
     OPTIONAL {
         ?subscription a dcon:DataContractSubscription ;
             dcon:subscribesTo ?contract ;
@@ -625,7 +330,7 @@ WHERE {
 
 ---
 
-## 9. Validation
+## 8. Validation
 
 After migration, validate with Adalbert SHACL shapes:
 

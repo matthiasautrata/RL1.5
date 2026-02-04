@@ -1,90 +1,99 @@
 # Adalbert Examples
 
-Concrete policy examples demonstrating Adalbert features.
+Concrete policy examples demonstrating Adalbert as an ODRL 2.2 profile.
+
+Every Adalbert policy is a valid ODRL 2.2 policy. The examples below use ODRL terms
+directly (`odrl:obligation`, `odrl:constraint`, `odrl:assigner`, `odrl:assignee`, etc.)
+and extend them with Adalbert-specific vocabulary only where ODRL has no equivalent
+(lifecycle state, deadlines, hierarchical membership).
 
 ## Examples
 
 | File | Description |
 |------|-------------|
-| [market-data-contract.ttl](market-data-contract.ttl) | DataContract, Subscription, bilateral duties, provider SLA |
+| [data-contract.ttl](data-contract.ttl) | DataContract, Subscription, bilateral duties, provider SLA |
 | [data-use-policy.ttl](data-use-policy.ttl) | Set policy, role-based access, purpose constraints, prohibitions |
 
 ## Key Patterns Demonstrated
 
-### 1. Bilateral Agreements (market-data-contract.ttl)
+### 1. Bilateral Agreements (data-contract.ttl)
+
+Adalbert models bilateral agreements using ODRL's `odrl:obligation` with
+`odrl:assignee` on each duty to distinguish provider duties from consumer duties.
 
 ```turtle
-ex:subscription a adalbert-dc:Subscription ;
-    adalbert:grantor ex:dataTeam ;      # Has duties too!
-    adalbert:grantee ex:consumer ;
-    
-    # Grantor duty (provider SLA)
-    adalbert:clause [
-        a adalbert:Duty ;
-        adalbert:subject ex:dataTeam ;  # ← Grantor
-        adalbert:action adalbert-md:deliver ;
+ex:subscription a adalbert:Subscription ;
+    odrl:assigner ex:dataTeam ;
+    odrl:assignee ex:consumer ;
+    odrl:obligation [
+        a odrl:Duty ;
+        odrl:assignee ex:dataTeam ;
+        odrl:action adalbert-due:deliver ;
         ...
     ] ;
-    
-    # Grantee duty (consumer obligation)
-    adalbert:clause [
-        a adalbert:Duty ;
-        adalbert:subject ex:consumer ;  # ← Grantee
-        adalbert:action adalbert-md:report ;
+    odrl:obligation [
+        a odrl:Duty ;
+        odrl:assignee ex:consumer ;
+        odrl:action adalbert-due:report ;
         ...
     ] .
 ```
 
-### 2. Duty Lifecycle
+### 2. Unified Lifecycle State
+
+Adalbert adds lifecycle state tracking to ODRL duties and contracts.
+Four states (Pending, Active, Fulfilled, Violated) apply uniformly.
 
 ```turtle
-ex:duty a adalbert:Duty ;
-    adalbert:deadline "P30D"^^xsd:duration ;  # Relative to activation
-    adalbert:dutyState adalbert:Pending .     # → Active → Fulfilled/Violated
+ex:duty a odrl:Duty ;
+    adalbert:deadline "P30D"^^xsd:duration ;
+    adalbert:state adalbert:Pending .
+
+ex:contract a adalbert:DataContract ;
+    adalbert:state adalbert:Active .
 ```
 
 ### 3. Hierarchical Matching
 
+Adalbert extends ODRL with hierarchical membership for agents and assets,
+and reuses ODRL's `odrl:includedIn` for action subsumption.
+
 ```turtle
-# Agent hierarchy
 ex:analyst adalbert:memberOf ex:team .
-ex:team adalbert:memberOf ex:division .
-
-# Asset hierarchy  
 ex:table adalbert:partOf ex:schema .
-ex:schema adalbert:partOf ex:database .
-
-# Action hierarchy
-adalbert-md:display adalbert:includedIn adalbert-gov:use .
+adalbert-due:display odrl:includedIn adalbert-due:use .
 ```
 
-Policy on `ex:division` applies to `ex:analyst` via transitivity.
+Policy on `ex:team` applies to `ex:analyst` via transitivity.
 
 ### 4. Logical Conditions
 
+Adalbert uses ODRL's `odrl:LogicalConstraint` pattern for compound conditions.
+
 ```turtle
-adalbert:condition [
-    a adalbert:LogicalConstraint ;
-    adalbert:constraintOperator adalbert:and ;
-    adalbert:operand [
-        a adalbert:AtomicConstraint ;
-        adalbert:leftOperand adalbert-gov:purpose ;
-        adalbert:constraintOperator adalbert:eq ;
-        adalbert:rightOperand adalbert-gov:analytics
-    ] ;
-    adalbert:operand [
-        a adalbert:AtomicConstraint ;
-        adalbert:leftOperand adalbert-du:environment ;
-        adalbert:constraintOperator adalbert:eq ;
-        adalbert:rightOperand adalbert-du:production
-    ]
+odrl:constraint [
+    a odrl:LogicalConstraint ;
+    odrl:and (
+        [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:purpose ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand adalbert-due:analytics
+        ]
+        [
+            a odrl:Constraint ;
+            odrl:leftOperand adalbert-due:environment ;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand adalbert-due:production
+        ]
+    )
 ] .
 ```
 
 ### 5. Contract Versioning
 
 ```turtle
-ex:contract-v2 a adalbert-dc:DataContract ;
+ex:contract-v2 a adalbert:DataContract ;
     prov:wasRevisionOf ex:contract-v1 .
 ```
 
@@ -94,7 +103,7 @@ ex:contract-v2 a adalbert-dc:DataContract ;
 # Validate examples against SHACL shapes
 shacl validate \
   --shapes ../ontology/adalbert-shacl.ttl \
-  --data market-data-contract.ttl
+  --data data-contract.ttl
 
 shacl validate \
   --shapes ../ontology/adalbert-shacl.ttl \

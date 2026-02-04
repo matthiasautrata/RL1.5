@@ -1,0 +1,437 @@
+# =============================================================================
+# Adalbert Data Use Profile (DUE)
+# Version: 0.6
+# Date: 2026-02-03
+# =============================================================================
+# Complete data governance vocabulary: operands, actions, concept values.
+#
+# All operands are typed as odrl:LeftOperand (not adalbert:LeftOperand).
+# All actions are typed as odrl:Action (not adalbert:Action).
+# Action hierarchy uses odrl:includedIn (not adalbert:includedIn).
+# Operand resolution uses adalbert:resolutionPath (Adalbert extension).
+# =============================================================================
+
+@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-due: <https://vocabulary.bigbank/adalbert/due/> .
+@prefix odrl:     <http://www.w3.org/ns/odrl/2/> .
+@prefix skos:     <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix org:      <http://www.w3.org/ns/org#> .
+
+# =============================================================================
+# PROFILE DECLARATION
+# =============================================================================
+
+<https://vocabulary.bigbank/adalbert/due/> a owl:Ontology, odrl:Profile ;
+    dcterms:title "Adalbert Data Use Profile"@en ;
+    dcterms:description """
+        Complete data governance vocabulary for Adalbert.
+
+        Covers:
+        - Purpose and classification constraints
+        - Asset metadata (class, market, benchmark)
+        - Jurisdiction and residency requirements
+        - Retention and processing controls
+        - Audit and logging requirements
+        - Identity and access control (role, org, project)
+        - Environment and network constraints
+        - Data freshness (timeliness, delay)
+        - Usage modes (display, non-display, derive)
+        - Derivation constraints (commingled, non-substitutive)
+        - Consent and legal basis
+        - Obligation actions (reporting, delivery, notification)
+
+        All operands are odrl:LeftOperand with adalbert:resolutionPath.
+        All actions are odrl:Action with odrl:includedIn hierarchy.
+    """@en ;
+    dcterms:created "2026-02-03"^^xsd:date ;
+    owl:versionInfo "0.6" ;
+    owl:imports <https://vocabulary.bigbank/adalbert/> .
+
+# =============================================================================
+# PURPOSE OPERANDS
+# =============================================================================
+
+adalbert-due:purpose a odrl:LeftOperand ;
+    rdfs:label "purpose"@en ;
+    skos:definition "Intended use of the data."@en ;
+    adalbert:resolutionPath "context.purpose" ;
+    rdfs:comment "Purpose hierarchy uses skos:broader for subsumption."@en .
+
+# Purpose taxonomy
+adalbert-due:analytics a skos:Concept ;
+    rdfs:label "analytics"@en ;
+    skos:definition "General analytical use."@en .
+
+adalbert-due:research a skos:Concept ;
+    rdfs:label "research"@en ;
+    skos:definition "Research and development."@en .
+
+adalbert-due:compliance a skos:Concept ;
+    rdfs:label "compliance"@en ;
+    skos:definition "Regulatory compliance."@en .
+
+adalbert-due:operations a skos:Concept ;
+    rdfs:label "operations"@en ;
+    skos:definition "Operational use."@en .
+
+# =============================================================================
+# CLASSIFICATION OPERANDS
+# =============================================================================
+
+adalbert-due:classification a odrl:LeftOperand ;
+    rdfs:label "classification"@en ;
+    skos:definition "Data classification level."@en ;
+    adalbert:resolutionPath "asset.classification" .
+
+adalbert-due:sensitivity a odrl:LeftOperand ;
+    rdfs:label "sensitivity"@en ;
+    skos:definition "Data sensitivity type."@en ;
+    adalbert:resolutionPath "asset.sensitivity" .
+
+# Classification values
+adalbert-due:public a skos:Concept ; rdfs:label "public"@en .
+adalbert-due:internal a skos:Concept ; rdfs:label "internal"@en .
+adalbert-due:confidential a skos:Concept ; rdfs:label "confidential"@en .
+adalbert-due:restricted a skos:Concept ; rdfs:label "restricted"@en .
+
+# Sensitivity values
+adalbert-due:pii a skos:Concept ; rdfs:label "PII"@en ; skos:definition "Personally Identifiable Information."@en .
+adalbert-due:mnpi a skos:Concept ; rdfs:label "MNPI"@en ; skos:definition "Material Non-Public Information."@en .
+adalbert-due:phi a skos:Concept ; rdfs:label "PHI"@en ; skos:definition "Protected Health Information."@en .
+
+# =============================================================================
+# ASSET METADATA OPERANDS
+# =============================================================================
+
+adalbert-due:assetClass a odrl:LeftOperand ;
+    rdfs:label "asset class"@en ;
+    skos:definition "Financial instrument or data classification."@en ;
+    adalbert:resolutionPath "asset.class" ;
+    rdfs:comment "E.g., equity, fixed-income, fx, commodity, reference."@en .
+
+adalbert-due:market a odrl:LeftOperand ;
+    rdfs:label "market"@en ;
+    skos:definition "Trading venue or market of origin."@en ;
+    adalbert:resolutionPath "asset.market" ;
+    rdfs:comment "E.g., NYSE, LSE, CME, OTC."@en .
+
+adalbert-due:isBenchmark a odrl:LeftOperand ;
+    rdfs:label "is benchmark"@en ;
+    skos:definition "Whether asset is a benchmark or index."@en ;
+    adalbert:resolutionPath "asset.isBenchmark" ;
+    rdfs:comment "Benchmarks often have stricter usage constraints."@en .
+
+# =============================================================================
+# JURISDICTION OPERANDS
+# =============================================================================
+
+adalbert-due:jurisdiction a odrl:LeftOperand ;
+    rdfs:label "jurisdiction"@en ;
+    skos:definition "Legal jurisdiction governing data use."@en ;
+    adalbert:resolutionPath "context.jurisdiction" .
+
+adalbert-due:residency a odrl:LeftOperand ;
+    rdfs:label "residency"@en ;
+    skos:definition "Data residency location."@en ;
+    adalbert:resolutionPath "asset.residency" .
+
+# =============================================================================
+# TEMPORAL OPERANDS
+# =============================================================================
+
+adalbert-due:retentionPeriod a odrl:LeftOperand ;
+    rdfs:label "retention period"@en ;
+    skos:definition "Maximum time data may be retained."@en ;
+    adalbert:resolutionPath "asset.retentionPeriod" .
+
+adalbert-due:expiry a odrl:LeftOperand ;
+    rdfs:label "expiry"@en ;
+    skos:definition "Expiration date of the policy."@en ;
+    adalbert:resolutionPath "asset.expiry" .
+
+# =============================================================================
+# PROCESSING OPERANDS
+# =============================================================================
+
+adalbert-due:processingMode a odrl:LeftOperand ;
+    rdfs:label "processing mode"@en ;
+    skos:definition "How data is processed."@en ;
+    adalbert:resolutionPath "context.processingMode" .
+
+adalbert-due:human a skos:Concept ; rdfs:label "human"@en .
+adalbert-due:automated a skos:Concept ; rdfs:label "automated"@en .
+adalbert-due:modelTraining a skos:Concept ; rdfs:label "model training"@en .
+adalbert-due:inference a skos:Concept ; rdfs:label "inference"@en .
+
+# =============================================================================
+# AUDIT OPERANDS
+# =============================================================================
+
+adalbert-due:auditRequired a odrl:LeftOperand ;
+    rdfs:label "audit required"@en ;
+    skos:definition "Whether audit logging is required."@en ;
+    adalbert:resolutionPath "asset.auditRequired" .
+
+# =============================================================================
+# IDENTITY OPERANDS
+# =============================================================================
+
+adalbert-due:role a odrl:LeftOperand ;
+    rdfs:label "role"@en ;
+    skos:definition "Role of the requesting agent."@en ;
+    adalbert:resolutionPath "agent.role" .
+
+adalbert-due:organization a odrl:LeftOperand ;
+    rdfs:label "organization"@en ;
+    skos:definition "Organization of the requesting agent."@en ;
+    adalbert:resolutionPath "agent.organization" ;
+    rdfs:comment "Hierarchy via org:subOrganizationOf."@en .
+
+adalbert-due:costCenter a odrl:LeftOperand ;
+    rdfs:label "cost center"@en ;
+    skos:definition "Cost center of the requesting agent."@en ;
+    adalbert:resolutionPath "agent.costCenter" .
+
+adalbert-due:project a odrl:LeftOperand ;
+    rdfs:label "project"@en ;
+    skos:definition "Project context of the request."@en ;
+    adalbert:resolutionPath "context.project" .
+
+# =============================================================================
+# ENVIRONMENT OPERANDS
+# =============================================================================
+
+adalbert-due:environment a odrl:LeftOperand ;
+    rdfs:label "environment"@en ;
+    skos:definition "Execution environment."@en ;
+    adalbert:resolutionPath "context.environment" .
+
+adalbert-due:production a skos:Concept ; rdfs:label "production"@en .
+adalbert-due:staging a skos:Concept ; rdfs:label "staging"@en .
+adalbert-due:development a skos:Concept ; rdfs:label "development"@en .
+adalbert-due:sandbox a skos:Concept ; rdfs:label "sandbox"@en .
+
+adalbert-due:network a odrl:LeftOperand ;
+    rdfs:label "network"@en ;
+    skos:definition "Network zone of the request."@en ;
+    adalbert:resolutionPath "context.network" .
+
+adalbert-due:internalNetwork a skos:Concept ; rdfs:label "internal network"@en .
+adalbert-due:externalNetwork a skos:Concept ; rdfs:label "external network"@en .
+adalbert-due:cloudNetwork a skos:Concept ; rdfs:label "cloud network"@en .
+
+# =============================================================================
+# TIMELINESS OPERANDS
+# =============================================================================
+
+adalbert-due:timeliness a odrl:LeftOperand ;
+    rdfs:label "timeliness"@en ;
+    skos:definition "Required data freshness category."@en ;
+    adalbert:resolutionPath "asset.timeliness" .
+
+adalbert-due:delayMinutes a odrl:LeftOperand ;
+    rdfs:label "delay minutes"@en ;
+    skos:definition "Maximum acceptable delay in minutes."@en ;
+    adalbert:resolutionPath "asset.delayMinutes" .
+
+# Timeliness values
+adalbert-due:realtime a skos:Concept ; rdfs:label "real-time"@en ;
+    skos:definition "Data with minimal latency (sub-second)."@en .
+adalbert-due:nearRealtime a skos:Concept ; rdfs:label "near real-time"@en ;
+    skos:definition "Data with short delay (seconds to minutes)."@en .
+adalbert-due:delayed a skos:Concept ; rdfs:label "delayed"@en ;
+    skos:definition "Data with significant delay (15+ minutes)."@en .
+adalbert-due:endOfDay a skos:Concept ; rdfs:label "end of day"@en ;
+    skos:definition "Data available after market close."@en .
+adalbert-due:historical a skos:Concept ; rdfs:label "historical"@en ;
+    skos:definition "Historical/archived data."@en .
+
+# =============================================================================
+# CONSENT AND LEGAL BASIS
+# =============================================================================
+
+adalbert-due:legalBasis a odrl:LeftOperand ;
+    rdfs:label "legal basis"@en ;
+    skos:definition "Legal basis for processing."@en ;
+    adalbert:resolutionPath "context.legalBasis" .
+
+adalbert-due:consent a skos:Concept ; rdfs:label "consent"@en .
+adalbert-due:contract a skos:Concept ; rdfs:label "contract"@en .
+adalbert-due:legalObligation a skos:Concept ; rdfs:label "legal obligation"@en .
+adalbert-due:vitalInterest a skos:Concept ; rdfs:label "vital interest"@en .
+adalbert-due:publicTask a skos:Concept ; rdfs:label "public task"@en .
+adalbert-due:legitimateInterest a skos:Concept ; rdfs:label "legitimate interest"@en .
+
+adalbert-due:consentId a odrl:LeftOperand ;
+    rdfs:label "consent ID"@en ;
+    skos:definition "Reference to consent record."@en ;
+    adalbert:resolutionPath "context.consentId" .
+
+# =============================================================================
+# ACCESS PATTERN OPERANDS
+# =============================================================================
+
+adalbert-due:accessPattern a odrl:LeftOperand ;
+    rdfs:label "access pattern"@en ;
+    skos:definition "Type of data access."@en ;
+    adalbert:resolutionPath "context.accessPattern" .
+
+adalbert-due:batch a skos:Concept ; rdfs:label "batch"@en .
+adalbert-due:streaming a skos:Concept ; rdfs:label "streaming"@en .
+adalbert-due:interactive a skos:Concept ; rdfs:label "interactive"@en .
+adalbert-due:api a skos:Concept ; rdfs:label "API"@en .
+
+adalbert-due:volumeLimit a odrl:LeftOperand ;
+    rdfs:label "volume limit"@en ;
+    skos:definition "Maximum data volume per request."@en ;
+    adalbert:resolutionPath "context.volumeLimit" .
+
+adalbert-due:rateLimit a odrl:LeftOperand ;
+    rdfs:label "rate limit"@en ;
+    skos:definition "Maximum requests per time period."@en ;
+    adalbert:resolutionPath "context.rateLimit" .
+
+# =============================================================================
+# DERIVATION OPERANDS
+# =============================================================================
+
+adalbert-due:derivationType a odrl:LeftOperand ;
+    rdfs:label "derivation type"@en ;
+    skos:definition "Type of derivation being performed."@en ;
+    adalbert:resolutionPath "context.derivationType" .
+
+adalbert-due:commingled a skos:Concept ; rdfs:label "commingled"@en ;
+    skos:definition "Derived data mixed with other sources."@en .
+adalbert-due:nonSubstitutive a skos:Concept ; rdfs:label "non-substitutive"@en ;
+    skos:definition "Derived data cannot substitute for original."@en .
+adalbert-due:newProduct a skos:Concept ; rdfs:label "new product"@en ;
+    skos:definition "Substantially transformed into new product."@en .
+
+# =============================================================================
+# COMMON ACTIONS
+# =============================================================================
+
+adalbert-due:use a odrl:Action ;
+    rdfs:label "use"@en ;
+    skos:definition "General use of the asset."@en .
+
+adalbert-due:read a odrl:Action ;
+    rdfs:label "read"@en ;
+    skos:definition "Read/view the asset."@en ;
+    odrl:includedIn adalbert-due:use .
+
+adalbert-due:distribute a odrl:Action ;
+    rdfs:label "distribute"@en ;
+    skos:definition "Distribute to third parties."@en .
+
+adalbert-due:delete a odrl:Action ;
+    rdfs:label "delete"@en ;
+    skos:definition "Delete the asset."@en .
+
+adalbert-due:modify a odrl:Action ;
+    rdfs:label "modify"@en ;
+    skos:definition "Modify the asset."@en .
+
+adalbert-due:aggregate a odrl:Action ;
+    rdfs:label "aggregate"@en ;
+    skos:definition "Aggregate with other data."@en .
+
+adalbert-due:anonymize a odrl:Action ;
+    rdfs:label "anonymize"@en ;
+    skos:definition "Remove identifying information."@en .
+
+adalbert-due:derive a odrl:Action ;
+    rdfs:label "derive"@en ;
+    skos:definition "Create derived data."@en .
+
+adalbert-due:conformTo a odrl:Action ;
+    rdfs:label "conform to"@en ;
+    skos:definition "Conform to a schema or specification."@en ;
+    rdfs:comment "Provider duty: ensure data conforms to published schema."@en .
+
+adalbert-due:log a odrl:Action ;
+    rdfs:label "log"@en ;
+    skos:definition "Log access to the asset."@en .
+
+adalbert-due:notify a odrl:Action ;
+    rdfs:label "notify"@en ;
+    skos:definition "Notify relevant parties."@en .
+
+# =============================================================================
+# USAGE MODE ACTIONS
+# =============================================================================
+
+adalbert-due:display a odrl:Action ;
+    rdfs:label "display"@en ;
+    skos:definition "Display data to human users."@en ;
+    odrl:includedIn adalbert-due:use ;
+    rdfs:comment "Visual presentation: dashboards, reports, screens."@en .
+
+adalbert-due:nonDisplay a odrl:Action ;
+    rdfs:label "non-display"@en ;
+    skos:definition "Use data for automated/programmatic purposes."@en ;
+    odrl:includedIn adalbert-due:use ;
+    rdfs:comment "Algorithmic use: models, automation, calculations."@en .
+
+# =============================================================================
+# SPECIALIZED ACTIONS
+# =============================================================================
+
+adalbert-due:calculateIndex a odrl:Action ;
+    rdfs:label "calculate index"@en ;
+    skos:definition "Use data for index/benchmark calculation."@en ;
+    odrl:includedIn adalbert-due:derive .
+
+adalbert-due:algorithmicTrading a odrl:Action ;
+    rdfs:label "algorithmic trading"@en ;
+    skos:definition "Use data for automated trading decisions."@en ;
+    odrl:includedIn adalbert-due:nonDisplay .
+
+# =============================================================================
+# DATA MANIPULATION ACTIONS
+# =============================================================================
+
+adalbert-due:query a odrl:Action ;
+    rdfs:label "query"@en ;
+    skos:definition "Query/select data."@en ;
+    odrl:includedIn adalbert-due:read .
+
+adalbert-due:export a odrl:Action ;
+    rdfs:label "export"@en ;
+    skos:definition "Export data outside the system."@en .
+
+adalbert-due:copy a odrl:Action ;
+    rdfs:label "copy"@en ;
+    skos:definition "Copy data to another location."@en .
+
+adalbert-due:link a odrl:Action ;
+    rdfs:label "link"@en ;
+    skos:definition "Link/join with other datasets."@en .
+
+adalbert-due:profile a odrl:Action ;
+    rdfs:label "profile"@en ;
+    skos:definition "Create profiles from data."@en ;
+    odrl:includedIn adalbert-due:derive .
+
+# =============================================================================
+# OBLIGATION ACTIONS
+# =============================================================================
+
+adalbert-due:report a odrl:Action ;
+    rdfs:label "report"@en ;
+    skos:definition "Submit usage reports."@en ;
+    rdfs:comment "Typically an assignee duty: report usage to data owner."@en .
+
+adalbert-due:deliver a odrl:Action ;
+    rdfs:label "deliver"@en ;
+    skos:definition "Deliver data to consumer."@en ;
+    rdfs:comment "Typically an assigner duty in data contracts."@en .
+
+# =============================================================================
+# END OF PROFILE
+# =============================================================================

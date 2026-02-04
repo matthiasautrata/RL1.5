@@ -1,98 +1,49 @@
 # =============================================================================
-# Adalbert Namespace Registry (Authoritative)
+# Adalbert Namespace Registry
 # =============================================================================
-# Standard prefixes for all Turtle files and documentation.
-# This file is the single source of truth for namespace URIs.
+# Authoritative source for all Adalbert namespaces.
+# Import this file to ensure consistent prefix declarations.
+#
+# Adalbert is a proper ODRL 2.2 profile. The odrl: namespace provides
+# all standard constructs (Rule types, Policy types, Constraint types,
+# operators, core properties). The adalbert: namespace is for extensions
+# only (lifecycle state, deadline, contracts, hierarchy, resolution,
+# runtime references, logical negation).
 # =============================================================================
 
-# -----------------------------------------------------------------------------
-# W3C Standard Vocabularies
-# -----------------------------------------------------------------------------
+# Primary — ODRL 2.2 (provides all standard terms)
+@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 
+# Adalbert extensions
+@prefix adalbert:      <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbertsh:    <https://vocabulary.bigbank/adalbert/shapes/> .
+@prefix adalbert-due:  <https://vocabulary.bigbank/adalbert/due/> .
+
+# External vocabularies
+@prefix dcon:    <https://vocabulary.bigbank/dcon/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
-@prefix sh:      <http://www.w3.org/ns/shacl#> .
-@prefix dcat:    <http://www.w3.org/ns/dcat#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 @prefix prov:    <http://www.w3.org/ns/prov#> .
-@prefix org:     <http://www.w3.org/ns/org#> .
-@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
-@prefix time:    <http://www.w3.org/2006/time#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
 @prefix prof:    <http://www.w3.org/ns/dx/prof/> .
 
-# -----------------------------------------------------------------------------
-# Adalbert Core Ontologies (TBox)
-# -----------------------------------------------------------------------------
-
-@prefix adalbert:     <https://vocabulary.bigbank/adalbert/> .
-# Core vocabulary: Privilege, Duty, Prohibition, Agreement, Offer, Set
-
-@prefix adalbertsh:   <https://vocabulary.bigbank/adalbert/shapes/> .
-# SHACL shapes for Adalbert validation
-
-# -----------------------------------------------------------------------------
-# Adalbert Domain Profiles (TBox)
-# -----------------------------------------------------------------------------
-
-@prefix adalbert-gov: <https://vocabulary.bigbank/adalbert/governance/> .
-# Shared governance operands: purpose, classification, jurisdiction
-
-@prefix adalbert-md:  <https://vocabulary.bigbank/adalbert/market-data/> .
-# Market data profile: timeliness, distribution, display
-
-@prefix adalbert-du:  <https://vocabulary.bigbank/adalbert/data-use/> .
-# Data use profile: internal access control
-
-@prefix adalbert-dc:  <https://vocabulary.bigbank/adalbert/contracts/> .
-# Data contracts extension: DataContract, Subscription, lifecycle
-
-# -----------------------------------------------------------------------------
-# External Vocabularies (Aligned)
-# -----------------------------------------------------------------------------
-
-@prefix dcon:    <https://vocabulary.bigbank/dcon/> .
-# DCON vocabulary (if used alongside Adalbert)
-
-@prefix rl2:     <https://vocabulary.bigbank/rl2/> .
-# RL2 full specification (superset of Adalbert)
-
-# -----------------------------------------------------------------------------
-# Instance Namespaces (ABox)
-# -----------------------------------------------------------------------------
-
-@prefix policy:       <https://data.bigbank/policies/> .
-# Policy instances: policy:<uuid>
-
-@prefix agreement:    <https://data.bigbank/agreements/> .
-# Agreement instances: agreement:<uuid>
-
-@prefix offer:        <https://data.bigbank/offers/> .
-# Offer instances: offer:<uuid>
-
-@prefix duty:         <https://data.bigbank/duties/> .
-# Duty instances: duty:<uuid>
-
-@prefix privilege:    <https://data.bigbank/privileges/> .
-# Privilege instances: privilege:<uuid>
-
-@prefix prohibition:  <https://data.bigbank/prohibitions/> .
-# Prohibition instances: prohibition:<uuid>
-
-@prefix agent:        <https://data.bigbank/agents/> .
-# Agent instances: agent:<identifier>
-
-@prefix asset:        <https://data.bigbank/assets/> .
-# Asset instances: asset:<identifier>
-
-# -----------------------------------------------------------------------------
-# Organization Instances
-# -----------------------------------------------------------------------------
-
-@prefix bbOrg:        <https://hr.data.bigbank/org/> .
-# Organization units: bbOrg:<org-code>
-
-@prefix bbWorker:     <https://hr.data.bigbank/worker/> .
-# Worker instances: bbWorker:<employee-id>
+# =============================================================================
+# NAMESPACE DOCUMENTATION
+# =============================================================================
+#
+# odrl:          ODRL 2.2 — provides Rule, Policy, Constraint types,
+#                operators, and core properties (action, target, assignee, etc.)
+# adalbert:      Adalbert extensions only (State, deadline, DataContract,
+#                Subscription, partOf, memberOf, resolutionPath,
+#                RuntimeReference, rightOperandRef, not)
+# adalbertsh:    SHACL validation shapes
+# adalbert-due:  Data use profile (all operands, actions, concept values)
+#
+# DCON alignment mappings live in ontology/adalbert-dcon-alignment.ttl
+# using the dcon: prefix for external DCON references.
+#
+# =============================================================================

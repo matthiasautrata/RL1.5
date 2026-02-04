@@ -1,9 +1,11 @@
 # =============================================================================
 # Adalbert Profile Declaration (DXPROF)
-# Version: 0.2
+# Version: 0.5
 # Date: 2026-02-03
 # =============================================================================
 # W3C Profiles Vocabulary metadata for Adalbert.
+# Adalbert is a proper ODRL 2.2 profile — it uses ODRL terms and adds
+# only genuinely new extensions.
 # =============================================================================
 
 @prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
@@ -28,10 +30,15 @@ odrl:core a dct:Standard ;
 
 <https://vocabulary.bigbank/adalbert/> a prof:Profile ;
     dct:title "Adalbert Core"@en ;
-    dct:description "Deterministic policy language extending ODRL 2.2."@en ;
+    dct:description """
+        Proper ODRL 2.2 profile for deterministic data governance.
+        Uses ODRL terms for standard constructs; adds lifecycle state,
+        deadline, data contracts, hierarchy extensions, operand resolution,
+        runtime references, and logical negation.
+    """@en ;
     prof:isProfileOf odrl:core ;
     prof:hasToken "adalbert"^^xsd:token ;
-    
+
     prof:hasResource [
         a prof:ResourceDescriptor ;
         dct:title "Adalbert Specification"@en ;
@@ -57,31 +64,23 @@ odrl:core a dct:Standard ;
     ] .
 
 # =============================================================================
-# DOMAIN PROFILES
+# DATA USE PROFILE
 # =============================================================================
 
-<https://vocabulary.bigbank/adalbert/governance/> a prof:Profile ;
-    dct:title "Adalbert Governance Core"@en ;
-    prof:isProfileOf <https://vocabulary.bigbank/adalbert/> ;
-    prof:hasToken "adalbert-gov"^^xsd:token .
-
-<https://vocabulary.bigbank/adalbert/market-data/> a prof:Profile ;
-    dct:title "Adalbert Market Data"@en ;
-    prof:isProfileOf <https://vocabulary.bigbank/adalbert/governance/> ;
-    prof:isTransitiveProfileOf <https://vocabulary.bigbank/adalbert/> , odrl:core ;
-    prof:hasToken "adalbert-md"^^xsd:token .
-
-<https://vocabulary.bigbank/adalbert/data-use/> a prof:Profile ;
-    dct:title "Adalbert Data Use"@en ;
-    prof:isProfileOf <https://vocabulary.bigbank/adalbert/governance/> ;
-    prof:isTransitiveProfileOf <https://vocabulary.bigbank/adalbert/> , odrl:core ;
-    prof:hasToken "adalbert-du"^^xsd:token .
-
-<https://vocabulary.bigbank/adalbert/contracts/> a prof:Profile ;
-    dct:title "Adalbert Contracts"@en ;
+<https://vocabulary.bigbank/adalbert/due/> a prof:Profile ;
+    dct:title "Adalbert Data Use (DUE)"@en ;
+    dct:description "Complete data governance vocabulary: operands, actions, concept values."@en ;
     prof:isProfileOf <https://vocabulary.bigbank/adalbert/> ;
     prof:isTransitiveProfileOf odrl:core ;
-    prof:hasToken "adalbert-dc"^^xsd:token .
+    prof:hasToken "adalbert-due"^^xsd:token ;
+
+    prof:hasResource [
+        a prof:ResourceDescriptor ;
+        dct:title "Adalbert DUE Vocabulary"@en ;
+        prof:hasRole role:vocabulary ;
+        dct:conformsTo owl: ;
+        prof:hasArtifact <https://vocabulary.bigbank/adalbert/profiles/adalbert-due.ttl>
+    ] .
 
 # =============================================================================
 # END
