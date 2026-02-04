@@ -6,7 +6,9 @@
 
 ## Executive Summary
 
-Adalbert is a strict subset of RL2 by design. Every Adalbert policy has a faithful RL2 representation. RL2 adds four Hohfeldian norm types, promise theory, event-based constraints, identity binding, policy generations, and a formal protocol layer. The ontology is roughly 2-3x larger; implementation complexity is 3-4x.
+Adalbert is a strict subset of RL2 by design. Every Adalbert policy has a faithful RL2 representation. RL2 adds four Hohfeldian norm types, promise theory, event-based constraints, identity binding, policy generations, and a formal protocol layer.
+
+**Architectural difference**: Adalbert is a profile on top of ODRL 2.2 — it reuses ~47 ODRL terms and adds 13 of its own. RL2 is self-contained — it defines all 78 terms in its own namespace. A fair comparison must include the full stack for both.
 
 | Dimension | Adalbert (RL1.5) | RL2 |
 |-----------|-------------------|-----|
@@ -18,9 +20,10 @@ Adalbert is a strict subset of RL2 by design. Every Adalbert policy has a faithf
 | Event calculus | No | Yes (typed event log, pattern matching) |
 | Identity binding | No | Yes (duty performer tracking, separation of duty) |
 | Policy generations | No | Yes (immutable snapshots) |
-| Ontology triples | ~136 | ~656 |
-| SHACL shapes | ~207 triples | ~22KB |
-| Formal semantics | ~1000 lines | ~2500 lines |
+| Effective vocabulary | ~60 terms (13 native + 47 ODRL) | 78 terms (standalone) |
+| Ontology (extension only) | 250 lines | 655 lines |
+| SHACL shapes | 15 | 30 |
+| Formal semantics | ~1050 lines | ~1600 lines |
 
 ---
 
@@ -150,16 +153,39 @@ Features present in both:
 
 ## 8. Complexity Assessment
 
-### Ontology Complexity
+### Full-Stack Footprint
 
-| Metric | Adalbert | RL2 | Factor |
-|--------|----------|-----|--------|
-| Core classes | 20 | ~40 | 2x |
-| Properties | 27 | ~45 | 1.7x |
-| Ontology triples | 136 | ~656 | 4.8x |
-| SHACL shapes | 16 | ~30+ | 2x |
-| Semantic domains | 10 | 15+ | 1.5x |
+Adalbert builds on ODRL 2.2; RL2 is self-contained. A fair comparison includes the base vocabulary.
+
+#### Adalbert Stack
+
+| Layer | Classes | Properties | Lines |
+|-------|---------|------------|-------|
+| ODRL 2.2 base (terms used) | 18 | 29 | ~2300 (W3C spec) |
+| Adalbert extensions | 4 | 9 | 250 |
+| DUE profile (operands + actions) | 0 | 0 | 420 |
+| **Effective total** | **22** | **38** | **670 (custom)** |
+
+#### RL2 Stack
+
+| Layer | Classes | Properties | Lines |
+|-------|---------|------------|-------|
+| RL2 core | 35 | 43 | 655 |
+| RL2 protocol (rl2p) | ~8 | ~12 | ~340 |
+| **Total** | **~43** | **~55** | **~995** |
+
+#### Side-by-Side
+
+| Metric | Adalbert (full stack) | RL2 (full stack) | Factor |
+|--------|-----------------------|------------------|--------|
+| Effective classes | 22 | ~43 | 2.0x |
+| Effective properties | 38 | ~55 | 1.4x |
+| Custom ontology lines | 670 | ~995 | 1.5x |
+| SHACL shapes | 15 | 30 | 2.0x |
+| Semantics doc lines | ~1050 | ~1600 | 1.5x |
 | Correctness theorems | 6 | 6 (S1-S6) | 1x |
+
+**Key insight**: When counting the full stack, the size gap narrows from the naive 4.8x (extension triples only) to 1.5-2x. Adalbert's economy comes from reusing the W3C-standardized ODRL vocabulary rather than defining terms from scratch. The complexity gap is primarily in evaluation mechanics (see below), not vocabulary size.
 
 ### Implementation Complexity
 
@@ -184,7 +210,7 @@ Features present in both:
 - Protocol layer (Request/Result/Case/Requirement lifecycle)
 - `resolutionFunction` extension point
 
-**Estimated implementation factor: 3-4x** for a full RL2 evaluator vs Adalbert. The Hohfeldian layer and event calculus contribute most -- they add fundamentally new evaluation mechanics, not just more types.
+**Estimated implementation factor: 3-4x** for a full RL2 evaluator vs Adalbert. The vocabulary size difference (1.5-2x) understates the true complexity gap. The Hohfeldian layer and event calculus add fundamentally new evaluation mechanics, not just more types. An ODRL processor that already handles the base vocabulary needs only the Adalbert extensions; an RL2 processor must implement everything.
 
 ---
 

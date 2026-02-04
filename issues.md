@@ -253,6 +253,14 @@ Example policies use DUE vocabulary but only declare the core profile in `odrl:p
 
 Consider that RL2 is self-sufficient and RL1.5 lives ontop of ODRL2.2. So, a fair comparison would include the full foot-print in both cases.
 
+**Decision:** Restructured executive summary and §8 (Complexity Assessment) with full-stack footprint analysis. Adalbert uses 22 classes + 38 properties (13 native + 47 ODRL); RL2 uses ~43 classes + ~55 properties (standalone). The size gap narrows from naive 4.8x to 1.5-2x when counting the full stack. Implementation complexity remains 3-4x due to fundamentally new evaluation mechanics in RL2.
+
+**Changes:**
+
+- `docs/comparisons/comparison-rl2.md`: Updated executive summary table with effective vocabulary counts; restructured §8 with layered footprint breakdown (ODRL base, Adalbert extensions, DUE profile vs RL2 core, RL2 protocol) and side-by-side comparison
+
+**Status:** Resolved
+
 ## Open Questions / Decisions
 
 These require human input before resolution:
@@ -277,3 +285,4 @@ These require human input before resolution:
 | 2026-02-04 | Issue 7 | Fixed three doc inconsistencies: added `memberOf` + `xsd:time` to README, fixed `dcon:Duty` → `dcon:Promise`, removed false SKOS claims | -- |
 | 2026-02-04 | Issue 8 | Added `adalbertsh:SetShape` requiring `odrl:target` on Set policies | -- |
 | 2026-02-04 | Issue 9 | Added DUE profile declaration to all 4 example policy instances | -- |
+| 2026-02-04 | Issue 10 | Restructured RL2 comparison with full-stack footprint (ODRL base + extensions vs RL2 standalone) | -- |
