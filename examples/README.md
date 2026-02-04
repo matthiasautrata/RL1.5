@@ -61,7 +61,7 @@ and reuses ODRL's `odrl:includedIn` for action subsumption.
 ```turtle
 ex:analyst adalbert:memberOf ex:team .
 ex:table adalbert:partOf ex:schema .
-adalbert-due:display odrl:includedIn adalbert-due:use .
+odrl:display odrl:includedIn odrl:use .
 ```
 
 Policy on `ex:team` applies to `ex:analyst` via transitivity.

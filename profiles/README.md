@@ -23,11 +23,13 @@ adalbert-core.ttl
 
 | Profile | Namespace | Description |
 |---------|-----------|-------------|
-| **Data Use (DUE)** | `adalbert-due:` | All operands, actions, concept values for data governance |
+| **Data Use (DUE)** | `adalbert-due:` + `odrl:` | Operands, DUE-specific actions, concept values. Uses ODRL Common Vocabulary actions directly. |
 
 ## Design
 
 DUE is the single vocabulary profile — it defines what you can/can't do with data. Used in both `odrl:Set` policies (org-wide rules) and as rule content within contracts.
+
+DUE uses ODRL Common Vocabulary actions directly where ODRL defines them (`odrl:use`, `odrl:read`, `odrl:display`, `odrl:distribute`, `odrl:delete`, `odrl:modify`, `odrl:aggregate`, `odrl:anonymize`, `odrl:derive`). DUE-specific actions that have no ODRL equivalent use the `adalbert-due:` namespace (`nonDisplay`, `conformTo`, `log`, `notify`, `report`, `deliver`, `calculateIndex`, `algorithmicTrading`, `query`, `export`, `copy`, `link`, `profile`).
 
 Contract lifecycle classes (`DataContract`, `Subscription`) and their properties (`subscribesTo`, `effectiveDate`, `expirationDate`) live in core, not in a profile. DCON alignment mappings live in `ontology/adalbert-dcon-alignment.ttl`.
 

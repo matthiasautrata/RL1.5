@@ -1,6 +1,6 @@
 # =============================================================================
 # Adalbert SHACL Shapes
-# Version: 0.5
+# Version: 0.6
 # Date: 2026-02-03
 # =============================================================================
 # Validation shapes for Adalbert policies.
@@ -15,6 +15,38 @@
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+
+# =============================================================================
+# REUSABLE PROPERTY GROUPS
+# =============================================================================
+
+adalbertsh:StatePropertyGroup
+    sh:path adalbert:state ;
+    sh:maxCount 1 ;
+    sh:in (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
+    sh:message "State must be Pending, Active, Fulfilled, or Violated." .
+
+# =============================================================================
+# POLICY SHAPE — profile and conflict declaration
+# =============================================================================
+
+adalbertsh:PolicyShape a sh:NodeShape ;
+    sh:targetClass odrl:Policy ;
+    sh:name "Policy Shape" ;
+
+    sh:property [
+        sh:path odrl:profile ;
+        sh:minCount 1 ;
+        sh:hasValue <https://vocabulary.bigbank/adalbert/> ;
+        sh:message "Adalbert policies must declare odrl:profile <https://vocabulary.bigbank/adalbert/>."
+    ] ;
+
+    sh:property [
+        sh:path odrl:conflict ;
+        sh:maxCount 1 ;
+        sh:in (odrl:prohibit) ;
+        sh:message "Adalbert fixes conflict resolution to odrl:prohibit."
+    ] .
 
 # =============================================================================
 # OFFER SHAPE
@@ -107,6 +139,13 @@ adalbertsh:DutyShape a sh:NodeShape ;
     sh:name "Duty Shape" ;
 
     sh:property [
+        sh:path odrl:action ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Duty must have exactly one action."
+    ] ;
+
+    sh:property [
         sh:path adalbert:deadline ;
         sh:maxCount 1 ;
         sh:or (
@@ -117,12 +156,7 @@ adalbertsh:DutyShape a sh:NodeShape ;
         sh:message "Deadline must be xsd:dateTime, xsd:duration, or xsd:time."
     ] ;
 
-    sh:property [
-        sh:path adalbert:state ;
-        sh:maxCount 1 ;
-        sh:in (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
-        sh:message "State must be Pending, Active, Fulfilled, or Violated."
-    ] .
+    sh:property adalbertsh:StatePropertyGroup .
 
 # =============================================================================
 # CONSTRAINT SHAPE
@@ -154,6 +188,22 @@ adalbertsh:ConstraintShape a sh:NodeShape ;
     sh:message "Constraint must have exactly one of: odrl:rightOperand or adalbert:rightOperandRef." .
 
 # =============================================================================
+# LOGICAL CONSTRAINT SHAPE
+# =============================================================================
+
+adalbertsh:LogicalConstraintShape a sh:NodeShape ;
+    sh:targetClass odrl:LogicalConstraint ;
+    sh:name "Logical Constraint Shape" ;
+
+    # Must have exactly one of: odrl:and, odrl:or, adalbert:not
+    sh:xone (
+        [ sh:property [ sh:path odrl:and ; sh:minCount 1 ; sh:maxCount 1 ] ]
+        [ sh:property [ sh:path odrl:or ; sh:minCount 1 ; sh:maxCount 1 ] ]
+        [ sh:property [ sh:path adalbert:not ; sh:minCount 1 ; sh:maxCount 1 ] ]
+    ) ;
+    sh:message "LogicalConstraint must have exactly one of: odrl:and, odrl:or, or adalbert:not." .
+
+# =============================================================================
 # DATA CONTRACT SHAPE
 # =============================================================================
 
@@ -168,12 +218,7 @@ adalbertsh:DataContractShape a sh:NodeShape ;
         sh:message "DataContract must have exactly one assigner."
     ] ;
 
-    sh:property [
-        sh:path adalbert:state ;
-        sh:maxCount 1 ;
-        sh:in (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
-        sh:message "State must be Pending, Active, Fulfilled, or Violated."
-    ] ;
+    sh:property adalbertsh:StatePropertyGroup ;
 
     sh:property [
         sh:path adalbert:effectiveDate ;
@@ -203,12 +248,7 @@ adalbertsh:SubscriptionShape a sh:NodeShape ;
         sh:message "Subscription must reference exactly one DataContract."
     ] ;
 
-    sh:property [
-        sh:path adalbert:state ;
-        sh:maxCount 1 ;
-        sh:in (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
-        sh:message "State must be Pending, Active, Fulfilled, or Violated."
-    ] ;
+    sh:property adalbertsh:StatePropertyGroup ;
 
     sh:property [
         sh:path adalbert:effectiveDate ;
@@ -225,6 +265,9 @@ adalbertsh:SubscriptionShape a sh:NodeShape ;
 # =============================================================================
 # LEFT OPERAND SHAPE
 # =============================================================================
+# sh:minCount 0: resolutionPath is optional in the shape because ODRL's
+# built-in left operands (odrl:dateTime, etc.) don't have it. Adalbert
+# profile operands MUST provide it — enforced by convention and DUE.
 
 adalbertsh:LeftOperandShape a sh:NodeShape ;
     sh:targetClass odrl:LeftOperand ;
@@ -232,7 +275,6 @@ adalbertsh:LeftOperandShape a sh:NodeShape ;
 
     sh:property [
         sh:path adalbert:resolutionPath ;
-        sh:minCount 1 ;
         sh:maxCount 1 ;
         sh:datatype xsd:string ;
         sh:pattern "^(agent|asset|context)\\." ;

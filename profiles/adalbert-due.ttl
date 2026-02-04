@@ -6,8 +6,10 @@
 # Complete data governance vocabulary: operands, actions, concept values.
 #
 # All operands are typed as odrl:LeftOperand (not adalbert:LeftOperand).
-# All actions are typed as odrl:Action (not adalbert:Action).
-# Action hierarchy uses odrl:includedIn (not adalbert:includedIn).
+# Actions from ODRL Common Vocabulary are used directly (odrl:use, odrl:read,
+# odrl:display, odrl:distribute, odrl:delete, odrl:modify, odrl:aggregate,
+# odrl:anonymize, odrl:derive). DUE-only actions use the adalbert-due: prefix.
+# Action hierarchy uses odrl:includedIn.
 # Operand resolution uses adalbert:resolutionPath (Adalbert extension).
 # =============================================================================
 
@@ -45,8 +47,10 @@
         - Consent and legal basis
         - Obligation actions (reporting, delivery, notification)
 
+        Actions from ODRL Common Vocabulary are used directly (odrl:use,
+        odrl:read, odrl:display, etc.). DUE adds domain-specific actions
+        (nonDisplay, conformTo, log, notify, report, deliver, etc.).
         All operands are odrl:LeftOperand with adalbert:resolutionPath.
-        All actions are odrl:Action with odrl:includedIn hierarchy.
     """@en ;
     dcterms:created "2026-02-03"^^xsd:date ;
     owl:versionInfo "0.6" ;
@@ -202,6 +206,12 @@ adalbert-due:project a odrl:LeftOperand ;
     skos:definition "Project context of the request."@en ;
     adalbert:resolutionPath "context.project" .
 
+adalbert-due:recipientType a odrl:LeftOperand ;
+    rdfs:label "recipient type"@en ;
+    skos:definition "Type of data recipient."@en ;
+    adalbert:resolutionPath "agent.recipientType" ;
+    rdfs:comment "E.g., internal, professional, retail."@en .
+
 # =============================================================================
 # ENVIRONMENT OPERANDS
 # =============================================================================
@@ -313,41 +323,30 @@ adalbert-due:newProduct a skos:Concept ; rdfs:label "new product"@en ;
     skos:definition "Substantially transformed into new product."@en .
 
 # =============================================================================
-# COMMON ACTIONS
+# ODRL COMMON VOCABULARY ACTIONS (used directly)
+# =============================================================================
+# These actions come from ODRL 2.2 Common Vocabulary. DUE uses them directly
+# rather than redefining them. ODRL already defines their includedIn hierarchy.
+#
+# odrl:use        — General use (top of hierarchy)
+# odrl:read       — Read/view (includedIn odrl:use)
+# odrl:display    — Display to human users (includedIn odrl:use)
+# odrl:distribute — Distribute to third parties (includedIn odrl:use)
+# odrl:delete     — Delete the asset (includedIn odrl:use)
+# odrl:modify     — Modify the asset (includedIn odrl:use)
+# odrl:aggregate  — Aggregate with other data (includedIn odrl:use)
+# odrl:anonymize  — Remove identifying information (includedIn odrl:use)
+# odrl:derive     — Create derived data (includedIn odrl:use)
+
+# =============================================================================
+# DUE-SPECIFIC ACTIONS (no ODRL equivalent)
 # =============================================================================
 
-adalbert-due:use a odrl:Action ;
-    rdfs:label "use"@en ;
-    skos:definition "General use of the asset."@en .
-
-adalbert-due:read a odrl:Action ;
-    rdfs:label "read"@en ;
-    skos:definition "Read/view the asset."@en ;
-    odrl:includedIn adalbert-due:use .
-
-adalbert-due:distribute a odrl:Action ;
-    rdfs:label "distribute"@en ;
-    skos:definition "Distribute to third parties."@en .
-
-adalbert-due:delete a odrl:Action ;
-    rdfs:label "delete"@en ;
-    skos:definition "Delete the asset."@en .
-
-adalbert-due:modify a odrl:Action ;
-    rdfs:label "modify"@en ;
-    skos:definition "Modify the asset."@en .
-
-adalbert-due:aggregate a odrl:Action ;
-    rdfs:label "aggregate"@en ;
-    skos:definition "Aggregate with other data."@en .
-
-adalbert-due:anonymize a odrl:Action ;
-    rdfs:label "anonymize"@en ;
-    skos:definition "Remove identifying information."@en .
-
-adalbert-due:derive a odrl:Action ;
-    rdfs:label "derive"@en ;
-    skos:definition "Create derived data."@en .
+adalbert-due:nonDisplay a odrl:Action ;
+    rdfs:label "non-display"@en ;
+    skos:definition "Use data for automated/programmatic purposes."@en ;
+    odrl:includedIn odrl:use ;
+    rdfs:comment "Algorithmic use: models, automation, calculations."@en .
 
 adalbert-due:conformTo a odrl:Action ;
     rdfs:label "conform to"@en ;
@@ -362,21 +361,15 @@ adalbert-due:notify a odrl:Action ;
     rdfs:label "notify"@en ;
     skos:definition "Notify relevant parties."@en .
 
-# =============================================================================
-# USAGE MODE ACTIONS
-# =============================================================================
+adalbert-due:report a odrl:Action ;
+    rdfs:label "report"@en ;
+    skos:definition "Submit usage reports."@en ;
+    rdfs:comment "Typically an assignee duty: report usage to data owner."@en .
 
-adalbert-due:display a odrl:Action ;
-    rdfs:label "display"@en ;
-    skos:definition "Display data to human users."@en ;
-    odrl:includedIn adalbert-due:use ;
-    rdfs:comment "Visual presentation: dashboards, reports, screens."@en .
-
-adalbert-due:nonDisplay a odrl:Action ;
-    rdfs:label "non-display"@en ;
-    skos:definition "Use data for automated/programmatic purposes."@en ;
-    odrl:includedIn adalbert-due:use ;
-    rdfs:comment "Algorithmic use: models, automation, calculations."@en .
+adalbert-due:deliver a odrl:Action ;
+    rdfs:label "deliver"@en ;
+    skos:definition "Deliver data to consumer."@en ;
+    rdfs:comment "Typically an assigner duty in data contracts."@en .
 
 # =============================================================================
 # SPECIALIZED ACTIONS
@@ -385,7 +378,7 @@ adalbert-due:nonDisplay a odrl:Action ;
 adalbert-due:calculateIndex a odrl:Action ;
     rdfs:label "calculate index"@en ;
     skos:definition "Use data for index/benchmark calculation."@en ;
-    odrl:includedIn adalbert-due:derive .
+    odrl:includedIn odrl:derive .
 
 adalbert-due:algorithmicTrading a odrl:Action ;
     rdfs:label "algorithmic trading"@en ;
@@ -399,7 +392,7 @@ adalbert-due:algorithmicTrading a odrl:Action ;
 adalbert-due:query a odrl:Action ;
     rdfs:label "query"@en ;
     skos:definition "Query/select data."@en ;
-    odrl:includedIn adalbert-due:read .
+    odrl:includedIn odrl:read .
 
 adalbert-due:export a odrl:Action ;
     rdfs:label "export"@en ;
@@ -416,21 +409,7 @@ adalbert-due:link a odrl:Action ;
 adalbert-due:profile a odrl:Action ;
     rdfs:label "profile"@en ;
     skos:definition "Create profiles from data."@en ;
-    odrl:includedIn adalbert-due:derive .
-
-# =============================================================================
-# OBLIGATION ACTIONS
-# =============================================================================
-
-adalbert-due:report a odrl:Action ;
-    rdfs:label "report"@en ;
-    skos:definition "Submit usage reports."@en ;
-    rdfs:comment "Typically an assignee duty: report usage to data owner."@en .
-
-adalbert-due:deliver a odrl:Action ;
-    rdfs:label "deliver"@en ;
-    skos:definition "Deliver data to consumer."@en ;
-    rdfs:comment "Typically an assigner duty in data contracts."@en .
+    odrl:includedIn odrl:derive .
 
 # =============================================================================
 # END OF PROFILE

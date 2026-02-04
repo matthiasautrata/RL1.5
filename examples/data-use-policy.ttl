@@ -40,6 +40,9 @@
 <https://data.bigbank/assets/employee-data> a odrl:Asset ;
     rdfs:label "Employee Data Lake" .
 
+<https://data.bigbank/assets/access-log> a odrl:Asset ;
+    rdfs:label "Access Log" .
+
 # =============================================================================
 # POLICY SET: HR Data Access Controls
 # =============================================================================
@@ -48,6 +51,7 @@
 <https://data.bigbank/policies/hr-data-access> a odrl:Set ;
     rdfs:label "HR Data Access Policy" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:conflict odrl:prohibit ;
     odrl:target <https://data.bigbank/assets/employee-data> ;
 
     # ===== RULE 1: HR Analytics can read for analytics purposes =====
@@ -56,7 +60,7 @@
         a odrl:Permission ;
         rdfs:label "HR analytics read access" ;
         odrl:assignee <https://data.bigbank/agents/hr-analytics> ;
-        odrl:action adalbert-due:read ;
+        odrl:action odrl:read ;
         odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
@@ -72,7 +76,7 @@
         a odrl:Permission ;
         rdfs:label "Compliance audit access" ;
         odrl:assignee <https://data.bigbank/agents/compliance-team> ;
-        odrl:action adalbert-due:read ;
+        odrl:action odrl:read ;
         odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
@@ -105,7 +109,7 @@
         a odrl:Prohibition ;
         rdfs:label "No external sharing" ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:distribute ;
+        odrl:action odrl:distribute ;
         odrl:target <https://data.bigbank/assets/employee-data>
     ] ;
 
@@ -115,7 +119,7 @@
         a odrl:Prohibition ;
         rdfs:label "No ML training" ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:use ;
+        odrl:action odrl:use ;
         odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
@@ -129,9 +133,9 @@
 
     odrl:prohibition [
         a odrl:Prohibition ;
-        rdfs:label "Production environment only" ;
+        rdfs:label "Production and staging only" ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:use ;
+        odrl:action odrl:use ;
         odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
@@ -150,6 +154,7 @@
 <https://data.bigbank/policies/compensation-access> a odrl:Set ;
     rdfs:label "Compensation Data Access Policy" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:conflict odrl:prohibit ;
     odrl:target <https://data.bigbank/assets/employee-compensation> ;
 
     # Only HR Division (not just analytics sub-team)
@@ -157,7 +162,7 @@
         a odrl:Permission ;
         rdfs:label "HR Division compensation access" ;
         odrl:assignee <https://data.bigbank/agents/hr-division> ;
-        odrl:action adalbert-due:read ;
+        odrl:action odrl:read ;
         odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [
             a odrl:LogicalConstraint ;
@@ -183,7 +188,7 @@
         a odrl:Duty ;
         rdfs:label "Retention limit" ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:delete ;
+        odrl:action odrl:delete ;
         odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [
             a odrl:Constraint ;
@@ -198,7 +203,7 @@
         a odrl:Duty ;
         rdfs:label "Anonymization required" ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:anonymize ;
+        odrl:action odrl:anonymize ;
         odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [
             a odrl:Constraint ;

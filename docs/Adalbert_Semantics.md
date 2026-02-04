@@ -1,7 +1,7 @@
 ---
 title: "Adalbert Formal Semantics"
 subtitle: "Deterministic Policy Evaluation for Data Governance"
-version: "0.5"
+version: "0.6"
 status: "Draft"
 date: 2026-02-03
 abstract: |
@@ -134,6 +134,23 @@ Deadline ::= AbsoluteDeadline(time: Time)
 - The formal `subject` parameter maps to `odrl:assignee` in the RDF encoding (the party to whom the norm applies).
 - `AbsoluteDeadline`: Fixed point in time (e.g., 2026-12-31T23:59:59Z)
 - `RelativeDeadline`: Duration from activation (e.g., P30D, PT24H)
+
+**Abstract-to-RDF Name Mapping**:
+
+| Abstract Syntax | RDF Encoding | Notes |
+|---|---|---|
+| `Permission` | `odrl:Permission` | |
+| `Duty` | `odrl:Duty` | |
+| `Prohibition` | `odrl:Prohibition` | |
+| `subject` | `odrl:assignee` | Party to whom the norm applies |
+| `grantor` | `odrl:assigner` | Party granting rights |
+| `grantee` | `odrl:assignee` | Party receiving rights (policy-level) |
+| `condition` | `odrl:constraint` | |
+| `Set` | `odrl:Set` | |
+| `Offer` | `odrl:Offer` | `DataContract` is a subtype |
+| `Agreement` | `odrl:Agreement` | `Subscription` is a subtype |
+| `lte` | `odrl:lteq` | |
+| `gte` | `odrl:gteq` | |
 
 ### 3.3 Conditions
 
@@ -666,7 +683,7 @@ Adalbert uses a fixed conflict resolution strategy:
 Prohibition > Permission
 ```
 
-If both a prohibition and privilege match, the prohibition wins. This strategy is not configurable in Adalbert (RL2 offers configurable strategies).
+If both a prohibition and permission match, the prohibition wins. This strategy is not configurable in Adalbert (RL2 offers configurable strategies).
 
 ### 8.2 Algorithm
 
@@ -834,8 +851,8 @@ adalbertsh:LeftOperandShape a sh:NodeShape ;
 ### 11.2 Action Hierarchies
 
 ```turtle
-adalbert-due:display a odrl:Action ;
-    odrl:includedIn adalbert-due:use .
+odrl:display a odrl:Action ;
+    odrl:includedIn odrl:use .
 ```
 
 Action subsumption is defined by the transitive closure of `odrl:includedIn`:
@@ -912,7 +929,7 @@ ex:agreement a odrl:Agreement ;
     odrl:permission [
         a odrl:Permission ;
         odrl:assignee ex:analyticsTeam ;
-        odrl:action adalbert-due:display ;
+        odrl:action odrl:display ;
         odrl:target ex:marketData
     ] ;
 

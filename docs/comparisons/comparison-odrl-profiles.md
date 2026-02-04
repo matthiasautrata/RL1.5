@@ -140,7 +140,7 @@ ex:accessRule a odrl:Permission ;
 # Business policy check (Adalbert Data Use)
 ex:useRule a odrl:Permission ;
     odrl:assignee ex:analyticsTeam ;
-    odrl:action adalbert-due:derive ;
+    odrl:action odrl:derive ;
     odrl:target ex:customerData ;
     odrl:constraint [
         a odrl:Constraint ;

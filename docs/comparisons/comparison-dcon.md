@@ -52,7 +52,7 @@ ex:marketDataContract a adalbert:DataContract ;
     odrl:permission [
         a odrl:Permission ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:display ;
+        odrl:action odrl:display ;
         odrl:target ex:marketDataFeed
     ] ;
 
@@ -89,7 +89,7 @@ ex:analyticsSubscription a adalbert:Subscription ;
     odrl:permission [
         a odrl:Permission ;
         odrl:assignee ex:analyticsTeam ;
-        odrl:action adalbert-due:display ;
+        odrl:action odrl:display ;
         odrl:target ex:marketDataFeed
     ] ;
 
@@ -231,7 +231,7 @@ ex:displayPermission a odrl:Permission ;
 ```turtle
 [   a odrl:Permission ;
     odrl:assignee ex:analyticsTeam ;
-    odrl:action adalbert-due:display ;
+    odrl:action odrl:display ;
     odrl:target ex:marketDataFeed ;
     odrl:constraint [
         a odrl:Constraint ;

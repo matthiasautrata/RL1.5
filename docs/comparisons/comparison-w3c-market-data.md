@@ -24,9 +24,9 @@ Internal teams then subscribe to translated contracts (`adalbert:Subscription`) 
 | `odrl:permission` | `odrl:Permission` | Same type |
 | `odrl:prohibition` | `odrl:Prohibition` | Same type |
 | `odrl:duty` | `odrl:Duty` | Same type + lifecycle (add `adalbert:state`) |
-| `md:display` | `adalbert-due:display` | Namespace swap |
-| `md:distribute` | `adalbert-due:distribute` | Namespace swap |
-| `md:derive` | `adalbert-due:derive` | Namespace swap |
+| `md:display` | `odrl:display` | MDS action to ODRL Common Vocabulary |
+| `md:distribute` | `odrl:distribute` | MDS action to ODRL Common Vocabulary |
+| `md:derive` | `odrl:derive` | MDS action to ODRL Common Vocabulary |
 | `md:timeliness` | `adalbert-due:timeliness` | Namespace swap |
 | `md:assetClass` | `adalbert-due:assetClass` | Namespace swap |
 | `odrl:constraint` | `odrl:constraint` | Same property |

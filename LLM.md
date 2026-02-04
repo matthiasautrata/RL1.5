@@ -64,6 +64,7 @@ Key relationships:
 | `profiles/adalbert-due.ttl` | Data use vocabulary (all operands, actions, concept values) |
 | `docs/comparisons/comparison-odrl22.md` | Detailed ODRL 2.2 comparison |
 | `docs/comparisons/comparison-dcon.md` | DCON alignment analysis |
+| `docs/comparisons/comparison-rl2.md` | RL2 functional gap, complexity, translation path |
 | `docs/comparisons/comparison-odrl-profiles.md` | W3C ecosystem positioning |
 | `docs/comparisons/comparison-w3c-market-data.md` | W3C Market Data Profile mapping |
 | `docs/conformance-w3c-best-practices.md` | W3C Best Practices compliance |
@@ -123,10 +124,14 @@ Adalbert is a proper ODRL 2.2 profile. It uses ODRL's classes and properties dir
 | `adalbert:memberOf` | Party hierarchy (transitive) |
 | `adalbert:resolutionPath` | Dot-separated path from canonical root to value |
 | `adalbert:RuntimeReference` | Value resolved at evaluation time |
-| `adalbert:currentAgent` | Runtime reference: the requesting agent |
+| `adalbert:currentAgent` | Runtime reference: the requesting agent (dual-typed as `adalbert:RuntimeReference` and `odrl:Party`) |
 | `adalbert:currentDateTime` | Runtime reference: evaluation timestamp |
 | `adalbert:rightOperandRef` | Runtime reference for right-operand comparison |
 | `adalbert:not` | Logical negation on LogicalConstraint (ODRL lacks this) |
+
+### DUE Action Vocabulary
+
+The DUE profile uses ODRL Common Vocabulary actions directly where equivalents exist (`odrl:use`, `odrl:read`, `odrl:display`, `odrl:derive`, `odrl:distribute`, `odrl:delete`, `odrl:modify`, `odrl:aggregate`, `odrl:anonymize`). The `adalbert-due:` namespace is reserved for domain-specific actions that have no ODRL equivalent: `nonDisplay`, `conformTo`, `log`, `notify`, `report`, `deliver`, `calculateIndex`, `algorithmicTrading`, `query`, `export`, `copy`, `link`, `profile`.
 
 ### Core Abstract Syntax
 
@@ -191,10 +196,13 @@ Fixed precedence: **Prohibition > Permission**. No configurable conflict strateg
             adalbert-due
             (all vocab:
              purpose, role,
-             env, actions)
+             env, domain-specific
+             actions; ODRL Common
+             Vocabulary actions
+             used directly)
 ```
 
-One profile (DUE) carries all vocabulary. Contract lifecycle classes (DataContract, Subscription) live in core. DCON alignment is a separate mapping file, not a profile.
+One profile (DUE) carries all vocabulary. DUE reuses ODRL Common Vocabulary actions (odrl:use, odrl:display, etc.) and only defines domain-specific actions in the adalbert-due: namespace. Contract lifecycle classes (DataContract, Subscription) live in core. DCON alignment is a separate mapping file, not a profile.
 
 ### What Adalbert Defers to RL2
 
@@ -304,7 +312,7 @@ adalbert-due:  https://vocabulary.bigbank/adalbert/due/
 
 ## Status
 
-- **Version:** 0.5 (Draft)
+- **Version:** 0.6 (Draft)
 - **Phase:** 1 -- Specification
 - **Formal semantics:** Complete draft (`docs/Adalbert_Semantics.md`)
 - **OWL ontology:** Complete draft (`ontology/adalbert-core.ttl`)

@@ -37,6 +37,15 @@
 <https://data.bigbank/assets/market-data-lake> a odrl:Asset ;
     rdfs:label "Market Data Lake" .
 
+<https://data.bigbank/assets/data-ready-notification> a odrl:Asset ;
+    rdfs:label "Data Ready Notification" .
+
+<https://data.bigbank/assets/schema-changes> a odrl:Asset ;
+    rdfs:label "Schema Changes" .
+
+<https://data.bigbank/assets/usage-stats> a odrl:Asset ;
+    rdfs:label "Usage Statistics" .
+
 # =============================================================================
 # DATA CONTRACT (Offer)
 # =============================================================================
@@ -46,6 +55,7 @@
 <https://data.bigbank/offers/market-prices-v2> a adalbert:DataContract ;
     rdfs:label "Market Price Data Contract v2" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/data-platform-team> ;
     odrl:target <https://data.bigbank/assets/market-prices> ;
     adalbert:state adalbert:Active ;
@@ -87,7 +97,7 @@
         a odrl:Permission ;
         rdfs:label "Display access" ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:display ;
+        odrl:action odrl:display ;
         odrl:target <https://data.bigbank/assets/market-prices>
     ] ;
 
@@ -111,7 +121,7 @@
         a odrl:Permission ;
         rdfs:label "Derivation rights" ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:derive ;
+        odrl:action odrl:derive ;
         odrl:target <https://data.bigbank/assets/market-prices>
     ] ;
 
@@ -134,7 +144,7 @@
         a odrl:Prohibition ;
         rdfs:label "No redistribution" ;
         odrl:assignee adalbert:currentAgent ;
-        odrl:action adalbert-due:distribute ;
+        odrl:action odrl:distribute ;
         odrl:target <https://data.bigbank/assets/market-prices>
     ] .
 
@@ -148,6 +158,7 @@
 <https://data.bigbank/agreements/quant-market-data-2026> a adalbert:Subscription ;
     rdfs:label "Quant Research Market Data 2026" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ;
+    odrl:conflict odrl:prohibit ;
     adalbert:subscribesTo <https://data.bigbank/offers/market-prices-v2> ;
     odrl:assigner <https://data.bigbank/agents/data-platform-team> ;
     odrl:assignee <https://data.bigbank/agents/quant-research> ;
@@ -164,7 +175,7 @@
     odrl:permission [
         a odrl:Permission ;
         odrl:assignee <https://data.bigbank/agents/quant-research> ;
-        odrl:action adalbert-due:display ;
+        odrl:action odrl:display ;
         odrl:target <https://data.bigbank/assets/market-prices>
     ] ;
 
@@ -178,7 +189,7 @@
     odrl:permission [
         a odrl:Permission ;
         odrl:assignee <https://data.bigbank/agents/quant-research> ;
-        odrl:action adalbert-due:derive ;
+        odrl:action odrl:derive ;
         odrl:target <https://data.bigbank/assets/market-prices>
     ] ;
 
@@ -191,7 +202,7 @@
     odrl:prohibition [
         a odrl:Prohibition ;
         odrl:assignee <https://data.bigbank/agents/quant-research> ;
-        odrl:action adalbert-due:distribute ;
+        odrl:action odrl:distribute ;
         odrl:target <https://data.bigbank/assets/market-prices>
     ] .
 

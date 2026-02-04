@@ -1,6 +1,6 @@
 # =============================================================================
 # Adalbert <-> DCON Alignment Mappings
-# Version: 0.4
+# Version: 0.6
 # Date: 2026-02-03
 # =============================================================================
 # skos:closeMatch mappings between Adalbert/ODRL and DCON concepts.
@@ -37,7 +37,7 @@
         Adalbert-specific classes.
     """@en ;
     dcterms:created "2026-02-03"^^xsd:date ;
-    owl:versionInfo "0.4" ;
+    owl:versionInfo "0.6" ;
     owl:imports <https://vocabulary.bigbank/adalbert/> .
 
 # =============================================================================

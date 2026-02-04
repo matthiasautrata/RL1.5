@@ -41,9 +41,9 @@ The `odrl:` namespace is the **primary vocabulary** for Adalbert policies. All s
 
 | Prefix | Namespace | Adalbert Usage |
 |--------|-----------|-------------|
-| `dcon:` | `https://vocabulary.jpmorgan/dcon/` | Referenced in `ontology/adalbert-dcon-alignment.ttl` |
-| `dcon-ops-shapes:` | `https://vocabulary.jpmorgan/dcon/ops/shapes/` | Not used |
-| `dcon-ui:` | `https://vocabulary.jpmorgan/dcon/ui/` | Not used |
+| `dcon:` | `https://vocabulary.bigbank/dcon/` | Referenced in `ontology/adalbert-dcon-alignment.ttl` |
+| `dcon-ops-shapes:` | `https://vocabulary.bigbank/dcon/ops/shapes/` | Not used |
+| `dcon-ui:` | `https://vocabulary.bigbank/dcon/ui/` | Not used |
 
 ### Adalbert-Specific Namespaces (Extensions Only)
 
@@ -65,8 +65,8 @@ The `adalbert:` namespace contains **only terms that ODRL does not define**. All
 
 | Prefix | Namespace | Adalbert Usage |
 |--------|-----------|-------------|
-| `jpmv:` | `https://vocabulary.jpmorgan/DataPublishing/` | Could reference |
-| `due:` | `https://policy.vocabulary.jpmorgan/due/` | Referenced in profiles |
+| `jpmv:` | `https://vocabulary.bigbank/DataPublishing/` | Could reference |
+| `due:` | `https://policy.vocabulary.bigbank/due/` | Referenced in profiles |
 | `dprod:` | `https://ekgf.github.io/data-product-spec/dprod/` | Not used |
 
 ### Instance Namespaces (From DCON2)
@@ -75,11 +75,11 @@ These are for ABox (instance) data, not TBox (vocabulary) definitions:
 
 | Prefix | Namespace | Notes |
 |--------|-----------|-------|
-| `datacontract:` | `https://cdao.data.jpmorgan/dcon/` | DCON contract instances |
-| `subscription:` | `https://cdao.data.jpmorgan/dcon/subscriptions/` | DCON subscriptions |
-| `promise:` | `https://cdao.data.jpmorgan/dcon/promises/` | DCON promises |
-| `duty:` | `https://cdao.data.jpmorgan/dcon/duties/` | Could be used for Adalbert duties |
-| `permission:` | `https://cdao.data.jpmorgan/dcon/permissions/` | Could be used for Adalbert permissions |
+| `datacontract:` | `https://cdao.data.bigbank/dcon/` | DCON contract instances |
+| `subscription:` | `https://cdao.data.bigbank/dcon/subscriptions/` | DCON subscriptions |
+| `promise:` | `https://cdao.data.bigbank/dcon/promises/` | DCON promises |
+| `duty:` | `https://cdao.data.bigbank/dcon/duties/` | Could be used for Adalbert duties |
+| `permission:` | `https://cdao.data.bigbank/dcon/permissions/` | Could be used for Adalbert permissions |
 
 ---
 
@@ -95,7 +95,7 @@ Adalbert uses ODRL terms as its primary vocabulary and defines extensions in its
 
 This is distinct from DCON:
 ```turtle
-@prefix dcon: <https://vocabulary.jpmorgan/dcon/> .
+@prefix dcon: <https://vocabulary.bigbank/dcon/> .
 ```
 
 **Rationale**: Adalbert is a proper ODRL 2.2 profile; DCON is an organization-specific data contract vocabulary. They complement each other. Adalbert uses ODRL terms directly, adding only genuinely new concepts.
@@ -113,11 +113,11 @@ subscription:abc123 a dcon:DataContractSubscription ;
         a adalbert:Subscription ;
         odrl:profile <https://vocabulary.bigbank/adalbert/> ;
         odrl:assigner ex:dataTeam ;
-        odrl:assignee jpmWorker:12345 ;         # DCON2 instance namespace
+        odrl:assignee worker:12345 ;         # DCON2 instance namespace
         odrl:permission [
             a odrl:Permission ;
-            odrl:assignee jpmWorker:12345 ;
-            odrl:action adalbert-due:derive ;
+            odrl:assignee worker:12345 ;
+            odrl:action odrl:derive ;
             odrl:target dataresource:xyz789      # DCON2 instance namespace
         ]
     ] .
@@ -159,8 +159,8 @@ adalbert:Subscription skos:closeMatch dcon:DataContractSubscription .
 @prefix adalbert-due:  <https://vocabulary.bigbank/adalbert/due/> .
 
 # --- DCON (when integrating) ---
-@prefix dcon:    <https://vocabulary.jpmorgan/dcon/> .
-@prefix due:     <https://policy.vocabulary.jpmorgan/due/> .
+@prefix dcon:    <https://vocabulary.bigbank/dcon/> .
+@prefix due:     <https://policy.vocabulary.bigbank/due/> .
 ```
 
 ---

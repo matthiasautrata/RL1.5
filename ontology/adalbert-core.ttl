@@ -1,6 +1,6 @@
 # =============================================================================
 # Adalbert Core Ontology — ODRL 2.2 Profile Extension
-# Version: 0.5
+# Version: 0.6
 # Date: 2026-02-03
 # =============================================================================
 # Adalbert is a proper ODRL 2.2 profile. It uses ODRL terms wherever ODRL
@@ -54,8 +54,8 @@
     """@en ;
     dcterms:created "2026-02-02"^^xsd:date ;
     dcterms:modified "2026-02-03"^^xsd:date ;
-    owl:versionInfo "0.5" ;
-    owl:versionIRI <https://vocabulary.bigbank/adalbert/0.5> ;
+    owl:versionInfo "0.6" ;
+    owl:versionIRI <https://vocabulary.bigbank/adalbert/0.6> ;
     rdfs:seeAlso <https://vocabulary.bigbank/rl2/> ,
                  <http://www.w3.org/ns/odrl/2/> .
 
@@ -113,11 +113,14 @@ adalbert:deadline a owl:DatatypeProperty ;
     skos:definition "Time constraint for duty fulfillment."@en ;
     rdfs:domain odrl:Duty ;
     rdfs:comment """
-        Supports two forms:
+        Supports multiple forms:
         - xsd:dateTime: absolute deadline (e.g., 2026-12-31T23:59:59Z)
         - xsd:duration: relative to activation (e.g., P30D, PT24H)
+        - xsd:time: daily recurring deadline (e.g., 06:30:00)
 
-        For duration: deadline = activationTime + duration
+        For duration: deadline = activationTime + duration.
+        No rdfs:range declared because the range is a union of datatypes;
+        SHACL enforces the allowed types.
     """@en .
 
 # =============================================================================
@@ -160,11 +163,13 @@ adalbert:subscribesTo a owl:ObjectProperty ;
 adalbert:effectiveDate a owl:DatatypeProperty ;
     rdfs:label "effective date"@en ;
     skos:definition "When the contract/subscription becomes effective."@en ;
+    rdfs:domain [ owl:unionOf (adalbert:DataContract adalbert:Subscription) ] ;
     rdfs:range xsd:dateTime .
 
 adalbert:expirationDate a owl:DatatypeProperty ;
     rdfs:label "expiration date"@en ;
     skos:definition "When the contract/subscription expires."@en ;
+    rdfs:domain [ owl:unionOf (adalbert:DataContract adalbert:Subscription) ] ;
     rdfs:range xsd:dateTime .
 
 # =============================================================================
@@ -208,9 +213,15 @@ adalbert:RuntimeReference a owl:Class ;
     rdfs:label "Runtime Reference"@en ;
     skos:definition "Value resolved at evaluation time."@en .
 
-adalbert:currentAgent a adalbert:RuntimeReference ;
+adalbert:currentAgent a adalbert:RuntimeReference, odrl:Party ;
     rdfs:label "current agent"@en ;
-    skos:definition "The requesting agent."@en .
+    skos:definition "The requesting agent."@en ;
+    rdfs:comment """
+        Used as odrl:assignee in open offers and templates to mean
+        'whoever is making the request'. Resolved at evaluation time
+        to the actual requesting agent. Typed as both RuntimeReference
+        and odrl:Party so standard ODRL processors see a valid party.
+    """@en .
 
 adalbert:currentDateTime a odrl:LeftOperand, adalbert:RuntimeReference ;
     rdfs:label "current date time"@en ;

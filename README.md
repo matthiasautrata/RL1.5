@@ -141,7 +141,7 @@ See [comparison-dcon.md](docs/comparisons/comparison-dcon.md) for complete mappi
 |--------|-----------|------|
 | `odrl:` | `http://www.w3.org/ns/odrl/2/` | Primary — all standard constructs |
 | `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Extensions only (State, DataContract, Subscription, resolutionPath, hierarchy) |
-| `adalbert-due:` | `https://vocabulary.bigbank/adalbert/due/` | Data use vocabulary (operands, actions, concept values) |
+| `adalbert-due:` | `https://vocabulary.bigbank/adalbert/due/` | Data use vocabulary (operands, domain-specific actions, concept values); ODRL Common Vocabulary actions used directly |
 
 ---
 
@@ -166,4 +166,4 @@ An implementation conforms to Adalbert if:
 
 ---
 
-**Version**: 0.5 | **Date**: 2026-02-03
+**Version**: 0.6 | **Date**: 2026-02-03

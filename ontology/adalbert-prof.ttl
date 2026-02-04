@@ -1,6 +1,6 @@
 # =============================================================================
 # Adalbert Profile Declaration (DXPROF)
-# Version: 0.5
+# Version: 0.6
 # Date: 2026-02-03
 # =============================================================================
 # W3C Profiles Vocabulary metadata for Adalbert.

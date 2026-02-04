@@ -20,11 +20,12 @@
 | [comparison-odrl-profiles.md](comparisons/comparison-odrl-profiles.md) | vs W3C ODRL profile ecosystem |
 | [comparison-w3c-market-data.md](comparisons/comparison-w3c-market-data.md) | vs W3C Market Data Profile (+ migration appendix) |
 | [comparison-dcon.md](comparisons/comparison-dcon.md) | vs DCON ontology |
+| [comparison-rl2.md](comparisons/comparison-rl2.md) | vs RL2 (functional gap, complexity, translation path) |
 | [namespace-alignment.md](comparisons/namespace-alignment.md) | Namespace coordination |
 
 ---
 
-## Key Design Decisions (v0.4)
+## Key Design Decisions (v0.6)
 
 ### 1. Proper ODRL 2.2 Profile
 
