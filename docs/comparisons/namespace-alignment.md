@@ -65,7 +65,7 @@ The `adalbert:` namespace contains **only terms that ODRL does not define**. All
 
 | Prefix | Namespace | Adalbert Usage |
 |--------|-----------|-------------|
-| `jpmv:` | `https://vocabulary.bigbank/DataPublishing/` | Could reference |
+| `bbdp:` | `https://vocabulary.bigbank/DataPublishing/` | Could reference |
 | `due:` | `https://policy.vocabulary.bigbank/due/` | Referenced in profiles |
 | `dprod:` | `https://ekgf.github.io/data-product-spec/dprod/` | Not used |
 
