@@ -663,13 +663,14 @@ A norm within a policy is active when both the policy is applicable and the norm
 
 ```
 NormActive(norm, Env) =
-    (norm.subject = Env.agent ∨ norm.subject = * ∨ Env.agent memberOf⁺ norm.subject) ∧
+    (norm.subject = ⊥ ∨ norm.subject = Env.agent ∨ norm.subject = *
+     ∨ Env.agent memberOf⁺ norm.subject) ∧
     norm.action matches Env.action ∧
     (norm.asset = ⊥ ∨ norm.asset matches Env.asset) ∧
     (norm.condition = ⊥ ∨ ⟦norm.condition⟧(Env))
 ```
 
-Where `*` is the wildcard agent (matches any requesting agent).
+Where `⊥` indicates no assignee specified (rule applies to any requesting agent), `*` is the wildcard agent, and `memberOf⁺` is transitive party membership. In standard ODRL usage, Set and Offer policies omit `odrl:assignee` on rules that apply to any requesting agent; `adalbert:currentAgent` is reserved for constraint comparisons (identity binding), not for assignee position.
 
 ---
 

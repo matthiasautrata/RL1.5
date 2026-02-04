@@ -51,7 +51,6 @@ ex:marketDataContract a adalbert:DataContract ;
 
     odrl:permission [
         a odrl:Permission ;
-        odrl:assignee adalbert:currentAgent ;
         odrl:action odrl:display ;
         odrl:target ex:marketDataFeed
     ] ;

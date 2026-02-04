@@ -91,7 +91,6 @@
     odrl:obligation [
         a odrl:Duty ;
         rdfs:label "Mandatory audit logging" ;
-        odrl:assignee adalbert:currentAgent ;
         odrl:action adalbert-due:log ;
         odrl:target <https://data.bigbank/assets/access-log> ;
         odrl:constraint [
@@ -108,7 +107,6 @@
     odrl:prohibition [
         a odrl:Prohibition ;
         rdfs:label "No external sharing" ;
-        odrl:assignee adalbert:currentAgent ;
         odrl:action odrl:distribute ;
         odrl:target <https://data.bigbank/assets/employee-data>
     ] ;
@@ -118,7 +116,6 @@
     odrl:prohibition [
         a odrl:Prohibition ;
         rdfs:label "No ML training" ;
-        odrl:assignee adalbert:currentAgent ;
         odrl:action odrl:use ;
         odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
@@ -134,7 +131,6 @@
     odrl:prohibition [
         a odrl:Prohibition ;
         rdfs:label "Production and staging only" ;
-        odrl:assignee adalbert:currentAgent ;
         odrl:action odrl:use ;
         odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
@@ -187,7 +183,6 @@
     odrl:obligation [
         a odrl:Duty ;
         rdfs:label "Retention limit" ;
-        odrl:assignee adalbert:currentAgent ;
         odrl:action odrl:delete ;
         odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [
@@ -202,7 +197,6 @@
     odrl:obligation [
         a odrl:Duty ;
         rdfs:label "Anonymization required" ;
-        odrl:assignee adalbert:currentAgent ;
         odrl:action odrl:anonymize ;
         odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [

@@ -217,10 +217,12 @@ adalbert:currentAgent a adalbert:RuntimeReference, odrl:Party ;
     rdfs:label "current agent"@en ;
     skos:definition "The requesting agent."@en ;
     rdfs:comment """
-        Used as odrl:assignee in open offers and templates to mean
-        'whoever is making the request'. Resolved at evaluation time
-        to the actual requesting agent. Typed as both RuntimeReference
-        and odrl:Party so standard ODRL processors see a valid party.
+        Runtime reference resolved at evaluation time to the actual
+        requesting agent. Used in constraint right-operands for dynamic
+        comparisons (e.g., identity binding). Typed as both
+        RuntimeReference and odrl:Party for ODRL processor compatibility.
+        Note: for rules that apply to any requesting agent, omit
+        odrl:assignee (standard ODRL); do not use currentAgent as assignee.
     """@en .
 
 adalbert:currentDateTime a odrl:LeftOperand, adalbert:RuntimeReference ;
