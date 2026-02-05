@@ -43,7 +43,7 @@ Key relationships:
 |---------|-------------------------|
 | **RL2** | Adalbert is a strict subset; upgrade by adding capabilities |
 | **ODRL 2.2** | Adalbert is a proper profile; uses ODRL classes/properties directly |
-| **DCON** | Alignment via skos:closeMatch; DataContract/Subscription in core |
+| **DCON** | Superseded by Adalbert v0.7; DataContract/Subscription in core; promise hierarchy dissolved |
 | **Semantipolis** | Uses Adalbert for governance evaluation in the semantic layer |
 | **Themis** | Existing ODRL runtime; backward-compatibility target |
 
@@ -56,14 +56,19 @@ Key relationships:
 | `AGENTS.md` | **Governance, personas, multi-agent coordination** |
 | `docs/Adalbert_Semantics.md` | **Formal operational semantics (normative)** |
 | `README.md` | Project overview, design principles, repository structure |
-| `ontology/adalbert-core.ttl` | **OWL ontology -- thin profile extension: State, deadline, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, not** |
+| `ontology/adalbert-core.ttl` | **OWL ontology -- thin profile extension: State, deadline, recurrence, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, not** |
 | `ontology/adalbert-shacl.ttl` | **SHACL validation shapes** |
 | `ontology/adalbert-prof.ttl` | W3C DXPROF profile metadata |
-| `ontology/adalbert-dcon-alignment.ttl` | DCON alignment mappings (skos:closeMatch) |
+| `docs/adalbert-overview.md` | What is Adalbert? Architecture, key concepts, document map |
+| `docs/adalbert-specification.md` | Technical vocabulary reference (classes, properties, SHACL, DUE summary) |
+| `docs/adalbert-term-mapping.md` | Business term -> property mapping + DCON migration |
+| `docs/contracts-guide.md` | Data contract authoring guide (DataContract, Subscription, recurrence, patterns) |
+| `docs/policy-writers-guide.md` | Data use policy authoring guide (permissions, prohibitions, constraints, DUE vocabulary) |
 | `profiles/README.md` | Profile architecture and extension rules |
 | `profiles/adalbert-due.ttl` | Data use vocabulary (all operands, actions, concept values) |
+| `examples/baseline.ttl` | Comprehensive test data (8 contracts, 2 subscriptions, all patterns) |
 | `docs/comparisons/comparison-odrl22.md` | Detailed ODRL 2.2 comparison |
-| `docs/comparisons/comparison-dcon.md` | DCON alignment analysis |
+| `docs/comparisons/comparison-dcon.md` | DCON supersession analysis + completeness verification |
 | `docs/comparisons/comparison-rl2.md` | RL2 functional gap, complexity, translation path |
 | `docs/comparisons/comparison-odrl-profiles.md` | W3C ecosystem positioning |
 | `docs/comparisons/comparison-w3c-market-data.md` | W3C Market Data Profile mapping |
@@ -115,6 +120,7 @@ Adalbert is a proper ODRL 2.2 profile. It uses ODRL's classes and properties dir
 | `adalbert:State` | Unified lifecycle state (Pending, Active, Fulfilled, Violated) |
 | `adalbert:state` | Current lifecycle state property |
 | `adalbert:deadline` | Time constraint for duty fulfillment |
+| `adalbert:recurrence` | RFC 5545 RRULE defining when duty instances are generated |
 | `adalbert:DataContract` | `rdfs:subClassOf odrl:Offer` -- data access offer |
 | `adalbert:Subscription` | `rdfs:subClassOf odrl:Agreement` -- activated contract |
 | `adalbert:subscribesTo` | Links Subscription to its DataContract |
@@ -136,7 +142,7 @@ The DUE profile uses ODRL Common Vocabulary actions directly where equivalents e
 
 ```
 Rule ::= Permission(assignee, action, target, constraint?)
-       | Duty(assignee, action, target, constraint?, deadline?)
+       | Duty(assignee, action, target, constraint?, deadline?, recurrence?)
        | Prohibition(assignee, action, target, constraint?)
 
 Policy ::= Set(permission | prohibition | obligation)+
@@ -185,7 +191,7 @@ Fixed precedence: **Prohibition > Permission**. No configurable conflict strateg
 ```
           adalbert-core.ttl
           (thin profile extension:
-           State, deadline,
+           State, deadline, recurrence,
            DataContract, Subscription,
            partOf, memberOf,
            resolutionPath,
@@ -201,7 +207,7 @@ Fixed precedence: **Prohibition > Permission**. No configurable conflict strateg
              used directly)
 ```
 
-One profile (DUE) carries all vocabulary. DUE reuses ODRL Common Vocabulary actions (odrl:use, odrl:display, etc.) and only defines domain-specific actions in the adalbert-due: namespace. Contract lifecycle classes (DataContract, Subscription) live in core. DCON alignment is a separate mapping file, not a profile.
+One profile (DUE) carries all vocabulary. DUE reuses ODRL Common Vocabulary actions (odrl:use, odrl:display, etc.) and only defines domain-specific actions in the adalbert-due: namespace. Contract lifecycle classes (DataContract, Subscription) live in core. DCON is superseded — the alignment file is deprecated (historical reference only).
 
 ### What Adalbert Defers to RL2
 
@@ -225,7 +231,7 @@ One profile (DUE) carries all vocabulary. DUE reuses ODRL Common Vocabulary acti
 | **SHACL** | Validation shapes for policy conformance | `ontology/adalbert-shacl.ttl` |
 | **SKOS** | Concept hierarchies for operand values | Profile vocabularies |
 | **DXPROF** | W3C Profiles Vocabulary for metadata | `ontology/adalbert-prof.ttl` |
-| **DCON** | Data Contract Ontology alignment | `ontology/adalbert-dcon-alignment.ttl` |
+| **DCON** | Superseded — see `docs/comparisons/comparison-dcon.md` | — |
 | **Dublin Core** | Metadata (title, description, date) | Throughout RDF files |
 
 ### URI Namespace
@@ -304,19 +310,19 @@ adalbert-due:  https://vocabulary.bigbank/adalbert/due/
 | Go extraction from Dafny | Reference implementation language | Phase 2 |
 | Themis backward compatibility | How much of existing runtime to preserve | Open |
 | Profile SHACL shapes | Per-profile validation beyond core shapes | Incomplete |
-| DCON 1.0 compatibility verification | Formal mapping needed | Open |
+| DCON 1.0 compatibility verification | Superseded — see comparison-dcon.md | Resolved |
 | ABAC patterns for data-use profile | Attribute-based access control | Planned |
 
 ---
 
 ## Status
 
-- **Version:** 0.6 (Draft)
+- **Version:** 0.7 (Draft)
 - **Phase:** 1 -- Specification
 - **Formal semantics:** Complete draft (`docs/Adalbert_Semantics.md`)
 - **OWL ontology:** Complete draft (`ontology/adalbert-core.ttl`)
 - **SHACL shapes:** Complete draft (`ontology/adalbert-shacl.ttl`)
 - **Profiles:** DUE (data use vocabulary)
-- **DCON alignment:** Mapping file (`ontology/adalbert-dcon-alignment.ttl`)
+- **DCON:** Superseded (v0.7); see `docs/comparisons/comparison-dcon.md`
 - **Comparison docs:** Complete for ODRL 2.2, W3C profiles, market data, DCON
 - **Next:** Profile review, SHACL completeness, namespace finalization, Phase 2 planning

@@ -17,7 +17,7 @@ This is a **cross-LLM project**. Multiple AI agents and humans collaborate on th
 * Writing style is concise and precise, with no filler.
 * Mindset is that of a mathematician and engineer.
 * Always consider at least two or more alternative solutions. Prefer to research and evaluate alternatives -- locally or by searching secondary sources, like the internet -- instead of jumping into the design right away.
-* Use the ODRL vocabulary for standard constructs; use Adalbert vocabulary only for extensions (State, deadline, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, not).
+* Use the ODRL vocabulary for standard constructs; use Adalbert vocabulary only for extensions (State, deadline, recurrence, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, not).
 
 ## Core Principles
 
@@ -41,7 +41,7 @@ Each persona represents a discipline needed to maintain rigor on this project. A
 **Responsibilities:**
 
 - Design and review OWL classes and properties in `ontology/adalbert-core.ttl`
-- Ensure the core ontology uses ODRL classes and properties directly (odrl:Permission, odrl:Duty, odrl:Prohibition, odrl:Set, odrl:Offer, odrl:Agreement); Adalbert defines only genuine extensions (State, deadline, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, not)
+- Ensure the core ontology uses ODRL classes and properties directly (odrl:Permission, odrl:Duty, odrl:Prohibition, odrl:Set, odrl:Offer, odrl:Agreement); Adalbert defines only genuine extensions (State, deadline, recurrence, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, not)
 - Maintain SHACL validation shapes in `ontology/adalbert-shacl.ttl`
 - Ensure profile operands and actions follow the extension rules in `profiles/README.md`
 - Validate SKOS concept hierarchies (no cycles, proper broader/narrower/related)
@@ -273,9 +273,20 @@ Read these when starting a session:
 | `README.md` | Project overview, design principles |
 | `profiles/README.md` | Profile architecture and extension rules |
 
+Additional documentation (read as needed):
+
+| File | Purpose |
+|------|---------|
+| `docs/adalbert-overview.md` | What is Adalbert? Architecture, key concepts, document map |
+| `docs/adalbert-specification.md` | Technical vocabulary reference (classes, properties, SHACL, DUE summary) |
+| `docs/adalbert-term-mapping.md` | Business term -> property mapping + DCON migration |
+| `docs/contracts-guide.md` | Data contract authoring guide |
+| `docs/policy-writers-guide.md` | Data use policy authoring guide |
+| `examples/baseline.ttl` | Comprehensive test data (all patterns) |
+
 ---
 
-## Current Status (2026-02-03)
+## Current Status (2026-02-04)
 
 **Phase:** 1 -- Specification
 
@@ -287,7 +298,7 @@ Read these when starting a session:
 - SHACL validation shapes (`ontology/adalbert-shacl.ttl`)
 - DXPROF profile metadata (`ontology/adalbert-prof.ttl`)
 - Domain profile: DUE (data use vocabulary)
-- DCON alignment mappings (`ontology/adalbert-dcon-alignment.ttl`)
+- DCON superseded (v0.7); see `docs/comparisons/comparison-dcon.md`
 - Comparison documents (ODRL 2.2, W3C profiles, market data, DCON)
 - Conformance documentation (W3C Best Practices, namespace alignment)
 

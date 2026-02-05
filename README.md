@@ -13,6 +13,7 @@ Adalbert is a proper ODRL 2.2 profile. It uses ODRL terms for all standard const
 3. **Deterministic evaluation**: Total functions, no undefined states
 4. **Formal verification target**: Amenable to Dafny, Why3, Coq
 5. **Structured operand resolution**: `resolutionPath` from canonical roots (agent, asset, context)
+6. **Recurring duties**: `recurrence` via RFC 5545 RRULE for scheduled obligations
 
 Adalbert is **specification-first**. The semantics document defines what any conformant implementation must do. Every Adalbert policy is a valid ODRL 2.2 policy.
 
@@ -36,6 +37,7 @@ See [examples/](examples/) for complete working policies:
 | Conflict resolution | Configurable | Fixed: Prohibition > Permission |
 | Evaluation order | Undefined | Deterministic left-to-right |
 | Operand resolution | Implicit | Explicit `resolutionPath` from canonical roots |
+| Recurring duties | — | `recurrence` via RFC 5545 RRULE with per-instance `deadline` |
 | Contract types | — | `DataContract` (subclass of Offer), `Subscription` (subclass of Agreement) |
 
 **Note**: Adalbert is an ODRL profile, not a parallel vocabulary. Standard ODRL processors can parse Adalbert policies; Adalbert-aware processors additionally enforce lifecycle, bilateral duties, and deterministic evaluation.
@@ -103,35 +105,40 @@ Adalbert/
 ├── config/
 │   └── namespaces.ttl               # Authoritative namespace registry
 ├── ontology/
-│   ├── adalbert-core.ttl            # ODRL profile extension (State, deadline, DataContract, Subscription, hierarchy, resolution)
+│   ├── adalbert-core.ttl            # ODRL profile extension
 │   ├── adalbert-shacl.ttl           # Validation shapes
 │   ├── adalbert-prof.ttl            # DXPROF profile declaration
-│   └── adalbert-dcon-alignment.ttl  # DCON alignment mappings (skos:closeMatch)
 ├── profiles/
 │   └── adalbert-due.ttl             # Data use vocabulary (all operands + actions)
 ├── examples/
-│   ├── data-contract.ttl            # Complete contract example
-│   └── data-use-policy.ttl          # Access control example
+│   ├── data-contract.ttl            # Complete contract example (with recurrence)
+│   ├── data-use-policy.ttl          # Access control example
+│   └── baseline.ttl                 # Comprehensive test data (8 contracts, 2 subscriptions)
 └── docs/
+    ├── adalbert-overview.md         # What is Adalbert? (start here)
+    ├── adalbert-specification.md    # Technical vocabulary reference
+    ├── adalbert-term-mapping.md     # Business term -> property mapping + DCON migration
     ├── Adalbert_Semantics.md        # Formal semantics (normative)
+    ├── contracts-guide.md           # Data contract authoring guide
+    ├── policy-writers-guide.md      # Data use policy authoring guide
     └── comparisons/
-        └── comparison-dcon.md       # DCON integration guide
+        └── comparison-dcon.md       # DCON supersession analysis
 ```
 
 ---
 
-## DCON Integration
+## DCON Supersession
 
-Adalbert's core includes `DataContract` (subclass of Offer) and `Subscription` (subclass of Agreement). DCON alignment is provided via `skos:closeMatch` mappings in `ontology/adalbert-dcon-alignment.ttl`:
+As of v0.7, Adalbert **supersedes** DCON. DCON's promise hierarchy dissolves into standard `odrl:Duty` patterns with DUE actions (`deliver`, `notify`, `conformTo`, `report`). Recurring obligations use `adalbert:recurrence` (RFC 5545 RRULE) instead of DCON's scheduling constraints.
 
-| DCON | Adalbert | Mapping |
-|------|----------|---------|
-| `dcon:DataContract` | `adalbert:DataContract` | `skos:closeMatch` |
-| `dcon:DataContractSubscription` | `adalbert:Subscription` | `skos:closeMatch` |
-| `dcon:Promise` | `odrl:Duty` | Partial (simplified) |
-| Promise/Contract states | `adalbert:State` | `skos:closeMatch` |
+| DCON | Adalbert v0.7 | Status |
+|------|---------------|--------|
+| `dcon:DataContract` | `adalbert:DataContract` | Absorbed into core |
+| `dcon:DataContractSubscription` | `adalbert:Subscription` | Absorbed into core |
+| `dcon:Promise` hierarchy | `odrl:Duty` + DUE actions | Dissolved |
+| `dcon:promisedDeliveryTime` | `adalbert:recurrence` + `adalbert:deadline` | Scheduling + window |
 
-See [comparison-dcon.md](docs/comparisons/comparison-dcon.md) for complete mapping with examples.
+See [comparison-dcon.md](docs/comparisons/comparison-dcon.md) for the supersession analysis, [adalbert-term-mapping.md](docs/adalbert-term-mapping.md) for complete DCON -> Adalbert property mapping, and [contracts-guide.md](docs/contracts-guide.md) for the contracts authoring guide.
 
 ---
 
@@ -140,7 +147,7 @@ See [comparison-dcon.md](docs/comparisons/comparison-dcon.md) for complete mappi
 | Prefix | Namespace | Role |
 |--------|-----------|------|
 | `odrl:` | `http://www.w3.org/ns/odrl/2/` | Primary — all standard constructs |
-| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Extensions only (State, DataContract, Subscription, resolutionPath, hierarchy) |
+| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Extensions only (State, deadline, recurrence, DataContract, Subscription, resolutionPath, hierarchy) |
 | `adalbert-due:` | `https://vocabulary.bigbank/adalbert/due/` | Data use vocabulary (operands, domain-specific actions, concept values); ODRL Common Vocabulary actions used directly |
 
 ---
@@ -166,4 +173,4 @@ An implementation conforms to Adalbert if:
 
 ---
 
-**Version**: 0.6 | **Date**: 2026-02-03
+**Version**: 0.7 | **Date**: 2026-02-04
