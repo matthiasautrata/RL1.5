@@ -16,6 +16,26 @@ The former `ontology/adalbert-dcon-alignment.ttl` mapped Adalbert back to DCON v
 
 ## Critical
 
+### Issue 11: Deadline type mismatch between semantics and ontology/SHACL/examples
+
+The formal semantics (`docs/Adalbert_Semantics.md`) defines `Deadline` as either an absolute `dateTime` or a relative `duration`. The ontology, SHACL, and documentation explicitly allow `xsd:time` (daily recurring deadline), and examples use it (e.g., `"07:30:00"^^xsd:time`). This creates a direct conflict between the normative semantics and the rest of the stack.
+
+| Artifact | Location |
+|----------|----------|
+| Formal semantics | `docs/Adalbert_Semantics.md` |
+| Ontology | `ontology/adalbert-core.ttl` |
+| SHACL | `ontology/adalbert-shacl.ttl` |
+| Documentation | `docs/adalbert-specification.md` |
+| Examples | `examples/baseline.ttl` |
+
+**Alternatives (human decision required):**
+
+**A. Extend formal semantics with daily deadlines.** Add `DailyDeadline(time)` to the `Deadline` type and define the effective deadline rule for daily time windows. Update proofs accordingly.
+
+**B. Remove `xsd:time` from ontology/SHACL/docs/examples.** Model daily windows using `recurrence` plus `xsd:duration` deadlines only.
+
+**Status:** Open
+
 ### Issue 1: Runtime reference `currentAgent` inconsistent across artifacts
 
 `adalbert:currentAgent` was used as `odrl:assignee` in examples, but the formal semantics only matched `Env.agent`, wildcard `*`, or `memberOf+` and never treated `currentAgent` as a special case. This made many example rules non-applicable under the semantics.
@@ -125,6 +145,31 @@ Adalbert's semantics relies on transitive closure: `partOf⁺` in asset matching
 
 ## Medium
 
+### Issue 12: Docs require `odrl:conflict`, SHACL does not enforce it
+
+The policy checklist requires `odrl:conflict odrl:prohibit`, but `adalbertsh:PolicyShape` does not enforce a conflict value. This allows policies to pass SHACL while violating the documented requirement.
+
+| Artifact | Location |
+|----------|----------|
+| SHACL | `ontology/adalbert-shacl.ttl` |
+| Docs | `docs/policy-writers-guide.md` |
+
+**Decision needed:** Either make `odrl:conflict` required in SHACL or relax the documentation requirement.
+
+**Status:** Open
+
+### Issue 13: DUE profile version out of sync
+
+`profiles/adalbert-due.ttl` declares version `0.6` while core ontology and documentation are at `0.7`. This causes release confusion for downstream tooling.
+
+| Artifact | Location |
+|----------|----------|
+| DUE profile | `profiles/adalbert-due.ttl` |
+
+**Decision:** Update DUE profile version info to `0.7` for consistency.
+
+**Status:** Open
+
 ### Issue 5: DUE `purpose` duplicates ODRL purpose operand
 
 DUE defines `adalbert-due:purpose`, but ODRL already provides a `purpose` left operand. ODRL also defines a `recipient` left operand that may cover `recipientType`. This creates avoidable duplication and reduces portability.
@@ -210,6 +255,36 @@ Several DUE actions lack `odrl:includedIn` declarations: `conformTo`, `log`, `no
 
 ## Low
 
+### Issue 14: Redundant `odrl:target` / `odrl:assignee` in examples and guides
+
+Examples often repeat `odrl:target` at both policy and rule levels for the same asset, and repeat `odrl:assignee` at both agreement and rule levels for the same party. This is valid but noisy and makes examples harder to read.
+
+| Artifact | Location |
+|----------|----------|
+| Examples | `examples/baseline.ttl` |
+| Docs | `docs/contracts-guide.md` |
+
+**Alternatives:**
+
+**A. Keep policy-level `odrl:target` and omit rule-level targets unless a rule diverges.**
+
+**B. Drop policy-level `odrl:target` and always require rule-level targets for clarity.**
+
+**Status:** Open
+
+### Issue 15: Resolution paths not enforced for DUE operands
+
+SHACL allows `adalbert:resolutionPath` to be absent on any `odrl:LeftOperand`. For DUE operands, resolution paths are required by convention but not validated, so malformed operands can pass validation.
+
+| Artifact | Location |
+|----------|----------|
+| SHACL | `ontology/adalbert-shacl.ttl` |
+| DUE profile | `profiles/adalbert-due.ttl` |
+
+**Decision needed:** Add a DUE-specific shape that requires `adalbert:resolutionPath` for all operands in the DUE namespace.
+
+**Status:** Open
+
 ### Issue 8: SHACL missing `odrl:Set` target constraint
 
 SHACL does not enforce ODRL's requirement that an `odrl:Set` contains an `odrl:target`. Adding a Set shape would tighten profile validation.
@@ -265,6 +340,9 @@ These require human input before resolution:
 | Q1 | Should `adalbert:currentAgent` be the wildcard agent (`*`) or a runtime substitution for `odrl:assignee`? | Issue 1 | Resolved: neither -- omit assignee for universal rules, keep `currentAgent` for constraints only |
 | Q2 | Keep `adalbert:rightOperandRef`, or switch to `odrl:rightOperandReference` with explicit RDF mapping? | Issue 3 | Resolved: removed -- dead code, identity binding deferred to RL2 |
 | Q3 | Keep custom `partOf`/`memberOf`, or converge on `odrl:partOf` with additional constraints? | Issue 4 | Open |
+| Q4 | is odrl:assigner, odrl:assignee appropriate in the duties in the examples. Should there be a different odrl:Role subclass instead? | Open |
+| Q5 | is odrl:target appropriate in the duties in the examples. Should there be a different pattern instead? What/how should notify target be modelled? | Open |
+
 
 ---
 
