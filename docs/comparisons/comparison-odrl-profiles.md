@@ -185,7 +185,7 @@ The `adalbert:` namespace contains only extensions to ODRL. Domain vocabulary li
 - `odrl:` -- ODRL 2.2 standard terms (primary)
 - `adalbert:` -- Adalbert extensions (State, deadline, DataContract, etc.)
 - `adalbert-due:` -- Data use operands and actions
-- DCON alignment via `ontology/adalbert-dcon-alignment.ttl`
+- DCON superseded (v0.7) — see `comparison-dcon.md`
 - `ds:` -- Data sovereignty (external)
 - `bd:` -- Big data (external)
 
@@ -282,4 +282,4 @@ Adalbert explicitly does **not** attempt to:
 - [W3C ODRL Profiles Registry](https://www.w3.org/community/odrl/wiki/ODRL_Profiles)
 - [ODRL Profile Best Practices](https://www.w3.org/community/reports/odrl/CG-FINAL-profile-bp-20240808.html)
 - [Adalbert Data Use Profile](../../profiles/adalbert-due.ttl)
-- [Adalbert DCON Alignment](../../ontology/adalbert-dcon-alignment.ttl)
+- [Adalbert DCON Supersession](comparison-dcon.md)

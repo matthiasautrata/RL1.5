@@ -90,7 +90,24 @@ odrl:constraint [
 ] .
 ```
 
-### 5. Contract Versioning
+### 5. Recurring Duties
+
+Adalbert supports recurring duties via `adalbert:recurrence` — an RFC 5545 RRULE string that defines when duty instances are generated. The `deadline` defines the per-instance fulfillment window.
+
+```turtle
+odrl:obligation [
+    a odrl:Duty ;
+    odrl:assignee ex:dataTeam ;
+    odrl:action adalbert-due:deliver ;
+    odrl:target ex:marketPrices ;
+    adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
+    adalbert:deadline "06:30:00"^^xsd:time
+] .
+```
+
+This creates a daily delivery duty at 06:00 with a 30-minute fulfillment window. Each instance follows the standard lifecycle independently.
+
+### 6. Contract Versioning
 
 ```turtle
 ex:contract-v2 a adalbert:DataContract ;

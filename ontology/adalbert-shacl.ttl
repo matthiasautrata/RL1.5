@@ -1,7 +1,7 @@
 # =============================================================================
 # Adalbert SHACL Shapes
-# Version: 0.6
-# Date: 2026-02-03
+# Version: 0.7
+# Date: 2026-02-04
 # =============================================================================
 # Validation shapes for Adalbert policies.
 # All shapes target ODRL classes and use ODRL properties.
@@ -168,6 +168,14 @@ adalbertsh:DutyShape a sh:NodeShape ;
             [ sh:datatype xsd:time ]
         ) ;
         sh:message "Deadline must be xsd:dateTime, xsd:duration, or xsd:time."
+    ] ;
+
+    sh:property [
+        sh:path adalbert:recurrence ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^FREQ=(SECONDLY|MINUTELY|HOURLY|DAILY|WEEKLY|MONTHLY|YEARLY)" ;
+        sh:message "Recurrence must be a valid RFC 5545 RRULE starting with FREQ=."
     ] ;
 
     sh:property adalbertsh:StatePropertyGroup .

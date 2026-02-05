@@ -1,7 +1,7 @@
 # =============================================================================
 # Adalbert Profile Declaration (DXPROF)
-# Version: 0.6
-# Date: 2026-02-03
+# Version: 0.7
+# Date: 2026-02-04
 # =============================================================================
 # W3C Profiles Vocabulary metadata for Adalbert.
 # Adalbert is a proper ODRL 2.2 profile — it uses ODRL terms and adds
@@ -33,8 +33,8 @@ odrl:core a dct:Standard ;
     dct:description """
         Proper ODRL 2.2 profile for deterministic data governance.
         Uses ODRL terms for standard constructs; adds lifecycle state,
-        deadline, data contracts, hierarchy extensions, operand resolution,
-        runtime references, and logical negation.
+        deadline, recurrence, data contracts, hierarchy extensions,
+        operand resolution, runtime references, and logical negation.
     """@en ;
     prof:isProfileOf odrl:core ;
     prof:hasToken "adalbert"^^xsd:token ;

@@ -6,16 +6,11 @@ Systematic review findings from cross-LLM audit. Issues ordered by severity.
 
 ## Preliminary: DCON Alignment File
 
-`ontology/adalbert-dcon-alignment.ttl` maps Adalbert back to DCON via `skos:closeMatch`. If DCON absorption is complete and runtime interoperability with legacy DCON systems is not required, this file is documentation/metadata only. It can remain for reference or move to `docs/`. It is not strictly redundant -- it provides semantic bridging.
+The former `ontology/adalbert-dcon-alignment.ttl` mapped Adalbert back to DCON via `skos:closeMatch`.
 
-- Do we keep dcon.ttl as a minimal extension (Contract and Subscription only)?
-- Do we have all the time handling covered?
-- Do we migrate the ../dcon folder with its examples and docs or keep it separate?
-- Need to talk with Andrew?
+**Decision (v0.7):** Adalbert supersedes DCON. The alignment file has been deleted — `docs/comparisons/comparison-dcon.md` serves as the complete supersession record. DCON's promise hierarchy dissolves into `odrl:Duty` patterns with `adalbert:recurrence` for scheduling. Time handling is covered by `recurrence` (RRULE scheduling) + `deadline` (fulfillment window). The `../dcon` folder remains separate — it is not migrated.
 
-
-**Decision needed:** Keep in `ontology/`, move to `docs/`, or remove?
-**Status:** Open
+**Status:** Resolved (v0.7)
 
 ---
 
@@ -286,3 +281,4 @@ These require human input before resolution:
 | 2026-02-04 | Issue 8 | Added `adalbertsh:SetShape` requiring `odrl:target` on Set policies | -- |
 | 2026-02-04 | Issue 9 | Added DUE profile declaration to all 4 example policy instances | -- |
 | 2026-02-04 | Issue 10 | Restructured RL2 comparison with full-stack footprint (ODRL base + extensions vs RL2 standalone) | -- |
+| 2026-02-04 | DCON Supersession | v0.7: DCON superseded; added `adalbert:recurrence`; deprecated alignment file; rewrote comparison-dcon.md; created contracts-guide.md; 16 files modified, 1 created | -- |

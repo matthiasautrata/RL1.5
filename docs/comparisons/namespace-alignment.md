@@ -37,11 +37,13 @@ This file defines prefixes for all W3C vocabularies, DCON ontologies, external v
 
 The `odrl:` namespace is the **primary vocabulary** for Adalbert policies. All standard rule types (`odrl:Permission`, `odrl:Duty`, `odrl:Prohibition`), policy types (`odrl:Set`, `odrl:Offer`, `odrl:Agreement`), constraint types (`odrl:Constraint`, `odrl:LogicalConstraint`), core properties (`odrl:assignee`, `odrl:assigner`, `odrl:target`, `odrl:constraint`, `odrl:action`, `odrl:leftOperand`, `odrl:operator`, `odrl:rightOperand`), and operators (`odrl:eq`, `odrl:lteq`, `odrl:and`, etc.) come from this namespace.
 
-### DCON-Specific Namespaces
+### DCON-Specific Namespaces (Historical Reference)
+
+As of v0.7, Adalbert supersedes DCON. The `dcon:` prefix is retained only for historical reference in the deprecated alignment file.
 
 | Prefix | Namespace | Adalbert Usage |
 |--------|-----------|-------------|
-| `dcon:` | `https://vocabulary.bigbank/dcon/` | Referenced in `ontology/adalbert-dcon-alignment.ttl` |
+| `dcon:` | `https://vocabulary.bigbank/dcon/` | Historical reference only — deprecated alignment file |
 | `dcon-ops-shapes:` | `https://vocabulary.bigbank/dcon/ops/shapes/` | Not used |
 | `dcon-ui:` | `https://vocabulary.bigbank/dcon/ui/` | Not used |
 
@@ -49,12 +51,12 @@ The `odrl:` namespace is the **primary vocabulary** for Adalbert policies. All s
 
 | Prefix | Namespace | Purpose |
 |--------|-----------|---------|
-| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Profile extensions: State, deadline, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, currentAgent, currentDateTime, not |
+| `adalbert:` | `https://vocabulary.bigbank/adalbert/` | Profile extensions: State, deadline, recurrence, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, currentAgent, currentDateTime, not |
 | `adalbert-due:` | `https://vocabulary.bigbank/adalbert/due/` | Data use vocabulary (operands, actions, concept values) |
 
 The `adalbert:` namespace contains **only terms that ODRL does not define**. All standard ODRL constructs are used directly from the `odrl:` namespace. The Adalbert extensions are:
 
-- **Lifecycle**: `State`, `Pending`, `Active`, `Fulfilled`, `Violated`, `state`, `deadline`
+- **Lifecycle**: `State`, `Pending`, `Active`, `Fulfilled`, `Violated`, `state`, `deadline`, `recurrence`
 - **Contracts**: `DataContract` (subClassOf `odrl:Offer`), `Subscription` (subClassOf `odrl:Agreement`), `subscribesTo`, `effectiveDate`, `expirationDate`
 - **Hierarchy**: `partOf` (on `odrl:Asset`), `memberOf` (on `odrl:Party`)
 - **Resolution**: `resolutionPath` (on `odrl:LeftOperand`)
@@ -98,9 +100,9 @@ This is distinct from DCON:
 @prefix dcon: <https://vocabulary.bigbank/dcon/> .
 ```
 
-**Rationale**: Adalbert is a proper ODRL 2.2 profile; DCON is an organization-specific data contract vocabulary. They complement each other. Adalbert uses ODRL terms directly, adding only genuinely new concepts.
+**Rationale**: Adalbert is a proper ODRL 2.2 profile that supersedes DCON (as of v0.7). Adalbert uses ODRL terms directly, adding only genuinely new concepts.
 
-Contract lifecycle concepts (DataContract, Subscription) live in the `adalbert:` namespace as subclasses of ODRL types. Alignment with DCON is expressed via `skos:closeMatch` in `ontology/adalbert-dcon-alignment.ttl`.
+Contract lifecycle concepts (DataContract, Subscription) live in the `adalbert:` namespace as subclasses of ODRL types. The DCON alignment file is deprecated — retained for historical reference only.
 
 ### 2. Instance Layer (ABox)
 
@@ -123,11 +125,11 @@ subscription:abc123 a dcon:DataContractSubscription ;
     ] .
 ```
 
-### 3. Cross-References
+### 3. Cross-References (Historical)
 
-Adalbert DCON alignment file references DCON vocabulary:
+The former DCON alignment file (now deleted) contained these mappings:
 ```turtle
-# In ontology/adalbert-dcon-alignment.ttl
+# Historical — from the removed adalbert-dcon-alignment.ttl
 adalbert:DataContract skos:closeMatch dcon:DataContract .
 adalbert:Subscription skos:closeMatch dcon:DataContractSubscription .
 ```
@@ -192,7 +194,7 @@ adalbert:Subscription skos:closeMatch dcon:DataContractSubscription .
 **Rationale**:
 - DUE carries all vocabulary (operands, actions, concept values)
 - Contract lifecycle classes (DataContract, Subscription) live in core
-- DCON alignment is a mapping file, not a profile namespace
+- DCON is superseded — alignment file deprecated (historical reference)
 
 ### Decision 4: Use DCON2 Instance Namespaces
 

@@ -65,19 +65,14 @@
 
     # ----- PROVIDER COMMITMENTS (Assigner Duties) -----
 
-    # SLA: Daily delivery by 6:30 AM
+    # SLA: Daily delivery by 6:30 AM (recurrence handles scheduling)
     odrl:obligation [
         a odrl:Duty ;
         rdfs:label "Daily data delivery" ;
         odrl:assignee <https://data.bigbank/agents/data-platform-team> ;
-        odrl:action adalbert-due:notify ;
-        odrl:target <https://data.bigbank/assets/data-ready-notification> ;
-        odrl:constraint [
-            a odrl:Constraint ;
-            odrl:leftOperand adalbert:currentDateTime ;
-            odrl:operator odrl:gteq ;
-            odrl:rightOperand "06:00:00"^^xsd:time
-        ] ;
+        odrl:action adalbert-due:deliver ;
+        odrl:target <https://data.bigbank/assets/market-prices> ;
+        adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
         adalbert:deadline "06:30:00"^^xsd:time
     ] ;
 
@@ -209,18 +204,13 @@
 # =============================================================================
 # These are instantiated from the contract clauses with tracked state.
 
-# Assigner duty: Daily delivery notification
+# Assigner duty: Daily delivery (instance for 2026-01-15)
 <https://data.bigbank/duties/delivery-2026-001> a odrl:Duty ;
     rdfs:label "Daily delivery duty (2026-01-15)" ;
     odrl:assignee <https://data.bigbank/agents/data-platform-team> ;
-    odrl:action adalbert-due:notify ;
-    odrl:target <https://data.bigbank/assets/data-ready-notification> ;
-    odrl:constraint [
-        a odrl:Constraint ;
-        odrl:leftOperand adalbert:currentDateTime ;
-        odrl:operator odrl:gteq ;
-        odrl:rightOperand "06:00:00"^^xsd:time
-    ] ;
+    odrl:action adalbert-due:deliver ;
+    odrl:target <https://data.bigbank/assets/market-prices> ;
+    adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
     adalbert:deadline "06:30:00"^^xsd:time ;
     adalbert:state adalbert:Fulfilled .  # Successfully delivered
 

@@ -1,13 +1,14 @@
 # =============================================================================
 # Adalbert Core Ontology — ODRL 2.2 Profile Extension
-# Version: 0.6
-# Date: 2026-02-03
+# Version: 0.7
+# Date: 2026-02-04
 # =============================================================================
 # Adalbert is a proper ODRL 2.2 profile. It uses ODRL terms wherever ODRL
 # defines them and only adds terms for genuinely new capabilities:
 #
 #   - Duty lifecycle (State + state property)
 #   - Deadline on duties
+#   - Recurrence on duties (RFC 5545 RRULE)
 #   - Data contracts and subscriptions (domain subtypes)
 #   - Asset/party hierarchy (partOf, memberOf)
 #   - Structured operand resolution (resolutionPath)
@@ -41,6 +42,7 @@
         Constraint types, operators, core properties). Adds only:
         - Explicit duty lifecycle (Pending -> Active -> Fulfilled/Violated)
         - Deadline property on odrl:Duty
+        - Recurrence property on odrl:Duty (RFC 5545 RRULE)
         - Data contract and subscription subtypes
         - Asset/party hierarchy properties
         - Structured operand resolution via resolutionPath
@@ -52,9 +54,9 @@
         extensions.
     """@en ;
     dcterms:created "2026-02-02"^^xsd:date ;
-    dcterms:modified "2026-02-03"^^xsd:date ;
-    owl:versionInfo "0.6" ;
-    owl:versionIRI <https://vocabulary.bigbank/adalbert/0.6> ;
+    dcterms:modified "2026-02-04"^^xsd:date ;
+    owl:versionInfo "0.7" ;
+    owl:versionIRI <https://vocabulary.bigbank/adalbert/0.7> ;
     rdfs:seeAlso <https://vocabulary.bigbank/rl2/> ,
                  <http://www.w3.org/ns/odrl/2/> .
 
@@ -120,6 +122,23 @@ adalbert:deadline a owl:DatatypeProperty ;
         For duration: deadline = activationTime + duration.
         No rdfs:range declared because the range is a union of datatypes;
         SHACL enforces the allowed types.
+    """@en .
+
+# =============================================================================
+# RECURRENCE (genuinely new)
+# =============================================================================
+
+adalbert:recurrence a owl:DatatypeProperty ;
+    rdfs:label "recurrence"@en ;
+    skos:definition "RFC 5545 RRULE defining when duty instances are generated."@en ;
+    rdfs:domain odrl:Duty ;
+    rdfs:range xsd:string ;
+    rdfs:comment """
+        An RFC 5545 RRULE string (e.g., FREQ=DAILY;BYHOUR=6;BYMINUTE=0).
+        Defines the schedule on which duty instances are created.
+        Each instance follows the standard duty lifecycle independently.
+        The deadline property defines the per-instance fulfillment window.
+        Any iCal-compliant library can parse the value.
     """@en .
 
 # =============================================================================

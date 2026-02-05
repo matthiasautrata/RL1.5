@@ -7,7 +7,7 @@ Domain-specific vocabularies extending Adalbert Core.
 ```
 adalbert-core.ttl
 (ODRL profile extension:
- State, deadline,
+ State, deadline, recurrence,
  DataContract, Subscription,
  partOf, memberOf,
  resolutionPath,
@@ -31,7 +31,7 @@ DUE is the single vocabulary profile — it defines what you can/can't do with d
 
 DUE uses ODRL Common Vocabulary actions directly where ODRL defines them (`odrl:use`, `odrl:read`, `odrl:display`, `odrl:distribute`, `odrl:delete`, `odrl:modify`, `odrl:aggregate`, `odrl:anonymize`, `odrl:derive`). DUE-specific actions that have no ODRL equivalent use the `adalbert-due:` namespace (`nonDisplay`, `conformTo`, `log`, `notify`, `report`, `deliver`, `calculateIndex`, `algorithmicTrading`, `query`, `export`, `copy`, `link`, `profile`).
 
-Contract lifecycle classes (`DataContract`, `Subscription`) and their properties (`subscribesTo`, `effectiveDate`, `expirationDate`) live in core, not in a profile. DCON alignment mappings live in `ontology/adalbert-dcon-alignment.ttl`.
+Contract lifecycle classes (`DataContract`, `Subscription`) and their properties (`subscribesTo`, `effectiveDate`, `expirationDate`) live in core, not in a profile. DCON is superseded as of v0.7 — the alignment file is deprecated (historical reference only).
 
 External vendor contracts (MDS, Bloomberg, etc.) are captured as `adalbert:DataContract` offers using DUE vocabulary. Internal teams subscribe to those contracts and are additionally governed by org-wide DUE Set policies.
 
@@ -66,15 +66,15 @@ Every operand must have a `resolutionPath` starting with a canonical root:
 | `asset` | Target asset | `asset.classification`, `asset.market` |
 | `context` | Request context | `context.purpose`, `context.environment` |
 
-## DCON Alignment
+## DCON Supersession
 
-DCON alignment is not a profile but a mapping file (`ontology/adalbert-dcon-alignment.ttl`). It provides `skos:closeMatch` mappings between Adalbert core concepts and DCON:
+As of v0.7, Adalbert supersedes DCON. DCON's promise hierarchy dissolves into `odrl:Duty` patterns with DUE actions. See `docs/comparisons/comparison-dcon.md` for the supersession analysis.
 
-| Adalbert | DCON | Relationship |
-|----------|------|--------------|
-| `adalbert:DataContract` | `dcon:DataContract` | `skos:closeMatch` |
-| `adalbert:Subscription` | `dcon:DataContractSubscription` | `skos:closeMatch` |
-| `odrl:Duty` | `dcon:Promise` | `skos:closeMatch` |
-| `adalbert:State` instances | DCON duty states | `skos:closeMatch` |
+| DCON Concept | Adalbert v0.7 | Status |
+|--------------|---------------|--------|
+| `dcon:DataContract` | `adalbert:DataContract` | Absorbed into core |
+| `dcon:DataContractSubscription` | `adalbert:Subscription` | Absorbed into core |
+| `dcon:Promise` hierarchy | `odrl:Duty` + DUE actions | Dissolved |
+| Promise scheduling | `adalbert:recurrence` + `adalbert:deadline` | New in v0.7 |
 
-Note: State mappings use `skos:closeMatch`, not `owl:sameAs`, because the state machines differ (Adalbert has 4 unified states vs DCON's separate contract/promise states).
+See [comparison-dcon.md](../docs/comparisons/comparison-dcon.md) for the full supersession analysis.
