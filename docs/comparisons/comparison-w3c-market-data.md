@@ -23,7 +23,7 @@ Internal teams then subscribe to translated contracts (`adalbert:Subscription`) 
 |---------------|---------------------|-------|
 | `odrl:permission` | `odrl:Permission` | Same type |
 | `odrl:prohibition` | `odrl:Prohibition` | Same type |
-| `odrl:duty` | `odrl:Duty` | Same type + lifecycle (add `adalbert:state`) |
+| `odrl:obligation` | `odrl:Duty` | Same type + lifecycle (add `adalbert:state`) |
 | `md:display` | `odrl:display` | MDS action to ODRL Common Vocabulary |
 | `md:distribute` | `odrl:distribute` | MDS action to ODRL Common Vocabulary |
 | `md:derive` | `odrl:derive` | MDS action to ODRL Common Vocabulary |

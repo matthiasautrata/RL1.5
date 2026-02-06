@@ -258,11 +258,10 @@ adalbert:currentAgent a adalbert:RuntimeReference, odrl:Party ;
     rdfs:label "current agent"@en ;
     skos:definition "The requesting agent."@en ;
     rdfs:comment """
-        Runtime reference resolved at evaluation time to the actual
-        requesting agent. Used in constraint right-operands for dynamic
-        comparisons (e.g., identity binding). Typed as both
-        RuntimeReference and odrl:Party for ODRL processor compatibility.
-        Note: for rules that apply to any requesting agent, omit
+        Reserved for constraint identity comparisons. Runtime resolution
+        in right-operand position requires RL2 (rl2:rightOperandRef).
+        Typed as both RuntimeReference and odrl:Party for ODRL processor
+        compatibility. For rules applying to any requesting agent, omit
         odrl:assignee (standard ODRL); do not use currentAgent as assignee.
     """@en .
 

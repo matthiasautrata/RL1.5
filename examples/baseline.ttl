@@ -113,7 +113,13 @@
                  <https://vocabulary.bigbank/adalbert/due/> ;
     odrl:assigner <https://data.bigbank/agents/data-platform> ;
     odrl:target <https://data.bigbank/assets/customer-data> ;
-    adalbert:state adalbert:Fulfilled .
+    adalbert:state adalbert:Fulfilled ;
+
+    # Retained from original contract (superseded by v2)
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:action odrl:use
+    ] .
 
 <https://data.bigbank/offers/customer-api-v2> a adalbert:DataContract ;
     rdfs:label "Customer API v2" ;

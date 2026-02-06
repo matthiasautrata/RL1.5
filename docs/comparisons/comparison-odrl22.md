@@ -262,19 +262,28 @@ A policy conforms to Adalbert if:
 ### SHACL Enforcement
 
 ```turtle
-# Reject RL2-only constructs
-adalbertsh:RejectClaimShape a sh:NodeShape ;
-    sh:targetClass rl2:Claim ;
+# Reject excluded ODRL constructs
+adalbertsh:RejectXoneShape a sh:NodeShape ;
+    sh:target [
+        a sh:SPARQLTarget ;
+        sh:select """
+            PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+            SELECT ?this WHERE { ?this odrl:xone ?list . }
+        """
+    ] ;
     sh:severity sh:Violation ;
-    sh:message "Claims are RL2-only; not permitted in Adalbert" .
+    sh:message "Adalbert does not support xone operator." .
 
-# Duty shape — allow state tracking
-adalbertsh:DutyShape a sh:NodeShape ;
-    sh:targetClass odrl:Duty ;
-    sh:property [
-        sh:path adalbert:state ;
-        sh:minCount 0 ;  # State may be computed, not stored
-    ] .
+adalbertsh:RejectRemedyShape a sh:NodeShape ;
+    sh:target [
+        a sh:SPARQLTarget ;
+        sh:select """
+            PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+            SELECT ?this WHERE { ?this odrl:remedy ?r . }
+        """
+    ] ;
+    sh:severity sh:Violation ;
+    sh:message "Adalbert does not support odrl:remedy. Deferred to RL2." .
 ```
 
 ---

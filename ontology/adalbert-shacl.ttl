@@ -27,6 +27,20 @@ adalbertsh:StatePropertyGroup
     sh:in (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
     sh:message "State must be Pending, Active, Fulfilled, or Violated." .
 
+adalbertsh:ProfilePropertyGroup
+    sh:path odrl:profile ;
+    sh:minCount 1 ;
+    sh:hasValue <https://vocabulary.bigbank/adalbert/> ;
+    sh:message "Adalbert policies must declare odrl:profile <https://vocabulary.bigbank/adalbert/>." .
+
+adalbertsh:NonEmptyClausesConstraint a sh:NodeShape ;
+    sh:or (
+        [ sh:property [ sh:path odrl:permission ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path odrl:prohibition ; sh:minCount 1 ] ]
+        [ sh:property [ sh:path odrl:obligation ; sh:minCount 1 ] ]
+    ) ;
+    sh:message "Policy must have at least one permission, prohibition, or obligation." .
+
 # =============================================================================
 # POLICY SHAPE — profile and conflict declaration
 # =============================================================================
@@ -50,6 +64,10 @@ adalbertsh:SetShape a sh:NodeShape ;
     sh:targetClass odrl:Set ;
     sh:name "Set Shape" ;
 
+    sh:property adalbertsh:ProfilePropertyGroup ;
+
+    sh:node adalbertsh:NonEmptyClausesConstraint ;
+
     sh:property [
         sh:path odrl:target ;
         sh:minCount 1 ;
@@ -63,6 +81,10 @@ adalbertsh:SetShape a sh:NodeShape ;
 adalbertsh:OfferShape a sh:NodeShape ;
     sh:targetClass odrl:Offer ;
     sh:name "Offer Shape" ;
+
+    sh:property adalbertsh:ProfilePropertyGroup ;
+
+    sh:node adalbertsh:NonEmptyClausesConstraint ;
 
     # Offer requires assigner
     sh:property [
@@ -79,6 +101,10 @@ adalbertsh:OfferShape a sh:NodeShape ;
 adalbertsh:AgreementShape a sh:NodeShape ;
     sh:targetClass odrl:Agreement ;
     sh:name "Agreement Shape" ;
+
+    sh:property adalbertsh:ProfilePropertyGroup ;
+
+    sh:node adalbertsh:NonEmptyClausesConstraint ;
 
     sh:property [
         sh:path odrl:assigner ;
@@ -111,9 +137,8 @@ adalbertsh:PermissionShape a sh:NodeShape ;
 
     sh:property [
         sh:path odrl:target ;
-        sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:message "Permission must have exactly one target."
+        sh:message "Permission may have at most one target (inherits from policy if absent)."
     ] .
 
 # =============================================================================
@@ -133,9 +158,8 @@ adalbertsh:ProhibitionShape a sh:NodeShape ;
 
     sh:property [
         sh:path odrl:target ;
-        sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:message "Prohibition must have exactly one target."
+        sh:message "Prohibition may have at most one target (inherits from policy if absent)."
     ] .
 
 # =============================================================================
@@ -239,6 +263,10 @@ adalbertsh:DataContractShape a sh:NodeShape ;
     sh:targetClass adalbert:DataContract ;
     sh:name "Data Contract Shape" ;
 
+    sh:property adalbertsh:ProfilePropertyGroup ;
+
+    sh:node adalbertsh:NonEmptyClausesConstraint ;
+
     sh:property [
         sh:path odrl:assigner ;
         sh:minCount 1 ;
@@ -267,6 +295,10 @@ adalbertsh:DataContractShape a sh:NodeShape ;
 adalbertsh:SubscriptionShape a sh:NodeShape ;
     sh:targetClass adalbert:Subscription ;
     sh:name "Subscription Shape" ;
+
+    sh:property adalbertsh:ProfilePropertyGroup ;
+
+    sh:node adalbertsh:NonEmptyClausesConstraint ;
 
     sh:property [
         sh:path adalbert:subscribesTo ;
@@ -398,6 +430,52 @@ adalbertsh:RejectConsequenceShape a sh:NodeShape ;
     ] ;
     sh:severity sh:Violation ;
     sh:message "Adalbert does not support odrl:consequence. Deferred to RL2." .
+
+adalbertsh:RejectTicketShape a sh:NodeShape ;
+    sh:targetClass odrl:Ticket ;
+    sh:severity sh:Violation ;
+    sh:message "Adalbert does not support odrl:Ticket." .
+
+adalbertsh:RejectRequestShape a sh:NodeShape ;
+    sh:targetClass odrl:Request ;
+    sh:severity sh:Violation ;
+    sh:message "Adalbert does not support odrl:Request." .
+
+adalbertsh:RejectAssetCollectionShape a sh:NodeShape ;
+    sh:targetClass odrl:AssetCollection ;
+    sh:severity sh:Violation ;
+    sh:message "Adalbert does not support odrl:AssetCollection. Use adalbert:partOf hierarchy instead." .
+
+adalbertsh:RejectPartyCollectionShape a sh:NodeShape ;
+    sh:targetClass odrl:PartyCollection ;
+    sh:severity sh:Violation ;
+    sh:message "Adalbert does not support odrl:PartyCollection. Use adalbert:memberOf hierarchy instead." .
+
+adalbertsh:RejectInheritAllowedShape a sh:NodeShape ;
+    sh:target [
+        a sh:SPARQLTarget ;
+        sh:select """
+            PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+            SELECT ?this WHERE {
+                ?this odrl:inheritAllowed ?v .
+            }
+        """
+    ] ;
+    sh:severity sh:Violation ;
+    sh:message "Adalbert does not support odrl:inheritAllowed." .
+
+adalbertsh:RejectInheritFromShape a sh:NodeShape ;
+    sh:target [
+        a sh:SPARQLTarget ;
+        sh:select """
+            PREFIX odrl: <http://www.w3.org/ns/odrl/2/>
+            SELECT ?this WHERE {
+                ?this odrl:inheritFrom ?p .
+            }
+        """
+    ] ;
+    sh:severity sh:Violation ;
+    sh:message "Adalbert does not support odrl:inheritFrom." .
 
 # =============================================================================
 # END OF SHAPES

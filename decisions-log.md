@@ -387,6 +387,84 @@ Consider that RL2 is self-sufficient and RL1.5 lives ontop of ODRL2.2. So, a fai
 
 ---
 
+## External Review Findings
+
+### Issue 16 (High): SHACL target requirement conflicts with target inheritance
+
+PermissionShape/ProhibitionShape required `odrl:target minCount 1`, but Issue 14 introduced policy-level target inheritance where rules omit targets. All published examples failed SHACL validation.
+
+**Decision:** Remove `sh:minCount 1` for `odrl:target` on PermissionShape and ProhibitionShape. Keep `sh:maxCount 1`. Updated messages to note inheritance.
+
+**Changes:**
+
+- `ontology/adalbert-shacl.ttl`: Removed `sh:minCount 1` from PermissionShape and ProhibitionShape target constraints
+- `docs/adalbert-specification.md`: Updated rule-level shapes table
+
+**Status:** Resolved (v0.7.3)
+
+### Issue 17 (High): currentAgent right-operand claim contradicts semantics
+
+Ontology comment said currentAgent is "Used in constraint right-operands for dynamic comparisons", but semantics says right-operand runtime references are deferred to RL2.
+
+**Decision:** Updated ontology comment to remove right-operand claim. Now reads: "Reserved for constraint identity comparisons. Runtime resolution in right-operand position requires RL2."
+
+**Changes:**
+
+- `ontology/adalbert-core.ttl`: Rewritten `rdfs:comment` on `adalbert:currentAgent`
+
+**Status:** Resolved (v0.7.3)
+
+### Issue 18 (High): Incomplete SHACL enforcement of excluded ODRL constructs
+
+Docs list 9 excluded constructs; SHACL only rejected 3 (xone, remedy, consequence). Missing: Ticket, Request, AssetCollection, PartyCollection, inheritAllowed, inheritFrom.
+
+**Decision:** Added 6 rejection shapes. Class-based (`sh:targetClass`) for Ticket, Request, AssetCollection, PartyCollection. SPARQL-target for inheritAllowed, inheritFrom (same pattern as existing property rejections).
+
+**Changes:**
+
+- `ontology/adalbert-shacl.ttl`: Added 6 rejection shapes
+- `docs/adalbert-specification.md`: Added new shapes to rejection shapes table
+
+**Status:** Resolved (v0.7.3)
+
+### Issue 19 (High): Validation gaps — profile requirement and non-empty clauses
+
+Three sub-issues: (a) PolicyShape targets `odrl:Policy` — without RDFS inference, `odrl:profile` requirement never fires on Set/Offer/DataContract/Subscription instances; (b) DataContractShape/SubscriptionShape don't require `odrl:profile`; (c) Semantics requires `Norm+` (non-empty clauses) but no SHACL enforcement.
+
+**Decision:** Added reusable `ProfilePropertyGroup` and `NonEmptyClausesConstraint`. Applied both to SetShape, OfferShape, AgreementShape, DataContractShape, SubscriptionShape. PolicyShape retained for engines with inference.
+
+**Changes:**
+
+- `ontology/adalbert-shacl.ttl`: Added `ProfilePropertyGroup`, `NonEmptyClausesConstraint`; applied to 5 policy type shapes
+- `docs/adalbert-specification.md`: Updated policy-level and contract-level shape descriptions
+
+**Status:** Resolved (v0.7.3)
+
+### Issue 20 (Medium): Documentation inconsistencies
+
+Four sub-issues:
+- (a) Stale SHACL snippet in `comparison-odrl22.md` showing `RejectClaimShape` and simplified DutyShape
+- (b) DUE URI missing trailing slash in `comparison-odrl-profiles.md`
+- (c) SKOS status contradiction in `conformance-w3c-best-practices.md` (section 3 says "Not yet implemented", summary table said "Done")
+- (d) `odrl:duty` should be `odrl:obligation` in `comparison-w3c-market-data.md`
+
+**Decision:** Fixed all four.
+
+**Changes:**
+
+- `docs/comparisons/comparison-odrl22.md`: Replaced stale SHACL snippet with actual rejection shapes
+- `docs/comparisons/comparison-odrl-profiles.md`: Fixed DUE URI trailing slash
+- `docs/conformance-w3c-best-practices.md`: Changed SKOS status from "Done" to "Planned"
+- `docs/comparisons/comparison-w3c-market-data.md`: Changed `odrl:duty` to `odrl:obligation`
+
+**Status:** Resolved (v0.7.3)
+
+### Not addressed (deliberate)
+
+**Finding 5 (contract lifecycle metadata):** By design — contract/subscription state is administrative, duty state is evaluated. No change needed.
+
+---
+
 ## Resolution Log
 
 | Date | Issue | Action | Commit |
@@ -409,3 +487,8 @@ Consider that RL2 is self-sufficient and RL1.5 lives ontop of ODRL2.2. So, a fai
 | 2026-02-06 | Issue 14 | Adopted ODRL target inheritance — policy-level target inherited by rules unless overridden; removed redundant targets from examples and guides | -- |
 | 2026-02-06 | Issue 15 | Added `DUEOperandShape` requiring `resolutionPath` on all 26 DUE operands via `sh:targetNode` enumeration; generic `LeftOperandShape` stays permissive for ODRL built-ins | -- |
 | 2026-02-04 | DCON Supersession | v0.7: DCON superseded; added `adalbert:recurrence`; deprecated alignment file; rewrote comparison-dcon.md; created contracts-guide.md; 16 files modified, 1 created | -- |
+| 2026-02-06 | Issue 16 | Removed `sh:minCount 1` for `odrl:target` on PermissionShape/ProhibitionShape — target inheritance (Issue 14) makes rule-level target optional | -- |
+| 2026-02-06 | Issue 17 | Removed right-operand claim from `currentAgent` comment — runtime resolution in right-operand position deferred to RL2 | -- |
+| 2026-02-06 | Issue 18 | Added 6 SHACL rejection shapes for excluded ODRL constructs: Ticket, Request, AssetCollection, PartyCollection, inheritAllowed, inheritFrom | -- |
+| 2026-02-06 | Issue 19 | Added `ProfilePropertyGroup` and `NonEmptyClausesConstraint` to Set/Offer/Agreement/DataContract/Subscription shapes — ensures validation without RDFS inference | -- |
+| 2026-02-06 | Issue 20 | Fixed 4 doc inconsistencies: stale SHACL snippet, DUE URI slash, SKOS status contradiction, `odrl:duty` → `odrl:obligation` | -- |

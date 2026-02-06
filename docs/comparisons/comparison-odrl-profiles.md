@@ -196,7 +196,7 @@ Policies declare which profiles they use:
 ```turtle
 ex:policy a adalbert:Subscription ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
-                 <https://vocabulary.bigbank/adalbert/due> ,
+                 <https://vocabulary.bigbank/adalbert/due/> ,
                  <https://example.org/data-sovereignty> ;
     odrl:assigner ex:dataTeam ;
     odrl:assignee ex:analyticsTeam ;

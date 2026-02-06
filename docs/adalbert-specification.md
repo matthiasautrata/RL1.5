@@ -420,17 +420,17 @@ Shapes are defined in `ontology/adalbert-shacl.ttl`. Key constraints:
 
 | Shape | Target | Key Constraints |
 |-------|--------|-----------------|
-| `adalbertsh:PolicyShape` | `odrl:Policy` | Must declare `odrl:profile` |
-| `adalbertsh:SetShape` | `odrl:Set` | Must have at least one `odrl:target` |
-| `adalbertsh:OfferShape` | `odrl:Offer` | Exactly one `odrl:assigner` |
-| `adalbertsh:AgreementShape` | `odrl:Agreement` | Exactly one `odrl:assigner` and one `odrl:assignee` |
+| `adalbertsh:PolicyShape` | `odrl:Policy` | Must declare `odrl:profile` (for engines with RDFS inference) |
+| `adalbertsh:SetShape` | `odrl:Set` | Must declare `odrl:profile`; at least one `odrl:target`; at least one clause |
+| `adalbertsh:OfferShape` | `odrl:Offer` | Must declare `odrl:profile`; exactly one `odrl:assigner`; at least one clause |
+| `adalbertsh:AgreementShape` | `odrl:Agreement` | Must declare `odrl:profile`; exactly one `odrl:assigner` and one `odrl:assignee`; at least one clause |
 
 ### Rule-level shapes
 
 | Shape | Target | Key Constraints |
 |-------|--------|-----------------|
-| `adalbertsh:PermissionShape` | `odrl:Permission` | Exactly one `odrl:action` and one `odrl:target` |
-| `adalbertsh:ProhibitionShape` | `odrl:Prohibition` | Exactly one `odrl:action` and one `odrl:target` |
+| `adalbertsh:PermissionShape` | `odrl:Permission` | Exactly one `odrl:action`; at most one `odrl:target` (inherited from policy if absent) |
+| `adalbertsh:ProhibitionShape` | `odrl:Prohibition` | Exactly one `odrl:action`; at most one `odrl:target` (inherited from policy if absent) |
 | `adalbertsh:DutyShape` | `odrl:Duty` | Exactly one `odrl:action`; `subject` 0..1; `object` 0..1; `deadline` 0..1 (dateTime/duration); `recurrence` 0..1 (RRULE pattern); `state` 0..1 |
 
 ### Constraint-level shapes
@@ -444,8 +444,8 @@ Shapes are defined in `ontology/adalbert-shacl.ttl`. Key constraints:
 
 | Shape | Target | Key Constraints |
 |-------|--------|-----------------|
-| `adalbertsh:DataContractShape` | `adalbert:DataContract` | Exactly one `odrl:assigner`; `state` 0..1; effective/expiration dates 0..1 |
-| `adalbertsh:SubscriptionShape` | `adalbert:Subscription` | Exactly one `adalbert:subscribesTo` (must be `adalbert:DataContract`); `state` 0..1; effective/expiration dates 0..1 |
+| `adalbertsh:DataContractShape` | `adalbert:DataContract` | Must declare `odrl:profile`; exactly one `odrl:assigner`; at least one clause; `state` 0..1; effective/expiration dates 0..1 |
+| `adalbertsh:SubscriptionShape` | `adalbert:Subscription` | Must declare `odrl:profile`; exactly one `adalbert:subscribesTo` (must be `adalbert:DataContract`); at least one clause; `state` 0..1; effective/expiration dates 0..1 |
 
 ### Operand shapes
 
@@ -461,6 +461,12 @@ Shapes are defined in `ontology/adalbert-shacl.ttl`. Key constraints:
 | `adalbertsh:RejectXoneShape` | `odrl:xone` | Not supported in Adalbert |
 | `adalbertsh:RejectRemedyShape` | `odrl:remedy` | Deferred to RL2 |
 | `adalbertsh:RejectConsequenceShape` | `odrl:consequence` | Deferred to RL2 |
+| `adalbertsh:RejectTicketShape` | `odrl:Ticket` | Not supported |
+| `adalbertsh:RejectRequestShape` | `odrl:Request` | Not supported |
+| `adalbertsh:RejectAssetCollectionShape` | `odrl:AssetCollection` | Use `adalbert:partOf` instead |
+| `adalbertsh:RejectPartyCollectionShape` | `odrl:PartyCollection` | Use `adalbert:memberOf` instead |
+| `adalbertsh:RejectInheritAllowedShape` | `odrl:inheritAllowed` | Not supported |
+| `adalbertsh:RejectInheritFromShape` | `odrl:inheritFrom` | Not supported |
 
 ---
 

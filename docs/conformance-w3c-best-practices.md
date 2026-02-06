@@ -250,7 +250,7 @@ Using `prof:isTransitiveProfileOf` for the complete hierarchy:
 |---------------|--------|-------|
 | Unique IRI | Done | `https://vocabulary.bigbank/adalbert/` |
 | Stable web resource | Done | Planned hosting |
-| SKOS structure | Done | ConceptScheme + Collections referencing ODRL types |
+| SKOS structure | Planned | SKOS concept values used in DUE; profile-level SKOS structuring planned |
 | OWL ontology | Done | `adalbert-core.ttl` (extensions only) |
 | Human-readable spec | Done | Multiple markdown docs |
 | DXPROF metadata | Done | `adalbert-prof.ttl` |
