@@ -135,7 +135,7 @@
         odrl:action adalbert-due:deliver ;
         odrl:target <https://data.bigbank/assets/customer-data> ;
         adalbert:recurrence "FREQ=DAILY;BYHOUR=7;BYMINUTE=0" ;
-        adalbert:deadline "07:30:00"^^xsd:time
+        adalbert:deadline "PT30M"^^xsd:duration
     ] ;
 
     # Provider: schema conformance
@@ -704,7 +704,7 @@
     odrl:action adalbert-due:deliver ;
     odrl:target <https://data.bigbank/assets/customer-data> ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=7;BYMINUTE=0" ;
-    adalbert:deadline "07:30:00"^^xsd:time ;
+    adalbert:deadline "PT30M"^^xsd:duration ;
     adalbert:state adalbert:Fulfilled .
 
 <https://data.bigbank/duties/cust-schema-2026-001> a odrl:Duty ;

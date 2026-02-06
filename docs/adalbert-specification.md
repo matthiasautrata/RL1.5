@@ -187,17 +187,16 @@ ex:subscription a adalbert:Subscription ;
 |----------|-------|
 | **Type** | `owl:DatatypeProperty` |
 | **Domain** | `odrl:Duty` |
-| **Range** | `xsd:dateTime` | `xsd:duration` | `xsd:time` (enforced by SHACL) |
+| **Range** | `xsd:dateTime` | `xsd:duration` (enforced by SHACL) |
 | **Cardinality** | 0..1 |
 | **Definition** | Time constraint for duty fulfillment |
 
-Three forms:
+Two forms:
 
 | Form | Datatype | Meaning | Example |
 |------|----------|---------|---------|
 | Absolute | `xsd:dateTime` | Fixed deadline | `"2026-12-31T23:59:59Z"^^xsd:dateTime` |
 | Relative | `xsd:duration` | Offset from activation | `"P30D"^^xsd:duration` |
-| Daily recurring | `xsd:time` | Daily deadline | `"06:30:00"^^xsd:time` |
 
 ### 4.3 adalbert:recurrence
 
@@ -393,7 +392,7 @@ Shapes are defined in `ontology/adalbert-shacl.ttl`. Key constraints:
 |-------|--------|-----------------|
 | `adalbertsh:PermissionShape` | `odrl:Permission` | Exactly one `odrl:action` and one `odrl:target` |
 | `adalbertsh:ProhibitionShape` | `odrl:Prohibition` | Exactly one `odrl:action` and one `odrl:target` |
-| `adalbertsh:DutyShape` | `odrl:Duty` | Exactly one `odrl:action`; `deadline` 0..1 (dateTime/duration/time); `recurrence` 0..1 (RRULE pattern); `state` 0..1 |
+| `adalbertsh:DutyShape` | `odrl:Duty` | Exactly one `odrl:action`; `deadline` 0..1 (dateTime/duration); `recurrence` 0..1 (RRULE pattern); `state` 0..1 |
 
 ### Constraint-level shapes
 

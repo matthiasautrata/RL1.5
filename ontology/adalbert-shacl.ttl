@@ -165,9 +165,8 @@ adalbertsh:DutyShape a sh:NodeShape ;
         sh:or (
             [ sh:datatype xsd:dateTime ]
             [ sh:datatype xsd:duration ]
-            [ sh:datatype xsd:time ]
         ) ;
-        sh:message "Deadline must be xsd:dateTime, xsd:duration, or xsd:time."
+        sh:message "Deadline must be xsd:dateTime or xsd:duration."
     ] ;
 
     sh:property [

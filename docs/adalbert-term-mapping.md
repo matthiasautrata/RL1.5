@@ -101,7 +101,7 @@ ex:subscription adalbert:effectiveDate "2026-01-15T00:00:00Z"^^xsd:dateTime .
 **Adalbert property:** `adalbert:deadline`
 **Used on:** `odrl:Duty`
 **Cardinality:** 0..1
-**Datatype:** `xsd:dateTime` | `xsd:duration` | `xsd:time`
+**Datatype:** `xsd:dateTime` | `xsd:duration`
 **Source:** Adalbert
 **Example:**
 ```turtle
@@ -110,9 +110,6 @@ adalbert:deadline "2026-12-31T23:59:59Z"^^xsd:dateTime .
 
 # Relative deadline (30 days from activation)
 adalbert:deadline "P30D"^^xsd:duration .
-
-# Daily recurring deadline (06:30 each day)
-adalbert:deadline "06:30:00"^^xsd:time .
 ```
 **DCON equivalent:** `dcon:hasTerminationClause` (partial)
 
@@ -235,7 +232,7 @@ odrl:obligation [
     odrl:action adalbert-due:deliver ;
     odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
-    adalbert:deadline "06:30:00"^^xsd:time
+    adalbert:deadline "PT30M"^^xsd:duration
 ] .
 ```
 **DCON equivalent:** `dcon:ProviderTimelinessPromise`

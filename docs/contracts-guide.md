@@ -106,7 +106,7 @@ Provider duties declare what the data team commits to. The provider is identifie
         odrl:action adalbert-due:deliver ;
         odrl:target ex:marketPrices ;
         adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
-        adalbert:deadline "06:30:00"^^xsd:time
+        adalbert:deadline "PT30M"^^xsd:duration
     ] ;
 
     # Schema conformance
@@ -196,7 +196,7 @@ odrl:obligation [
     odrl:action adalbert-due:deliver ;
     odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
-    adalbert:deadline "06:30:00"^^xsd:time
+    adalbert:deadline "PT30M"^^xsd:duration
 ] .
 ```
 
@@ -267,7 +267,7 @@ odrl:obligation [
     odrl:action adalbert-due:deliver ;
     odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
-    adalbert:deadline "06:30:00"^^xsd:time
+    adalbert:deadline "PT30M"^^xsd:duration
 ] .
 ```
 
@@ -326,7 +326,7 @@ ex:contract a adalbert:DataContract ;
         odrl:action adalbert-due:deliver ;
         odrl:target ex:customerData ;
         adalbert:recurrence "FREQ=DAILY;BYHOUR=7;BYMINUTE=0" ;
-        adalbert:deadline "07:30:00"^^xsd:time
+        adalbert:deadline "PT30M"^^xsd:duration
     ] ;
     odrl:obligation [
         a odrl:Duty ;
@@ -557,7 +557,7 @@ If migrating from DCON, see [adalbert-term-mapping.md](adalbert-term-mapping.md)
 6. Each duty has exactly one `odrl:action`
 7. Each permission and prohibition has exactly one `odrl:action` and one `odrl:target`
 8. Provider duties have `odrl:assignee` set to the provider
-9. Deadlines use `xsd:dateTime`, `xsd:duration`, or `xsd:time`
+9. Deadlines use `xsd:dateTime` or `xsd:duration`
 10. Recurrence uses a valid RFC 5545 RRULE starting with `FREQ=`
 11. Constraints have `leftOperand`, `operator`, and `rightOperand`
 12. LogicalConstraints use exactly one of `odrl:and`, `odrl:or`, or `adalbert:not`

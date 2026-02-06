@@ -54,7 +54,7 @@ ex:timelinessPromise a dcon:ProviderTimelinessPromise ;
     odrl:action adalbert-due:deliver ;
     odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
-    adalbert:deadline "06:30:00"^^xsd:time
+    adalbert:deadline "PT30M"^^xsd:duration
 ] .
 ```
 

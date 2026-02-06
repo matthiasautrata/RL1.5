@@ -18,7 +18,7 @@ The former `ontology/adalbert-dcon-alignment.ttl` mapped Adalbert back to DCON v
 
 ### Issue 11: Deadline type mismatch between semantics and ontology/SHACL/examples
 
-The formal semantics (`docs/Adalbert_Semantics.md`) defines `Deadline` as either an absolute `dateTime` or a relative `duration`. The ontology, SHACL, and documentation explicitly allow `xsd:time` (daily recurring deadline), and examples use it (e.g., `"07:30:00"^^xsd:time`). This creates a direct conflict between the normative semantics and the rest of the stack.
+The formal semantics (`docs/Adalbert_Semantics.md`) defines `Deadline` as either an absolute `dateTime` or a relative `duration`. The ontology, SHACL, and documentation explicitly allowed `xsd:time` (daily recurring deadline), and examples used it (e.g., `"07:30:00"^^xsd:time`). This created a direct conflict between the normative semantics and the rest of the stack.
 
 | Artifact | Location |
 |----------|----------|
@@ -28,13 +28,23 @@ The formal semantics (`docs/Adalbert_Semantics.md`) defines `Deadline` as either
 | Documentation | `docs/adalbert-specification.md` |
 | Examples | `examples/baseline.ttl` |
 
-**Alternatives (human decision required):**
+**Decision:** Alternative B — Remove `xsd:time` from ontology/SHACL/docs/examples. Model daily windows using `recurrence` plus `xsd:duration` deadlines only. For example, `"FREQ=DAILY;BYHOUR=7;BYMINUTE=0"` with `"PT30M"^^xsd:duration` means "generate duty at 07:00, fulfill within 30 minutes" (effective deadline 07:30). This preserves all functional capability while aligning with the formal semantics.
 
-**A. Extend formal semantics with daily deadlines.** Add `DailyDeadline(time)` to the `Deadline` type and define the effective deadline rule for daily time windows. Update proofs accordingly.
+**Changes:**
 
-**B. Remove `xsd:time` from ontology/SHACL/docs/examples.** Model daily windows using `recurrence` plus `xsd:duration` deadlines only.
+- `ontology/adalbert-core.ttl`: Removed xsd:time from deadline property comment
+- `ontology/adalbert-shacl.ttl`: Removed xsd:time from deadline datatype SHACL constraint
+- `docs/adalbert-specification.md`: Removed xsd:time from deadline types table and SHACL summary
+- `examples/baseline.ttl`: Changed `"07:30:00"^^xsd:time` to `"PT30M"^^xsd:duration`
+- `examples/data-contract.ttl`: Changed `"06:30:00"^^xsd:time` to `"PT30M"^^xsd:duration`
+- `examples/README.md`: Updated example to use duration
+- `docs/README.md`: Removed xsd:time from deadline semantics section
+- `docs/adalbert-overview.md`: Updated example to use duration
+- `docs/adalbert-term-mapping.md`: Removed xsd:time from datatype list and examples
+- `docs/contracts-guide.md`: Updated all examples and checklist to remove xsd:time
+- `docs/comparisons/comparison-dcon.md`: Updated Adalbert example to use duration
 
-**Status:** Open
+**Status:** Resolved (v0.7.1)
 
 ### Issue 1: Runtime reference `currentAgent` inconsistent across artifacts
 
@@ -227,9 +237,9 @@ Several DUE actions lack `odrl:includedIn` declarations: `conformTo`, `log`, `no
 
 #### 7a: `docs/README.md` omits extensions and deadline type
 
-`docs/README.md` omits `adalbert:memberOf` from the extension list and excludes `xsd:time` from deadline semantics, but core ontology and SHACL allow it. (`rightOperandRef` was removed in Issue 3, so its absence is now correct.)
+`docs/README.md` omitted `adalbert:memberOf` from the extension list. (`rightOperandRef` was removed in Issue 3, so its absence is now correct.) The file also previously excluded `xsd:time` from deadline semantics, which was correct per Issue 11 resolution.
 
-**Fix:** Added `memberOf` to extension list; added `xsd:time` to deadline types.
+**Fix:** Added `memberOf` to extension list. `xsd:time` was later removed from the entire stack per Issue 11 (Alternative B).
 
 #### 7b: Duty/Promise mapping inconsistency
 
@@ -355,8 +365,10 @@ These require human input before resolution:
 | 2026-02-04 | Issue 3, Q2 | Removed `rightOperandRef` — dead code, identity binding deferred to RL2; simplified SHACL and abstract syntax | -- |
 | 2026-02-04 | Issue 5 | Replaced `adalbert-due:purpose` with `odrl:purpose` + resolutionPath — standard ODRL profile pattern; updated 7 files | -- |
 | 2026-02-04 | Issue 6 | Added `odrl:includedIn` hierarchy to 7 DUE actions; documented `conformTo` exception | -- |
-| 2026-02-04 | Issue 7 | Fixed three doc inconsistencies: added `memberOf` + `xsd:time` to README, fixed `dcon:Duty` → `dcon:Promise`, removed false SKOS claims | -- |
+| 2026-02-04 | Issue 7 | Fixed three doc inconsistencies: added `memberOf` to README, fixed `dcon:Duty` → `dcon:Promise`, removed false SKOS claims | -- |
+| 2026-02-06 | Issue 7 (revert) | Removed `xsd:time` from README per Issue 11 resolution (Alternative B) | -- |
 | 2026-02-04 | Issue 8 | Added `adalbertsh:SetShape` requiring `odrl:target` on Set policies | -- |
 | 2026-02-04 | Issue 9 | Added DUE profile declaration to all 4 example policy instances | -- |
 | 2026-02-04 | Issue 10 | Restructured RL2 comparison with full-stack footprint (ODRL base + extensions vs RL2 standalone) | -- |
+| 2026-02-06 | Issue 11 | Removed `xsd:time` from deadline — Alternative B: use recurrence + duration for daily windows; updated 11 files (ontology, SHACL, 7 docs, 3 examples) | -- |
 | 2026-02-04 | DCON Supersession | v0.7: DCON superseded; added `adalbert:recurrence`; deprecated alignment file; rewrote comparison-dcon.md; created contracts-guide.md; 16 files modified, 1 created | -- |

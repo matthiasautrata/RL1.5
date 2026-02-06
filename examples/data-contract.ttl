@@ -73,7 +73,7 @@
         odrl:action adalbert-due:deliver ;
         odrl:target <https://data.bigbank/assets/market-prices> ;
         adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
-        adalbert:deadline "06:30:00"^^xsd:time
+        adalbert:deadline "PT30M"^^xsd:duration
     ] ;
 
     # SLA: 14-day notice for schema changes
@@ -211,7 +211,7 @@
     odrl:action adalbert-due:deliver ;
     odrl:target <https://data.bigbank/assets/market-prices> ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
-    adalbert:deadline "06:30:00"^^xsd:time ;
+    adalbert:deadline "PT30M"^^xsd:duration ;
     adalbert:state adalbert:Fulfilled .  # Successfully delivered
 
 # Assigner duty: Schema change notification
