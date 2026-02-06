@@ -246,24 +246,26 @@ Each generated instance follows the standard duty lifecycle independently (Pendi
 | Property | Value |
 |----------|-------|
 | **Type** | `owl:ObjectProperty`, `owl:TransitiveProperty` |
+| **SubPropertyOf** | `odrl:partOf` |
 | **Domain** | `odrl:Asset` |
 | **Range** | `odrl:Asset` |
 | **Cardinality** | 0..* |
 | **Definition** | Asset contained in a larger asset |
 
-Transitive: if table `partOf` schema and schema `partOf` database, then table `partOf` database.
+Transitive: if table `partOf` schema and schema `partOf` database, then table `partOf` database. Declared `rdfs:subPropertyOf odrl:partOf` so ODRL processors with RDFS reasoning can interpret Adalbert asset hierarchies.
 
 ### 4.8 adalbert:memberOf
 
 | Property | Value |
 |----------|-------|
 | **Type** | `owl:ObjectProperty`, `owl:TransitiveProperty` |
+| **SubPropertyOf** | `odrl:partOf` |
 | **Domain** | `odrl:Party` |
 | **Range** | `odrl:Party` |
 | **Cardinality** | 0..* |
 | **Definition** | Party member of a group or organization |
 
-Transitive: if person `memberOf` team and team `memberOf` division, then person `memberOf` division.
+Transitive: if person `memberOf` team and team `memberOf` division, then person `memberOf` division. Declared `rdfs:subPropertyOf odrl:partOf` so ODRL processors with RDFS reasoning can interpret Adalbert party hierarchies.
 
 ### 4.9 adalbert:resolutionPath
 
@@ -455,8 +457,8 @@ Adalbert restricts certain ODRL features:
 | `odrl:consequence` | Rejected | Deferred to RL2 |
 | `odrl:Ticket` | Not used | Not applicable to data governance |
 | `odrl:Request` | Not used | Not applicable |
-| `odrl:AssetCollection` | Not used | Use `adalbert:partOf` hierarchy instead |
-| `odrl:PartyCollection` | Not used | Use `adalbert:memberOf` hierarchy instead |
+| `odrl:AssetCollection` | Not used | Use `adalbert:partOf` hierarchy instead (`rdfs:subPropertyOf odrl:partOf` bridges to ODRL) |
+| `odrl:PartyCollection` | Not used | Use `adalbert:memberOf` hierarchy instead (`rdfs:subPropertyOf odrl:partOf` bridges to ODRL) |
 
 ---
 

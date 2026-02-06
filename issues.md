@@ -147,9 +147,17 @@ Adalbert's semantics relies on transitive closure: `partOf⁺` in asset matching
 
 **D. Keep as-is.** The properties aren't redundant (they add transitivity and domain typing). But without subproperty bridging, ODRL processors can't interpret Adalbert hierarchies at all.
 
-**Decision needed:** Which alternative? Requires discussion -- affects ODRL interoperability posture.
+**Decision:** Option A — declare `rdfs:subPropertyOf odrl:partOf` on both properties. This is the standard ODRL profile pattern: 2 lines of RDF, zero impact on semantics or examples. ODRL processors with RDFS reasoning can infer `odrl:partOf` from Adalbert triples. Transitivity and typed domains remain Adalbert-specific additions not inherited by the base property.
 
-**Status:** Open
+**Changes:**
+
+- `ontology/adalbert-core.ttl`: Added `rdfs:subPropertyOf odrl:partOf` to both `adalbert:partOf` and `adalbert:memberOf`; updated `rdfs:comment` to note the bridge; updated `dcterms:modified`
+- `docs/adalbert-specification.md`: Added `SubPropertyOf` row to property tables (§4.7, §4.8); updated AssetCollection/PartyCollection reasons in §8
+- `docs/comparisons/comparison-odrl22.md`: Added ODRL Bridge column to hierarchy table; added bridge explanation paragraph; updated AssetCollection/PartyCollection exclusion reasons
+- `docs/conformance-w3c-best-practices.md`: Updated party functions and asset relationships sections
+- `docs/README.md`: Added parenthetical `rdfs:subPropertyOf odrl:partOf` to extension list
+
+**Status:** Resolved (v0.7.1)
 
 ---
 
@@ -365,7 +373,7 @@ These require human input before resolution:
 |---|----------|----------------|--------|
 | Q1 | Should `adalbert:currentAgent` be the wildcard agent (`*`) or a runtime substitution for `odrl:assignee`? | Issue 1 | Resolved: neither -- omit assignee for universal rules, keep `currentAgent` for constraints only |
 | Q2 | Keep `adalbert:rightOperandRef`, or switch to `odrl:rightOperandReference` with explicit RDF mapping? | Issue 3 | Resolved: removed -- dead code, identity binding deferred to RL2 |
-| Q3 | Keep custom `partOf`/`memberOf`, or converge on `odrl:partOf` with additional constraints? | Issue 4 | Open |
+| Q3 | Keep custom `partOf`/`memberOf`, or converge on `odrl:partOf` with additional constraints? | Issue 4 | Resolved: Option A — keep custom properties, bridge via `rdfs:subPropertyOf odrl:partOf` |
 | Q4 | is odrl:assigner, odrl:assignee appropriate in the duties in the examples. Should there be a different odrl:Role subclass instead? | Open |
 | Q5 | is odrl:target appropriate in the duties in the examples. Should there be a different pattern instead? What/how should notify target be modelled? | Open |
 
@@ -389,4 +397,5 @@ These require human input before resolution:
 | 2026-02-06 | Issue 11 | Removed `xsd:time` from deadline — Alternative B: use recurrence + duration for daily windows; updated 11 files (ontology, SHACL, 7 docs, 3 examples) | -- |
 | 2026-02-06 | Issue 12 | Moved `odrl:conflict` to profile level (Option C) — declared once in `adalbert-prof.ttl`; removed from SHACL, examples, guides; 9 files modified | -- |
 | 2026-02-06 | Issue 13 | Updated DUE profile version from `0.6` to `0.7` — synced with core ontology version | -- |
+| 2026-02-06 | Issue 4, Q3 | Option A: declared `rdfs:subPropertyOf odrl:partOf` on both `adalbert:partOf` and `adalbert:memberOf` — standard ODRL profile bridge pattern; updated ontology, spec, comparison, conformance, README | -- |
 | 2026-02-04 | DCON Supersession | v0.7: DCON superseded; added `adalbert:recurrence`; deprecated alignment file; rewrote comparison-dcon.md; created contracts-guide.md; 16 files modified, 1 created | -- |

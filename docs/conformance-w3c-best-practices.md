@@ -94,13 +94,13 @@ The W3C ODRL Community Group published best practices for ODRL 2.2 profiles. Thi
 
 **Requirement**: Define new party roles.
 
-**Adalbert**: Uses `odrl:assignee` and `odrl:assigner` directly. No sub-properties defined. Hierarchy is expressed via `adalbert:memberOf` (transitive party membership on `odrl:Party`).
+**Adalbert**: Uses `odrl:assignee` and `odrl:assigner` directly. No sub-properties defined. Hierarchy is expressed via `adalbert:memberOf` (transitive party membership on `odrl:Party`, declared `rdfs:subPropertyOf odrl:partOf` for ODRL interoperability).
 
 ### Additional Asset Relationships
 
 **Requirement**: Define new asset relations.
 
-**Adalbert**: Uses `odrl:target` directly. Adds `adalbert:partOf` (transitive asset containment on `odrl:Asset`).
+**Adalbert**: Uses `odrl:target` directly. Adds `adalbert:partOf` (transitive asset containment on `odrl:Asset`, declared `rdfs:subPropertyOf odrl:partOf` for ODRL interoperability).
 
 ### Rule Types
 

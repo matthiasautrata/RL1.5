@@ -54,7 +54,7 @@
         extensions.
     """@en ;
     dcterms:created "2026-02-02"^^xsd:date ;
-    dcterms:modified "2026-02-04"^^xsd:date ;
+    dcterms:modified "2026-02-06"^^xsd:date ;
     owl:versionInfo "0.7" ;
     owl:versionIRI <https://vocabulary.bigbank/adalbert/0.7> ;
     rdfs:seeAlso <https://vocabulary.bigbank/rl2/> ,
@@ -196,16 +196,18 @@ adalbert:expirationDate a owl:DatatypeProperty ;
 adalbert:partOf a owl:ObjectProperty, owl:TransitiveProperty ;
     rdfs:label "part of"@en ;
     skos:definition "Asset contained in larger asset."@en ;
+    rdfs:subPropertyOf odrl:partOf ;
     rdfs:domain odrl:Asset ;
     rdfs:range odrl:Asset ;
-    rdfs:comment "Transitive: table partOf schema, schema partOf database."@en .
+    rdfs:comment "Transitive asset hierarchy. Bridges to ODRL via rdfs:subPropertyOf odrl:partOf — ODRL processors with RDFS reasoning can interpret Adalbert hierarchies. Transitivity and typed domains are Adalbert additions not inherited by the base property."@en .
 
 adalbert:memberOf a owl:ObjectProperty, owl:TransitiveProperty ;
     rdfs:label "member of"@en ;
     skos:definition "Party member of group/organization."@en ;
+    rdfs:subPropertyOf odrl:partOf ;
     rdfs:domain odrl:Party ;
     rdfs:range odrl:Party ;
-    rdfs:comment "Transitive: person memberOf team, team memberOf division."@en .
+    rdfs:comment "Transitive party hierarchy. Bridges to ODRL via rdfs:subPropertyOf odrl:partOf — ODRL processors with RDFS reasoning can interpret Adalbert hierarchies. Transitivity and typed domains are Adalbert additions not inherited by the base property."@en .
 
 # =============================================================================
 # OPERAND RESOLUTION (genuinely new)

@@ -112,10 +112,12 @@ These are the only terms in the `adalbert:` namespace:
 
 ### Hierarchy Extensions
 
-| Adalbert Term | Purpose |
-|---------------|---------|
-| `adalbert:partOf` | Transitive asset containment (on `odrl:Asset`) |
-| `adalbert:memberOf` | Transitive party membership (on `odrl:Party`) |
+| Adalbert Term | Purpose | ODRL Bridge |
+|---------------|---------|-------------|
+| `adalbert:partOf` | Transitive asset containment (on `odrl:Asset`) | `rdfs:subPropertyOf odrl:partOf` |
+| `adalbert:memberOf` | Transitive party membership (on `odrl:Party`) | `rdfs:subPropertyOf odrl:partOf` |
+
+Both properties declare `rdfs:subPropertyOf odrl:partOf`, the standard ODRL profile bridging pattern. ODRL processors with RDFS reasoning can infer `odrl:partOf` triples from Adalbert hierarchies. The bridge does not grant ODRL processors Adalbert's transitive closure or typed domains — those are profile-level additions that require an Adalbert-aware processor.
 
 ### Operand Resolution
 
@@ -213,8 +215,8 @@ If a request matches both a prohibition and a permission for the same action/ass
 |--------------------|---------------------|
 | `odrl:Ticket` | Domain-specific |
 | `odrl:Request` | Separate from policy model |
-| `odrl:AssetCollection` | Use explicit listing |
-| `odrl:PartyCollection` | Use explicit listing |
+| `odrl:AssetCollection` | Use `adalbert:partOf` hierarchy (`rdfs:subPropertyOf odrl:partOf`) |
+| `odrl:PartyCollection` | Use `adalbert:memberOf` hierarchy (`rdfs:subPropertyOf odrl:partOf`) |
 | `odrl:inheritAllowed` | Complexity |
 | `odrl:inheritFrom` | Complexity |
 | `odrl:remedy` | Deferred to RL2 promises |
@@ -232,7 +234,7 @@ If a request matches both a prohibition and a permission for the same action/ass
 
 **Remedy/Consequence**: These imply automatic policy generation (violated duty leads to new duty). RL2 handles this through Promise Theory; Adalbert avoids the complexity.
 
-**AssetCollection/PartyCollection**: Dynamic collection resolution introduces non-determinism. Adalbert requires explicit enumeration; profiles may define resolution mechanisms.
+**AssetCollection/PartyCollection**: Adalbert replaces ODRL's collection model with transitive hierarchy properties (`adalbert:partOf`, `adalbert:memberOf`), both declared `rdfs:subPropertyOf odrl:partOf` for interoperability. This avoids dynamic collection resolution while preserving ODRL bridging.
 
 ---
 

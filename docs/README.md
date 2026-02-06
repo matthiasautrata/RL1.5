@@ -52,8 +52,8 @@ Adalbert is a proper **ODRL 2.2 profile**. It uses ODRL terms for all standard c
 - `adalbert:deadline` -- deadline semantics on duties
 - `adalbert:recurrence` -- RFC 5545 RRULE for recurring duties
 - `adalbert:DataContract` / `adalbert:Subscription` -- data contract lifecycle
-- `adalbert:partOf` -- asset hierarchy (on `odrl:Asset`)
-- `adalbert:memberOf` -- party hierarchy (on `odrl:Party`)
+- `adalbert:partOf` -- asset hierarchy (on `odrl:Asset`, `rdfs:subPropertyOf odrl:partOf`)
+- `adalbert:memberOf` -- party hierarchy (on `odrl:Party`, `rdfs:subPropertyOf odrl:partOf`)
 - `adalbert:resolutionPath` -- structured operand resolution (on `odrl:LeftOperand`)
 - `adalbert:RuntimeReference` -- runtime value references
 - `adalbert:not` -- logical negation of constraints
