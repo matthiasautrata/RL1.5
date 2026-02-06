@@ -38,6 +38,7 @@ odrl:core a dct:Standard ;
     """@en ;
     prof:isProfileOf odrl:core ;
     prof:hasToken "adalbert"^^xsd:token ;
+    odrl:conflict odrl:prohibit ;
 
     prof:hasResource [
         a prof:ResourceDescriptor ;

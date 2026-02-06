@@ -164,9 +164,21 @@ The policy checklist requires `odrl:conflict odrl:prohibit`, but `adalbertsh:Pol
 | SHACL | `ontology/adalbert-shacl.ttl` |
 | Docs | `docs/policy-writers-guide.md` |
 
-**Decision needed:** Either make `odrl:conflict` required in SHACL or relax the documentation requirement.
+**Decision:** Option C — declare once at profile level, relax per-policy requirement. Since Adalbert hardcodes Prohibition > Permission with no configurable alternative, per-policy declaration is ceremony. The conflict strategy is now declared once in `adalbert-prof.ttl` and inherited by all policies.
 
-**Status:** Open
+**Changes:**
+
+- `ontology/adalbert-prof.ttl`: Added `odrl:conflict odrl:prohibit` to the Adalbert Core profile declaration
+- `ontology/adalbert-shacl.ttl`: Removed `odrl:conflict` property constraint from `PolicyShape`
+- `ontology/adalbert-core.ttl`: Updated comment to reference profile-level declaration
+- `docs/adalbert-specification.md`: Updated PolicyShape description and profile constraints table
+- `docs/policy-writers-guide.md`: Updated checklist item 2; removed `odrl:conflict odrl:prohibit` from 2 example policies
+- `docs/contracts-guide.md`: Updated checklist item 2; removed `odrl:conflict odrl:prohibit` from 2 example contracts
+- `examples/baseline.ttl`: Removed 11 occurrences of `odrl:conflict odrl:prohibit`
+- `examples/data-contract.ttl`: Removed 2 occurrences
+- `examples/data-use-policy.ttl`: Removed 2 occurrences
+
+**Status:** Resolved (v0.7.1)
 
 ### Issue 13: DUE profile version out of sync
 
@@ -178,7 +190,11 @@ The policy checklist requires `odrl:conflict odrl:prohibit`, but `adalbertsh:Pol
 
 **Decision:** Update DUE profile version info to `0.7` for consistency.
 
-**Status:** Open
+**Changes:**
+
+- `profiles/adalbert-due.ttl`: Updated header comment and `owl:versionInfo` from `0.6` to `0.7`
+
+**Status:** Resolved (v0.7.1)
 
 ### Issue 5: DUE `purpose` duplicates ODRL purpose operand
 
@@ -371,4 +387,6 @@ These require human input before resolution:
 | 2026-02-04 | Issue 9 | Added DUE profile declaration to all 4 example policy instances | -- |
 | 2026-02-04 | Issue 10 | Restructured RL2 comparison with full-stack footprint (ODRL base + extensions vs RL2 standalone) | -- |
 | 2026-02-06 | Issue 11 | Removed `xsd:time` from deadline — Alternative B: use recurrence + duration for daily windows; updated 11 files (ontology, SHACL, 7 docs, 3 examples) | -- |
+| 2026-02-06 | Issue 12 | Moved `odrl:conflict` to profile level (Option C) — declared once in `adalbert-prof.ttl`; removed from SHACL, examples, guides; 9 files modified | -- |
+| 2026-02-06 | Issue 13 | Updated DUE profile version from `0.6` to `0.7` — synced with core ontology version | -- |
 | 2026-02-04 | DCON Supersession | v0.7: DCON superseded; added `adalbert:recurrence`; deprecated alignment file; rewrote comparison-dcon.md; created contracts-guide.md; 16 files modified, 1 created | -- |

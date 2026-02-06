@@ -37,7 +37,6 @@ A minimal data use policy:
 ex:policy a odrl:Set ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:target ex:customerData ;
 
     odrl:permission [
@@ -435,7 +434,6 @@ A `LogicalConstraint` must have exactly one of `odrl:and`, `odrl:or`, or `adalbe
 ex:policy a odrl:Set ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:target ex:data ;
 
     odrl:permission [
@@ -522,7 +520,7 @@ odrl:obligation [
 ## 10. Policy Review Checklist
 
 1. Every policy declares `odrl:profile <https://vocabulary.bigbank/adalbert/>` and `<https://vocabulary.bigbank/adalbert/due/>`
-2. Every policy declares `odrl:conflict odrl:prohibit`
+2. Conflict strategy (`odrl:conflict odrl:prohibit`) is inherited from the profile — do not repeat per-policy
 3. Policy has at least one `odrl:target`
 4. Each permission and prohibition has exactly one `odrl:action` and one `odrl:target`
 5. Each duty has exactly one `odrl:action`

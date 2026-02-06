@@ -381,7 +381,7 @@ Shapes are defined in `ontology/adalbert-shacl.ttl`. Key constraints:
 
 | Shape | Target | Key Constraints |
 |-------|--------|-----------------|
-| `adalbertsh:PolicyShape` | `odrl:Policy` | Must declare `odrl:profile`; `odrl:conflict` must be `odrl:prohibit` |
+| `adalbertsh:PolicyShape` | `odrl:Policy` | Must declare `odrl:profile` |
 | `adalbertsh:SetShape` | `odrl:Set` | Must have at least one `odrl:target` |
 | `adalbertsh:OfferShape` | `odrl:Offer` | Exactly one `odrl:assigner` |
 | `adalbertsh:AgreementShape` | `odrl:Agreement` | Exactly one `odrl:assigner` and one `odrl:assignee` |
@@ -449,7 +449,7 @@ Adalbert restricts certain ODRL features:
 
 | Feature | Status | Reason |
 |---------|--------|--------|
-| `odrl:conflict` | Fixed to `odrl:prohibit` | Deterministic conflict resolution |
+| `odrl:conflict` | Fixed to `odrl:prohibit` at profile level | Deterministic conflict resolution; declared once in `adalbert-prof.ttl` |
 | `odrl:xone` | Rejected | Deferred to RL2 |
 | `odrl:remedy` | Rejected | Deferred to RL2 |
 | `odrl:consequence` | Rejected | Deferred to RL2 |

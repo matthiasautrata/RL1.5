@@ -111,7 +111,6 @@
     rdfs:label "Customer API v1 (retired)" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/data-platform> ;
     odrl:target <https://data.bigbank/assets/customer-data> ;
     adalbert:state adalbert:Fulfilled .
@@ -120,7 +119,6 @@
     rdfs:label "Customer API v2" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/data-platform> ;
     odrl:target <https://data.bigbank/assets/customer-data> ;
     adalbert:state adalbert:Active ;
@@ -190,7 +188,6 @@
     rdfs:label "Market Data Feed" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/trading-data> ;
     odrl:target <https://data.bigbank/assets/market-prices> ;
     adalbert:state adalbert:Active ;
@@ -254,7 +251,6 @@
     rdfs:label "Country Reference Data" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/data-platform> ;
     odrl:target <https://data.bigbank/assets/country-codes> ;
     adalbert:state adalbert:Active ;
@@ -288,7 +284,6 @@
     rdfs:label "Transaction Files" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/finance> ;
     odrl:target <https://data.bigbank/assets/transaction-files> ;
     adalbert:state adalbert:Active ;
@@ -337,7 +332,6 @@
     rdfs:label "Employee Directory" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/hr> ;
     odrl:target <https://data.bigbank/assets/employee-directory> ;
     adalbert:state adalbert:Active ;
@@ -394,7 +388,6 @@
     rdfs:label "Risk Metrics" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/data-platform> ;
     odrl:target <https://data.bigbank/assets/risk-metrics> ;
     adalbert:state adalbert:Active ;
@@ -456,7 +449,6 @@
     rdfs:label "Audit Log Archive" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/data-platform> ;
     odrl:target <https://data.bigbank/assets/audit-logs> ;
     adalbert:state adalbert:Active ;
@@ -510,7 +502,6 @@
     rdfs:label "Multi-Asset Data Bundle" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner <https://data.bigbank/agents/data-platform> ;
     odrl:target <https://data.bigbank/assets/market-prices> ,
                <https://data.bigbank/assets/reference-data> ,
@@ -592,7 +583,6 @@
     rdfs:label "Analytics Customer Data 2026" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     adalbert:subscribesTo <https://data.bigbank/offers/customer-api-v2> ;
     odrl:assigner <https://data.bigbank/agents/data-platform> ;
     odrl:assignee <https://data.bigbank/agents/analytics> ;
@@ -648,7 +638,6 @@
     rdfs:label "Trading Market Data 2026" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     adalbert:subscribesTo <https://data.bigbank/offers/market-data-feed> ;
     odrl:assigner <https://data.bigbank/agents/trading-data> ;
     odrl:assignee <https://data.bigbank/agents/analytics> ;

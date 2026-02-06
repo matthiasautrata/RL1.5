@@ -63,7 +63,7 @@
 # =============================================================================
 # PROFILE CONSTRAINTS (documentation of ODRL usage)
 # =============================================================================
-# Adalbert fixes odrl:conflict to odrl:prohibit (prohibition overrides).
+# Adalbert fixes odrl:conflict to odrl:prohibit (declared at profile level in adalbert-prof.ttl).
 # Adalbert does not use: odrl:Ticket, odrl:Request, odrl:AssetCollection,
 # odrl:PartyCollection, odrl:remedy, odrl:consequence, odrl:xone.
 

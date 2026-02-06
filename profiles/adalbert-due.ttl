@@ -1,6 +1,6 @@
 # =============================================================================
 # Adalbert Data Use Profile (DUE)
-# Version: 0.6
+# Version: 0.7
 # Date: 2026-02-03
 # =============================================================================
 # Complete data governance vocabulary: operands, actions, concept values.
@@ -53,7 +53,7 @@
         All operands are odrl:LeftOperand with adalbert:resolutionPath.
     """@en ;
     dcterms:created "2026-02-03"^^xsd:date ;
-    owl:versionInfo "0.6" ;
+    owl:versionInfo "0.7" ;
     owl:imports <https://vocabulary.bigbank/adalbert/> .
 
 # =============================================================================

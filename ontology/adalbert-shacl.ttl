@@ -39,13 +39,6 @@ adalbertsh:PolicyShape a sh:NodeShape ;
         sh:minCount 1 ;
         sh:hasValue <https://vocabulary.bigbank/adalbert/> ;
         sh:message "Adalbert policies must declare odrl:profile <https://vocabulary.bigbank/adalbert/>."
-    ] ;
-
-    sh:property [
-        sh:path odrl:conflict ;
-        sh:maxCount 1 ;
-        sh:in (odrl:prohibit) ;
-        sh:message "Adalbert fixes conflict resolution to odrl:prohibit."
     ] .
 
 # =============================================================================

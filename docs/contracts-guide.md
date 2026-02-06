@@ -88,7 +88,6 @@ Every contract starts with a type, profile declaration, and provider identity.
 ex:contract a adalbert:DataContract ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:assigner ex:dataTeam ;
     odrl:target ex:marketPrices ;
     adalbert:state adalbert:Active .
@@ -171,7 +170,6 @@ When a consumer accepts the contract, create a Subscription (Agreement) referenc
 ex:subscription a adalbert:Subscription ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     adalbert:subscribesTo ex:contract ;
     odrl:assigner ex:dataTeam ;
     odrl:assignee ex:analyticsTeam ;
@@ -550,7 +548,7 @@ If migrating from DCON, see [adalbert-term-mapping.md](adalbert-term-mapping.md)
 ## Validation Checklist
 
 1. Every policy declares `odrl:profile <https://vocabulary.bigbank/adalbert/>` and `<https://vocabulary.bigbank/adalbert/due/>`
-2. Every policy declares `odrl:conflict odrl:prohibit`
+2. Conflict strategy (`odrl:conflict odrl:prohibit`) is inherited from the profile — do not repeat per-policy
 3. DataContract has `odrl:assigner` (provider)
 4. Subscription has both `odrl:assigner` and `odrl:assignee`
 5. Subscription has `adalbert:subscribesTo` referencing a DataContract

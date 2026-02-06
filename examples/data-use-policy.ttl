@@ -52,7 +52,6 @@
     rdfs:label "HR Data Access Policy" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:target <https://data.bigbank/assets/employee-data> ;
 
     # ===== RULE 1: HR Analytics can read for analytics purposes =====
@@ -152,7 +151,6 @@
     rdfs:label "Compensation Data Access Policy" ;
     odrl:profile <https://vocabulary.bigbank/adalbert/> ,
                  <https://vocabulary.bigbank/adalbert/due/> ;
-    odrl:conflict odrl:prohibit ;
     odrl:target <https://data.bigbank/assets/employee-compensation> ;
 
     # Only HR Division (not just analytics sub-team)
