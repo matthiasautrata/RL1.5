@@ -9,6 +9,7 @@
 # =============================================================================
 
 @prefix adalbert:    <https://vocabulary.bigbank/adalbert/> .
+@prefix adalbert-due: <https://vocabulary.bigbank/adalbert/due/> .
 @prefix adalbertsh:  <https://vocabulary.bigbank/adalbert/shapes/> .
 @prefix odrl:    <http://www.w3.org/ns/odrl/2/> .
 @prefix sh:      <http://www.w3.org/ns/shacl#> .
@@ -306,6 +307,53 @@ adalbertsh:LeftOperandShape a sh:NodeShape ;
         sh:datatype xsd:string ;
         sh:pattern "^(agent|asset|context)\\." ;
         sh:message "resolutionPath must start with agent., asset., or context."
+    ] .
+
+# =============================================================================
+# DUE OPERAND SHAPE — enforce resolutionPath on all DUE operands
+# =============================================================================
+# Unlike generic LeftOperandShape (which allows absent resolutionPath for ODRL
+# built-in operands like odrl:dateTime), DUE operands MUST declare a path.
+
+adalbertsh:DUEOperandShape a sh:NodeShape ;
+    sh:name "DUE Operand Shape" ;
+    sh:description "DUE operands must declare a resolution path." ;
+    sh:targetNode
+        odrl:purpose ,
+        adalbert-due:classification ,
+        adalbert-due:sensitivity ,
+        adalbert-due:assetClass ,
+        adalbert-due:market ,
+        adalbert-due:isBenchmark ,
+        adalbert-due:jurisdiction ,
+        adalbert-due:residency ,
+        adalbert-due:retentionPeriod ,
+        adalbert-due:expiry ,
+        adalbert-due:processingMode ,
+        adalbert-due:auditRequired ,
+        adalbert-due:role ,
+        adalbert-due:organization ,
+        adalbert-due:costCenter ,
+        adalbert-due:project ,
+        adalbert-due:recipientType ,
+        adalbert-due:environment ,
+        adalbert-due:network ,
+        adalbert-due:timeliness ,
+        adalbert-due:delayMinutes ,
+        adalbert-due:legalBasis ,
+        adalbert-due:consentId ,
+        adalbert-due:accessPattern ,
+        adalbert-due:volumeLimit ,
+        adalbert-due:rateLimit ,
+        adalbert-due:derivationType ;
+
+    sh:property [
+        sh:path adalbert:resolutionPath ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^(agent|asset|context)\\." ;
+        sh:message "DUE operands must have exactly one resolutionPath starting with agent., asset., or context."
     ] .
 
 # =============================================================================

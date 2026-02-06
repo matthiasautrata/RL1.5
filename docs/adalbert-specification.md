@@ -452,6 +452,7 @@ Shapes are defined in `ontology/adalbert-shacl.ttl`. Key constraints:
 | Shape | Target | Key Constraints |
 |-------|--------|-----------------|
 | `adalbertsh:LeftOperandShape` | `odrl:LeftOperand` | `resolutionPath` 0..1; must start with `agent.`, `asset.`, or `context.` |
+| `adalbertsh:DUEOperandShape` | All 26 DUE operands | Exactly one `resolutionPath` (pattern: `agent.\|asset.\|context.`) |
 
 ### Rejection shapes
 

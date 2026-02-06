@@ -1,6 +1,6 @@
-# Adalbert Issues Tracker
+# Adalbert Decisions Log
 
-Systematic review findings from cross-LLM audit. Issues ordered by severity.
+Design decisions from cross-LLM audit, ordered by severity. All issues and questions are resolved.
 
 ---
 
@@ -319,9 +319,14 @@ SHACL allows `adalbert:resolutionPath` to be absent on any `odrl:LeftOperand`. F
 | SHACL | `ontology/adalbert-shacl.ttl` |
 | DUE profile | `profiles/adalbert-due.ttl` |
 
-**Decision needed:** Add a DUE-specific shape that requires `adalbert:resolutionPath` for all operands in the DUE namespace.
+**Decision:** Added `adalbertsh:DUEOperandShape` using `sh:targetNode` to enumerate all 26 DUE operands (25 native + `odrl:purpose` which DUE extends). Requires exactly one `adalbert:resolutionPath` with pattern `^(agent|asset|context)\.`. The generic `LeftOperandShape` remains permissive (resolutionPath 0..1) for ODRL built-in operands like `odrl:dateTime`.
 
-**Status:** Open
+**Changes:**
+
+- `ontology/adalbert-shacl.ttl`: Added `adalbertsh:DUEOperandShape` with `sh:targetNode` listing all 26 DUE operands; added `adalbert-due:` prefix
+- `docs/adalbert-specification.md`: Added `DUEOperandShape` row to §6 Operand shapes table
+
+**Status:** Resolved (v0.7.2)
 
 ### Issue 8: SHACL missing `odrl:Set` target constraint
 
@@ -369,9 +374,7 @@ Consider that RL2 is self-sufficient and RL1.5 lives ontop of ODRL2.2. So, a fai
 
 **Status:** Resolved
 
-## Open Questions / Decisions
-
-These require human input before resolution:
+## Design Questions
 
 | # | Question | Related Issues | Status |
 |---|----------|----------------|--------|
@@ -404,4 +407,5 @@ These require human input before resolution:
 | 2026-02-06 | Issue 4, Q3 | Option A: declared `rdfs:subPropertyOf odrl:partOf` on both `adalbert:partOf` and `adalbert:memberOf` — standard ODRL profile bridge pattern; updated ontology, spec, comparison, conformance, README | -- |
 | 2026-02-06 | Q4, Q5 | Added `adalbert:subject` (rdfs:subPropertyOf odrl:assignee) and `adalbert:object` (rdfs:subPropertyOf odrl:function) for duty party roles; replaced `odrl:assignee` on all duty instances; updated ontology, SHACL, all examples, 7 docs | -- |
 | 2026-02-06 | Issue 14 | Adopted ODRL target inheritance — policy-level target inherited by rules unless overridden; removed redundant targets from examples and guides | -- |
+| 2026-02-06 | Issue 15 | Added `DUEOperandShape` requiring `resolutionPath` on all 26 DUE operands via `sh:targetNode` enumeration; generic `LeftOperandShape` stays permissive for ODRL built-ins | -- |
 | 2026-02-04 | DCON Supersession | v0.7: DCON superseded; added `adalbert:recurrence`; deprecated alignment file; rewrote comparison-dcon.md; created contracts-guide.md; 16 files modified, 1 created | -- |

@@ -29,16 +29,14 @@ ex:contract a adalbert:DataContract ;
     odrl:target ex:marketPrices ;
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:deliver ;
-        odrl:target ex:marketPrices ;
         adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
         adalbert:deadline "PT30M"^^xsd:duration
     ] ;
     odrl:permission [
         a odrl:Permission ;
-        odrl:action odrl:display ;
-        odrl:target ex:marketPrices
+        odrl:action odrl:display
     ] .
 ```
 
@@ -52,7 +50,6 @@ ex:policy a odrl:Set ;
         a odrl:Permission ;
         odrl:assignee ex:hrTeam ;
         odrl:action odrl:read ;
-        odrl:target ex:employeeData ;
         odrl:constraint [
             a odrl:Constraint ;
             odrl:leftOperand odrl:purpose ;
