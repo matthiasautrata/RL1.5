@@ -28,10 +28,10 @@ DataContract (Offer)          Subscription (Agreement)
 An `adalbert:DataContract` is a subclass of `odrl:Offer`. It specifies:
 
 - **Provider** (`odrl:assigner`): the data team providing data
-- **Target** (`odrl:target`): the data asset(s) covered
-- **Provider duties** (`odrl:obligation` with `odrl:assignee` = provider): SLAs like delivery, notification, schema conformance
+- **Target** (`odrl:target`): the data asset(s) covered — inherited by rules unless overridden
+- **Provider duties** (`odrl:obligation` with `adalbert:subject` = provider): SLAs like delivery, notification, schema conformance
 - **Consumer permissions** (`odrl:permission`): what consumers can do with the data
-- **Consumer duties** (`odrl:obligation` without assignee in Offer): obligations consumers accept upon subscribing
+- **Consumer duties** (`odrl:obligation` without subject in Offer): obligations consumers accept upon subscribing
 - **Prohibitions** (`odrl:prohibition`): what consumers cannot do
 
 ### Subscription (Agreement)
@@ -95,23 +95,24 @@ ex:contract a adalbert:DataContract ;
 
 ### Step 2: Add Provider Duties (SLAs)
 
-Provider duties declare what the data team commits to. The provider is identified by `odrl:assignee` on each duty.
+Provider duties declare what the data team commits to. The provider is identified by `adalbert:subject` on each duty. Use `adalbert:object` to identify who is affected (e.g., who receives notifications).
+
+Rules inherit `odrl:target` from the policy unless they target a different asset.
 
 ```turtle
-    # Daily delivery by 06:30
+    # Daily delivery by 06:30 (target inherited from policy)
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:deliver ;
-        odrl:target ex:marketPrices ;
         adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
         adalbert:deadline "PT30M"^^xsd:duration
     ] ;
 
-    # Schema conformance
+    # Schema conformance (different target — not inherited)
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:conformTo ;
         odrl:target ex:marketDataSchema
     ] ;
@@ -119,19 +120,17 @@ Provider duties declare what the data team commits to. The provider is identifie
 
 ### Step 3: Add Consumer Permissions
 
-Permissions define what subscribers can do. In an Offer, omit `odrl:assignee` — it is filled when the subscription is created.
+Permissions define what subscribers can do. In an Offer, omit `odrl:assignee` — it is filled when the subscription is created. Target is inherited from the policy.
 
 ```turtle
     odrl:permission [
         a odrl:Permission ;
-        odrl:action odrl:display ;
-        odrl:target ex:marketPrices
+        odrl:action odrl:display
     ] ;
 
     odrl:permission [
         a odrl:Permission ;
         odrl:action adalbert-due:nonDisplay ;
-        odrl:target ex:marketPrices ;
         odrl:constraint [
             a odrl:Constraint ;
             odrl:leftOperand adalbert-due:recipientType ;
@@ -146,7 +145,7 @@ Permissions define what subscribers can do. In an Offer, omit `odrl:assignee` �
 Consumer duties activate upon subscription. Prohibitions apply to all subscribers.
 
 ```turtle
-    # Consumer must report usage monthly
+    # Consumer must report usage monthly (different target — not inherited)
     odrl:obligation [
         a odrl:Duty ;
         odrl:action adalbert-due:report ;
@@ -154,11 +153,10 @@ Consumer duties activate upon subscription. Prohibitions apply to all subscriber
         adalbert:deadline "P30D"^^xsd:duration
     ] ;
 
-    # No external redistribution
+    # No external redistribution (target inherited from policy)
     odrl:prohibition [
         a odrl:Prohibition ;
-        odrl:action odrl:distribute ;
-        odrl:target ex:marketPrices
+        odrl:action odrl:distribute
     ] .
 ```
 
@@ -177,7 +175,7 @@ ex:subscription a adalbert:Subscription ;
     adalbert:expirationDate "2026-12-31T23:59:59Z"^^xsd:dateTime .
 ```
 
-The subscription materializes all duties from the contract with explicit `odrl:assignee` on each.
+The subscription materializes all duties from the contract with explicit `adalbert:subject` on each.
 
 ---
 
@@ -185,14 +183,13 @@ The subscription materializes all duties from the contract with explicit `odrl:a
 
 ### Timeliness Pattern (Delivery SLA)
 
-Scheduled data delivery with a fulfillment window.
+Scheduled data delivery with a fulfillment window. Target inherited from policy.
 
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:deliver ;
-    odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
     adalbert:deadline "PT30M"^^xsd:duration
 ] .
@@ -202,12 +199,12 @@ odrl:obligation [
 
 ### Schema Pattern (Schema Conformance)
 
-Provider guarantees data conforms to a published schema.
+Provider guarantees data conforms to a published schema. Target differs from policy — specify explicitly.
 
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:conformTo ;
     odrl:target ex:marketDataSchema
 ] .
@@ -217,12 +214,13 @@ odrl:obligation [
 
 ### Notification Pattern (Change Notification)
 
-Provider must notify consumers before making changes, with a lead time expressed as a duration deadline.
+Provider must notify consumers before making changes, with a lead time expressed as a duration deadline. Use `adalbert:object` to identify who is notified.
 
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
+    adalbert:object ex:consumer ;
     odrl:action adalbert-due:notify ;
     odrl:target ex:schemaChanges ;
     adalbert:deadline "P14D"^^xsd:duration
@@ -238,7 +236,7 @@ Provider guarantees data quality via `conformTo` with a constraint. This replace
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:conformTo ;
     odrl:target ex:riskMetricsSchema ;
     odrl:constraint [
@@ -261,15 +259,14 @@ Recurring duties use `adalbert:recurrence` — an RFC 5545 RRULE string. Combine
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:deliver ;
-    odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
     adalbert:deadline "PT30M"^^xsd:duration
 ] .
 ```
 
-This means: deliver market prices daily at 06:00, with a 30-minute window to fulfill.
+This means: deliver market prices daily at 06:00 (target inherited from policy), with a 30-minute window to fulfill.
 
 ### Common RRULE Patterns
 
@@ -289,7 +286,7 @@ Each generated instance follows the standard duty lifecycle independently (Pendi
 
 ### Simple File Drop
 
-Read-only access, no recurrence, no consumer duties.
+Read-only access, no recurrence, no consumer duties. Target inherited from policy.
 
 ```turtle
 ex:contract a adalbert:DataContract ;
@@ -298,19 +295,17 @@ ex:contract a adalbert:DataContract ;
     odrl:target ex:referenceData ;
     odrl:permission [
         a odrl:Permission ;
-        odrl:action odrl:read ;
-        odrl:target ex:referenceData
+        odrl:action odrl:read
     ] ;
     odrl:prohibition [
         a odrl:Prohibition ;
-        odrl:action odrl:modify ;
-        odrl:target ex:referenceData
+        odrl:action odrl:modify
     ] .
 ```
 
 ### API with SLA
 
-Daily delivery, schema conformance, display + non-display, monthly reporting.
+Daily delivery, schema conformance, display + non-display, monthly reporting. Target inherited from policy unless overridden.
 
 ```turtle
 ex:contract a adalbert:DataContract ;
@@ -320,27 +315,24 @@ ex:contract a adalbert:DataContract ;
     odrl:target ex:customerData ;
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:deliver ;
-        odrl:target ex:customerData ;
         adalbert:recurrence "FREQ=DAILY;BYHOUR=7;BYMINUTE=0" ;
         adalbert:deadline "PT30M"^^xsd:duration
     ] ;
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:conformTo ;
         odrl:target ex:customerSchema
     ] ;
     odrl:permission [
         a odrl:Permission ;
-        odrl:action odrl:display ;
-        odrl:target ex:customerData
+        odrl:action odrl:display
     ] ;
     odrl:permission [
         a odrl:Permission ;
-        odrl:action adalbert-due:nonDisplay ;
-        odrl:target ex:customerData
+        odrl:action adalbert-due:nonDisplay
     ] ;
     odrl:obligation [
         a odrl:Duty ;
@@ -350,14 +342,13 @@ ex:contract a adalbert:DataContract ;
     ] ;
     odrl:prohibition [
         a odrl:Prohibition ;
-        odrl:action odrl:distribute ;
-        odrl:target ex:customerData
+        odrl:action odrl:distribute
     ] .
 ```
 
 ### Mission-Critical Service
 
-High-frequency delivery with quality SLA and change notification.
+High-frequency delivery with quality SLA and change notification. Target inherited from policy unless overridden.
 
 ```turtle
 ex:contract a adalbert:DataContract ;
@@ -367,15 +358,14 @@ ex:contract a adalbert:DataContract ;
     odrl:target ex:riskMetrics ;
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:deliver ;
-        odrl:target ex:riskMetrics ;
         adalbert:recurrence "FREQ=MINUTELY;INTERVAL=1" ;
         adalbert:deadline "PT30S"^^xsd:duration
     ] ;
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:conformTo ;
         odrl:target ex:riskSchema ;
         odrl:constraint [
@@ -387,26 +377,24 @@ ex:contract a adalbert:DataContract ;
     ] ;
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:notify ;
         odrl:target ex:schemaChanges ;
         adalbert:deadline "P14D"^^xsd:duration
     ] ;
     odrl:permission [
         a odrl:Permission ;
-        odrl:action odrl:display ;
-        odrl:target ex:riskMetrics
+        odrl:action odrl:display
     ] ;
     odrl:permission [
         a odrl:Permission ;
-        odrl:action adalbert-due:nonDisplay ;
-        odrl:target ex:riskMetrics
+        odrl:action adalbert-due:nonDisplay
     ] .
 ```
 
 ### Multi-Dataset Contract
 
-A single contract covering multiple targets.
+A single contract covering multiple targets. When a policy has multiple targets, rules must specify their target explicitly — inheritance is ambiguous.
 
 ```turtle
 ex:contract a adalbert:DataContract ;
@@ -434,9 +422,33 @@ ex:contract a adalbert:DataContract ;
 
 ## Advanced Topics
 
+### Target Inheritance
+
+`odrl:target` at the policy level is inherited by rules that don't declare their own target. This reduces redundancy:
+
+```turtle
+ex:contract a adalbert:DataContract ;
+    odrl:target ex:marketPrices ;           # policy-level target
+    odrl:permission [
+        a odrl:Permission ;
+        odrl:action odrl:read                # inherits ex:marketPrices
+    ] ;
+    odrl:obligation [
+        a odrl:Duty ;
+        adalbert:subject ex:dataTeam ;
+        odrl:action adalbert-due:conformTo ;
+        odrl:target ex:marketDataSchema      # different target — explicit
+    ] .
+```
+
+**Rules**:
+- Single-target policy: rules inherit the target unless they specify a different one
+- Multi-target policy: rules must specify their target (inheritance is ambiguous)
+- Named duty instances (standalone): always specify their target
+
 ### Multi-Asset Contracts
 
-A contract can cover multiple targets. Each rule specifies its own target:
+A contract can cover multiple targets. When multiple targets exist, each rule must specify its own target (inheritance is ambiguous):
 
 ```turtle
 ex:contract odrl:target ex:asset1 , ex:asset2 ;
@@ -554,7 +566,7 @@ If migrating from DCON, see [adalbert-term-mapping.md](adalbert-term-mapping.md)
 5. Subscription has `adalbert:subscribesTo` referencing a DataContract
 6. Each duty has exactly one `odrl:action`
 7. Each permission and prohibition has exactly one `odrl:action` and one `odrl:target`
-8. Provider duties have `odrl:assignee` set to the provider
+8. Provider duties have `adalbert:subject` set to the provider
 9. Deadlines use `xsd:dateTime` or `xsd:duration`
 10. Recurrence uses a valid RFC 5545 RRULE starting with `FREQ=`
 11. Constraints have `leftOperand`, `operator`, and `rightOperand`

@@ -289,22 +289,26 @@ Several DUE actions lack `odrl:includedIn` declarations: `conformTo`, `log`, `no
 
 ## Low
 
-### Issue 14: Redundant `odrl:target` / `odrl:assignee` in examples and guides
+### Issue 14: Redundant `odrl:target` in examples and guides
 
-Examples often repeat `odrl:target` at both policy and rule levels for the same asset, and repeat `odrl:assignee` at both agreement and rule levels for the same party. This is valid but noisy and makes examples harder to read.
+Examples repeated `odrl:target` at both policy and rule levels for the same asset. This was valid but noisy and made examples harder to read.
 
 | Artifact | Location |
 |----------|----------|
-| Examples | `examples/baseline.ttl` |
-| Docs | `docs/contracts-guide.md` |
+| Examples | `examples/baseline.ttl`, `examples/data-contract.ttl`, `examples/data-use-policy.ttl` |
+| Docs | `docs/contracts-guide.md`, `docs/policy-writers-guide.md` |
 
-**Alternatives:**
+**Decision:** Option A — adopt ODRL's standard target inheritance pattern. Policy-level `odrl:target` is inherited by rules unless overridden at rule level. Rules targeting a different asset declare their own target. Multi-target policies require explicit rule-level targets (inheritance is ambiguous).
 
-**A. Keep policy-level `odrl:target` and omit rule-level targets unless a rule diverges.**
+**Changes:**
 
-**B. Drop policy-level `odrl:target` and always require rule-level targets for clarity.**
+- `examples/data-contract.ttl`: Removed redundant rule-level targets matching policy target; kept targets on duties with different assets (schema-changes, usage-stats)
+- `examples/data-use-policy.ttl`: Same pattern — removed redundant targets on permissions/prohibitions/duties matching policy target; kept access-log target on logging duty
+- `examples/baseline.ttl`: Removed redundant targets from 8 single-target contracts and 2 subscriptions; kept all targets in multi-asset contract (Contract 8) and on duties with different assets
+- `docs/contracts-guide.md`: Updated examples with target inheritance; added Target Inheritance subsection in Advanced Topics; documented multi-target rule
+- `docs/policy-writers-guide.md`: Updated checklist item 4 to note target inheritance
 
-**Status:** Open
+**Status:** Resolved (v0.7.2)
 
 ### Issue 15: Resolution paths not enforced for DUE operands
 
@@ -374,8 +378,8 @@ These require human input before resolution:
 | Q1 | Should `adalbert:currentAgent` be the wildcard agent (`*`) or a runtime substitution for `odrl:assignee`? | Issue 1 | Resolved: neither -- omit assignee for universal rules, keep `currentAgent` for constraints only |
 | Q2 | Keep `adalbert:rightOperandRef`, or switch to `odrl:rightOperandReference` with explicit RDF mapping? | Issue 3 | Resolved: removed -- dead code, identity binding deferred to RL2 |
 | Q3 | Keep custom `partOf`/`memberOf`, or converge on `odrl:partOf` with additional constraints? | Issue 4 | Resolved: Option A — keep custom properties, bridge via `rdfs:subPropertyOf odrl:partOf` |
-| Q4 | is odrl:assigner, odrl:assignee appropriate in the duties in the examples. Should there be a different odrl:Role subclass instead? | Open |
-| Q5 | is odrl:target appropriate in the duties in the examples. Should there be a different pattern instead? What/how should notify target be modelled? | Open |
+| Q4 | Is `odrl:assignee` appropriate on duties? Should there be dedicated duty party roles? | Resolved: `adalbert:subject` (`rdfs:subPropertyOf odrl:assignee`) replaces `odrl:assignee` on duties — avoids role overloading where provider is both assigner and assignee |
+| Q5 | How to express "to whom" on duties like notify/report? Is `odrl:target` appropriate for the affected party? | Resolved: `adalbert:object` (`rdfs:subPropertyOf odrl:function`) for affected party; `odrl:target` stays for assets. Aligns with MDS md:subject/md:object and rl2:subject/counterparty |
 
 
 ---
@@ -398,4 +402,6 @@ These require human input before resolution:
 | 2026-02-06 | Issue 12 | Moved `odrl:conflict` to profile level (Option C) — declared once in `adalbert-prof.ttl`; removed from SHACL, examples, guides; 9 files modified | -- |
 | 2026-02-06 | Issue 13 | Updated DUE profile version from `0.6` to `0.7` — synced with core ontology version | -- |
 | 2026-02-06 | Issue 4, Q3 | Option A: declared `rdfs:subPropertyOf odrl:partOf` on both `adalbert:partOf` and `adalbert:memberOf` — standard ODRL profile bridge pattern; updated ontology, spec, comparison, conformance, README | -- |
+| 2026-02-06 | Q4, Q5 | Added `adalbert:subject` (rdfs:subPropertyOf odrl:assignee) and `adalbert:object` (rdfs:subPropertyOf odrl:function) for duty party roles; replaced `odrl:assignee` on all duty instances; updated ontology, SHACL, all examples, 7 docs | -- |
+| 2026-02-06 | Issue 14 | Adopted ODRL target inheritance — policy-level target inherited by rules unless overridden; removed redundant targets from examples and guides | -- |
 | 2026-02-04 | DCON Supersession | v0.7: DCON superseded; added `adalbert:recurrence`; deprecated alignment file; rewrote comparison-dcon.md; created contracts-guide.md; 16 files modified, 1 created | -- |

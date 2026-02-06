@@ -56,7 +56,7 @@ Key relationships:
 | `AGENTS.md` | **Governance, personas, multi-agent coordination** |
 | `docs/Adalbert_Semantics.md` | **Formal operational semantics (normative)** |
 | `README.md` | Project overview, design principles, repository structure |
-| `ontology/adalbert-core.ttl` | **OWL ontology -- thin profile extension: State, deadline, recurrence, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, not** |
+| `ontology/adalbert-core.ttl` | **OWL ontology -- thin profile extension: State, deadline, recurrence, subject, object, DataContract, Subscription, partOf, memberOf, resolutionPath, RuntimeReference, not** |
 | `ontology/adalbert-shacl.ttl` | **SHACL validation shapes** |
 | `ontology/adalbert-prof.ttl` | W3C DXPROF profile metadata |
 | `docs/adalbert-overview.md` | What is Adalbert? Architecture, key concepts, document map |
@@ -100,7 +100,7 @@ Adalbert is a proper ODRL 2.2 profile. It uses ODRL's classes and properties dir
 | `odrl:Asset` | Target of a rule |
 | `odrl:Action` | Action type |
 | `odrl:LeftOperand` | Left operand of a constraint |
-| `odrl:assignee` | Subject of a rule (who receives the right/duty) |
+| `odrl:assignee` | Subject of a permission/prohibition (who receives the right) |
 | `odrl:assigner` | Grantor of a policy (who grants rights) |
 | `odrl:action` | Action of a rule |
 | `odrl:target` | Object/asset of a rule |
@@ -121,6 +121,8 @@ Adalbert is a proper ODRL 2.2 profile. It uses ODRL's classes and properties dir
 | `adalbert:state` | Current lifecycle state property |
 | `adalbert:deadline` | Time constraint for duty fulfillment |
 | `adalbert:recurrence` | RFC 5545 RRULE defining when duty instances are generated |
+| `adalbert:subject` | Duty bearer party role (`rdfs:subPropertyOf odrl:assignee`) |
+| `adalbert:object` | Affected party role (`rdfs:subPropertyOf odrl:function`) |
 | `adalbert:DataContract` | `rdfs:subClassOf odrl:Offer` -- data access offer |
 | `adalbert:Subscription` | `rdfs:subClassOf odrl:Agreement` -- activated contract |
 | `adalbert:subscribesTo` | Links Subscription to its DataContract |
@@ -142,7 +144,7 @@ The DUE profile uses ODRL Common Vocabulary actions directly where equivalents e
 
 ```
 Rule ::= Permission(assignee, action, target, constraint?)
-       | Duty(assignee, action, target, constraint?, deadline?, recurrence?)
+       | Duty(subject, action, target, object?, constraint?, deadline?, recurrence?)
        | Prohibition(assignee, action, target, constraint?)
 
 Policy ::= Set(permission | prohibition | obligation)+
@@ -192,6 +194,7 @@ Fixed precedence: **Prohibition > Permission**. No configurable conflict strateg
           adalbert-core.ttl
           (thin profile extension:
            State, deadline, recurrence,
+           subject, object,
            DataContract, Subscription,
            partOf, memberOf,
            resolutionPath,

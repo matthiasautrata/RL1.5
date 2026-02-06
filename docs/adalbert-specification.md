@@ -97,7 +97,7 @@ Active  -> Violated  (deadline passed without performance)
 
 | Property | Contains |
 |----------|----------|
-| `odrl:obligation` | Provider duties (with `odrl:assignee`), consumer duties (without assignee in Offer) |
+| `odrl:obligation` | Provider duties (with `adalbert:subject`), consumer duties (without subject in Offer) |
 | `odrl:permission` | Consumer permissions |
 | `odrl:prohibition` | Restrictions |
 
@@ -298,6 +298,43 @@ Canonical roots:
 
 ODRL defines `odrl:and` and `odrl:or` but lacks negation. Adalbert adds `adalbert:not` following the same pattern.
 
+### 4.11 adalbert:subject
+
+| Property | Value |
+|----------|-------|
+| **Type** | `owl:ObjectProperty` |
+| **SubPropertyOf** | `odrl:assignee` |
+| **Domain** | `odrl:Duty` |
+| **Range** | `odrl:Party` |
+| **Cardinality** | 0..1 |
+| **Definition** | Party bearing the duty (must perform the action) |
+
+The duty bearer. Replaces `odrl:assignee` on duties to avoid role overloading — in a bilateral agreement, the data provider is `odrl:assigner` at the policy level but would also need to be `odrl:assignee` on their own delivery duty. `adalbert:subject` removes this confusion. Bridges to ODRL via `rdfs:subPropertyOf odrl:assignee` (itself a sub-property of `odrl:function`), so ODRL processors with RDFS reasoning can infer `odrl:assignee` from `adalbert:subject`. Aligns with `md:subject` (W3C Market Data) and `rl2:subject`.
+
+### 4.12 adalbert:object
+
+| Property | Value |
+|----------|-------|
+| **Type** | `owl:ObjectProperty` |
+| **SubPropertyOf** | `odrl:function` |
+| **Domain** | `odrl:Duty` |
+| **Range** | `odrl:Party` |
+| **Cardinality** | 0..1 |
+| **Definition** | Party affected by the duty action |
+
+The party affected by or receiving the result of the duty action (e.g., who is notified, who receives the report). Bridges to ODRL via `rdfs:subPropertyOf odrl:function`. Aligns with `md:object` (W3C Market Data) and `rl2:counterparty`.
+
+**ODRL Common Vocabulary alternatives**: ODRL defines action-specific party functions that may be more semantically precise than `adalbert:object` in certain cases:
+
+| ODRL Function | Use when... | Example |
+|---|---|---|
+| `odrl:informedParty` | The duty is to inform/notify a party | Schema change notification |
+| `odrl:compensatedParty` | The duty involves compensation | License fee payment |
+| `odrl:trackedParty` | The duty involves tracking/monitoring | Usage tracking |
+| `odrl:consentingParty` | The duty requires obtaining consent | Data processing consent |
+
+Use `adalbert:object` as the generic alternative when no specific ODRL function fits, or when you prefer consistency across duty types. All are sub-properties of `odrl:function`.
+
 ---
 
 ## 5. DUE Vocabulary Summary
@@ -394,7 +431,7 @@ Shapes are defined in `ontology/adalbert-shacl.ttl`. Key constraints:
 |-------|--------|-----------------|
 | `adalbertsh:PermissionShape` | `odrl:Permission` | Exactly one `odrl:action` and one `odrl:target` |
 | `adalbertsh:ProhibitionShape` | `odrl:Prohibition` | Exactly one `odrl:action` and one `odrl:target` |
-| `adalbertsh:DutyShape` | `odrl:Duty` | Exactly one `odrl:action`; `deadline` 0..1 (dateTime/duration); `recurrence` 0..1 (RRULE pattern); `state` 0..1 |
+| `adalbertsh:DutyShape` | `odrl:Duty` | Exactly one `odrl:action`; `subject` 0..1; `object` 0..1; `deadline` 0..1 (dateTime/duration); `recurrence` 0..1 (RRULE pattern); `state` 0..1 |
 
 ### Constraint-level shapes
 
@@ -435,6 +472,8 @@ Which Adalbert properties are valid on which classes:
 | `adalbert:state` | Yes | Yes | Yes | | | | |
 | `adalbert:deadline` | Yes | | | | | | |
 | `adalbert:recurrence` | Yes | | | | | | |
+| `adalbert:subject` | Yes | | | | | | |
+| `adalbert:object` | Yes | | | | | | |
 | `adalbert:subscribesTo` | | | Yes | | | | |
 | `adalbert:effectiveDate` | | Yes | Yes | | | | |
 | `adalbert:expirationDate` | | Yes | Yes | | | | |
@@ -457,6 +496,7 @@ Adalbert restricts certain ODRL features:
 | `odrl:consequence` | Rejected | Deferred to RL2 |
 | `odrl:Ticket` | Not used | Not applicable to data governance |
 | `odrl:Request` | Not used | Not applicable |
+| `odrl:assignee` (on Duty) | Replaced by `adalbert:subject` | `adalbert:subject rdfs:subPropertyOf odrl:assignee` — avoids role overloading |
 | `odrl:AssetCollection` | Not used | Use `adalbert:partOf` hierarchy instead (`rdfs:subPropertyOf odrl:partOf` bridges to ODRL) |
 | `odrl:PartyCollection` | Not used | Use `adalbert:memberOf` hierarchy instead (`rdfs:subPropertyOf odrl:partOf` bridges to ODRL) |
 

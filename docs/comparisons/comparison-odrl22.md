@@ -51,7 +51,7 @@ Adalbert uses the following ODRL terms without renaming, sub-classing, or wrappi
 | `odrl:action` | Yes |
 | `odrl:target` | Yes |
 | `odrl:constraint` | Yes |
-| `odrl:assignee` | Yes |
+| `odrl:assignee` | Yes (Permissions/Prohibitions/policy-level; on Duty use `adalbert:subject` instead) |
 | `odrl:assigner` | Yes |
 | `odrl:leftOperand` | Yes |
 | `odrl:operator` | Yes |
@@ -109,6 +109,17 @@ These are the only terms in the `adalbert:` namespace:
 | `adalbert:subscribesTo` | Links Subscription to its DataContract |
 | `adalbert:effectiveDate` | When contract/subscription becomes effective |
 | `adalbert:expirationDate` | When contract/subscription expires |
+
+### Duty Party Roles
+
+| Adalbert Term | Purpose | ODRL Bridge |
+|---------------|---------|-------------|
+| `adalbert:subject` | Duty bearer (who must perform the action) | `rdfs:subPropertyOf odrl:assignee` |
+| `adalbert:object` | Affected party (who receives the result) | `rdfs:subPropertyOf odrl:function` |
+
+`adalbert:subject` replaces `odrl:assignee` on duties to avoid role overloading. In a bilateral agreement, the data provider is `odrl:assigner` at the policy level but would also need to be `odrl:assignee` on their own delivery duty — `adalbert:subject` removes this confusion. Both properties bridge to ODRL via `rdfs:subPropertyOf`, so ODRL processors with RDFS reasoning can infer standard party functions.
+
+`adalbert:object` is the generic alternative to ODRL Common Vocabulary party functions (`odrl:informedParty`, `odrl:compensatedParty`, `odrl:trackedParty`, `odrl:consentingParty`). Use those when the specific semantics fits; use `adalbert:object` for consistency or when no specific function applies. Aligns with `md:subject`/`md:object` (W3C Market Data) and `rl2:subject`/`rl2:counterparty`.
 
 ### Hierarchy Extensions
 
@@ -316,7 +327,7 @@ ex:policy a odrl:Set ;
 
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:consumer ;
+        adalbert:subject ex:consumer ;
         odrl:action adalbert-due:log ;
         odrl:target ex:accessLog ;
         adalbert:deadline "PT1H"^^xsd:duration ;    # Adalbert extension

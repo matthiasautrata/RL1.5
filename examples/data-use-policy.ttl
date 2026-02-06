@@ -3,6 +3,8 @@
 # =============================================================================
 # Shows role-based access with purpose constraints and consent tracking,
 # using ODRL terms for all standard constructs.
+# Target inheritance: policy-level odrl:target is inherited by rules unless
+# overridden at rule level.
 # =============================================================================
 
 @prefix odrl:         <http://www.w3.org/ns/odrl/2/> .
@@ -47,6 +49,7 @@
 # POLICY SET: HR Data Access Controls
 # =============================================================================
 # This is a Set (no parties) — applies to anyone matching the conditions.
+# Target inheritance: rules inherit employee-data target unless overridden.
 
 <https://data.bigbank/policies/hr-data-access> a odrl:Set ;
     rdfs:label "HR Data Access Policy" ;
@@ -55,13 +58,13 @@
     odrl:target <https://data.bigbank/assets/employee-data> ;
 
     # ===== RULE 1: HR Analytics can read for analytics purposes =====
+    # Target inherited from policy (employee-data)
 
     odrl:permission [
         a odrl:Permission ;
         rdfs:label "HR analytics read access" ;
         odrl:assignee <https://data.bigbank/agents/hr-analytics> ;
         odrl:action odrl:read ;
-        odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
             odrl:leftOperand odrl:purpose ;
@@ -71,13 +74,13 @@
     ] ;
 
     # ===== RULE 2: Compliance can read for compliance purposes =====
+    # Target inherited from policy (employee-data)
 
     odrl:permission [
         a odrl:Permission ;
         rdfs:label "Compliance audit access" ;
         odrl:assignee <https://data.bigbank/agents/compliance-team> ;
         odrl:action odrl:read ;
-        odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
             odrl:leftOperand odrl:purpose ;
@@ -87,6 +90,7 @@
     ] ;
 
     # ===== RULE 3: Anyone reading must log access =====
+    # Target differs from policy — access-log, not employee-data
 
     odrl:obligation [
         a odrl:Duty ;
@@ -103,21 +107,21 @@
     ] ;
 
     # ===== RULE 4: No external distribution =====
+    # Target inherited from policy (employee-data)
 
     odrl:prohibition [
         a odrl:Prohibition ;
         rdfs:label "No external sharing" ;
-        odrl:action odrl:distribute ;
-        odrl:target <https://data.bigbank/assets/employee-data>
+        odrl:action odrl:distribute
     ] ;
 
     # ===== RULE 5: No use for model training =====
+    # Target inherited from policy (employee-data)
 
     odrl:prohibition [
         a odrl:Prohibition ;
         rdfs:label "No ML training" ;
         odrl:action odrl:use ;
-        odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
             odrl:leftOperand adalbert-due:processingMode ;
@@ -127,12 +131,12 @@
     ] ;
 
     # ===== RULE 6: Production only =====
+    # Target inherited from policy (employee-data)
 
     odrl:prohibition [
         a odrl:Prohibition ;
         rdfs:label "Production and staging only" ;
         odrl:action odrl:use ;
-        odrl:target <https://data.bigbank/assets/employee-data> ;
         odrl:constraint [
             a odrl:Constraint ;
             odrl:leftOperand adalbert-due:environment ;
@@ -146,6 +150,7 @@
 # POLICY SET: Compensation Data (Stricter)
 # =============================================================================
 # More restrictive policy for sensitive compensation data.
+# Target inheritance: rules inherit employee-compensation target.
 
 <https://data.bigbank/policies/compensation-access> a odrl:Set ;
     rdfs:label "Compensation Data Access Policy" ;
@@ -154,12 +159,12 @@
     odrl:target <https://data.bigbank/assets/employee-compensation> ;
 
     # Only HR Division (not just analytics sub-team)
+    # Target inherited from policy (employee-compensation)
     odrl:permission [
         a odrl:Permission ;
         rdfs:label "HR Division compensation access" ;
         odrl:assignee <https://data.bigbank/agents/hr-division> ;
         odrl:action odrl:read ;
-        odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [
             a odrl:LogicalConstraint ;
             odrl:and (
@@ -180,11 +185,11 @@
     ] ;
 
     # Retention limit: delete after 7 years
+    # Target inherited from policy (employee-compensation)
     odrl:obligation [
         a odrl:Duty ;
         rdfs:label "Retention limit" ;
         odrl:action odrl:delete ;
-        odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [
             a odrl:Constraint ;
             odrl:leftOperand adalbert-due:retentionPeriod ;
@@ -194,11 +199,11 @@
     ] ;
 
     # Mandatory anonymization for any analytics
+    # Target inherited from policy (employee-compensation)
     odrl:obligation [
         a odrl:Duty ;
         rdfs:label "Anonymization required" ;
         odrl:action odrl:anonymize ;
-        odrl:target <https://data.bigbank/assets/employee-compensation> ;
         odrl:constraint [
             a odrl:Constraint ;
             odrl:leftOperand odrl:purpose ;

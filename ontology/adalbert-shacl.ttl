@@ -170,6 +170,20 @@ adalbertsh:DutyShape a sh:NodeShape ;
         sh:message "Recurrence must be a valid RFC 5545 RRULE starting with FREQ=."
     ] ;
 
+    sh:property [
+        sh:path adalbert:subject ;
+        sh:maxCount 1 ;
+        sh:class odrl:Party ;
+        sh:message "Duty subject must be a single odrl:Party."
+    ] ;
+
+    sh:property [
+        sh:path adalbert:object ;
+        sh:maxCount 1 ;
+        sh:class odrl:Party ;
+        sh:message "Duty object must be a single odrl:Party."
+    ] ;
+
     sh:property adalbertsh:StatePropertyGroup .
 
 # =============================================================================

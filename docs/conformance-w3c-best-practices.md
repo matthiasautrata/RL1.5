@@ -94,7 +94,14 @@ The W3C ODRL Community Group published best practices for ODRL 2.2 profiles. Thi
 
 **Requirement**: Define new party roles.
 
-**Adalbert**: Uses `odrl:assignee` and `odrl:assigner` directly. No sub-properties defined. Hierarchy is expressed via `adalbert:memberOf` (transitive party membership on `odrl:Party`, declared `rdfs:subPropertyOf odrl:partOf` for ODRL interoperability).
+**Adalbert**: Uses `odrl:assignee` and `odrl:assigner` directly on policies and permissions. For duties, Adalbert defines two additional party functions following the standard ODRL extension pattern (`rdfs:subPropertyOf odrl:function`):
+
+- `adalbert:subject` (`rdfs:subPropertyOf odrl:assignee`) — duty bearer (who must perform the action)
+- `adalbert:object` (`rdfs:subPropertyOf odrl:function`) — affected party (who receives the result)
+
+ODRL Common Vocabulary party functions (`odrl:informedParty`, `odrl:compensatedParty`, etc.) can also be used directly when their specific semantics is a better fit. `adalbert:object` is the generic alternative.
+
+Hierarchy is expressed via `adalbert:memberOf` (transitive party membership on `odrl:Party`, declared `rdfs:subPropertyOf odrl:partOf` for ODRL interoperability).
 
 ### Additional Asset Relationships
 

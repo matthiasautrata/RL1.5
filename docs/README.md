@@ -51,6 +51,8 @@ Adalbert is a proper **ODRL 2.2 profile**. It uses ODRL terms for all standard c
 - `adalbert:State` -- unified lifecycle states (Pending/Active/Fulfilled/Violated)
 - `adalbert:deadline` -- deadline semantics on duties
 - `adalbert:recurrence` -- RFC 5545 RRULE for recurring duties
+- `adalbert:subject` -- duty bearer party role (on `odrl:Duty`, `rdfs:subPropertyOf odrl:assignee`)
+- `adalbert:object` -- affected party role (on `odrl:Duty`, `rdfs:subPropertyOf odrl:function`)
 - `adalbert:DataContract` / `adalbert:Subscription` -- data contract lifecycle
 - `adalbert:partOf` -- asset hierarchy (on `odrl:Asset`, `rdfs:subPropertyOf odrl:partOf`)
 - `adalbert:memberOf` -- party hierarchy (on `odrl:Party`, `rdfs:subPropertyOf odrl:partOf`)

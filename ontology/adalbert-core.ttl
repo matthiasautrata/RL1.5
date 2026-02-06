@@ -9,6 +9,7 @@
 #   - Duty lifecycle (State + state property)
 #   - Deadline on duties
 #   - Recurrence on duties (RFC 5545 RRULE)
+#   - Duty party roles (subject, object)
 #   - Data contracts and subscriptions (domain subtypes)
 #   - Asset/party hierarchy (partOf, memberOf)
 #   - Structured operand resolution (resolutionPath)
@@ -43,6 +44,7 @@
         - Explicit duty lifecycle (Pending -> Active -> Fulfilled/Violated)
         - Deadline property on odrl:Duty
         - Recurrence property on odrl:Duty (RFC 5545 RRULE)
+        - Duty party roles (subject = duty bearer, object = affected party)
         - Data contract and subscription subtypes
         - Asset/party hierarchy properties
         - Structured operand resolution via resolutionPath
@@ -208,6 +210,26 @@ adalbert:memberOf a owl:ObjectProperty, owl:TransitiveProperty ;
     rdfs:domain odrl:Party ;
     rdfs:range odrl:Party ;
     rdfs:comment "Transitive party hierarchy. Bridges to ODRL via rdfs:subPropertyOf odrl:partOf — ODRL processors with RDFS reasoning can interpret Adalbert hierarchies. Transitivity and typed domains are Adalbert additions not inherited by the base property."@en .
+
+# =============================================================================
+# DUTY PARTY ROLES (genuinely new)
+# =============================================================================
+
+adalbert:subject a owl:ObjectProperty ;
+    rdfs:label "subject"@en ;
+    skos:definition "Party bearing the duty (must perform the action)."@en ;
+    rdfs:subPropertyOf odrl:assignee ;
+    rdfs:domain odrl:Duty ;
+    rdfs:range odrl:Party ;
+    rdfs:comment "The duty bearer. Bridges to ODRL via rdfs:subPropertyOf odrl:assignee (itself a sub-property of odrl:function). Aligns with md:subject (W3C Market Data) and rl2:subject."@en .
+
+adalbert:object a owl:ObjectProperty ;
+    rdfs:label "object"@en ;
+    skos:definition "Party affected by the duty action."@en ;
+    rdfs:subPropertyOf odrl:function ;
+    rdfs:domain odrl:Duty ;
+    rdfs:range odrl:Party ;
+    rdfs:comment "The party affected by or receiving the result of the duty action (e.g., who is notified, who receives the report). Bridges to ODRL via rdfs:subPropertyOf odrl:function. Generic alternative to ODRL Common Vocabulary party functions (informedParty, compensatedParty, etc.) — use those when the specific semantics fits, use adalbert:object for consistency or when no specific function applies. Aligns with md:object (W3C Market Data) and rl2:counterparty."@en .
 
 # =============================================================================
 # OPERAND RESOLUTION (genuinely new)

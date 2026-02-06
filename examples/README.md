@@ -18,22 +18,25 @@ and extend them with Adalbert-specific vocabulary only where ODRL has no equival
 
 ### 1. Bilateral Agreements (data-contract.ttl)
 
-Adalbert models bilateral agreements using ODRL's `odrl:obligation` with
-`odrl:assignee` on each duty to distinguish provider duties from consumer duties.
+Adalbert models bilateral agreements using `odrl:obligation` with
+`adalbert:subject` on each duty to identify the duty bearer, and `adalbert:object`
+to identify the affected party.
 
 ```turtle
 ex:subscription a adalbert:Subscription ;
     odrl:assigner ex:dataTeam ;
     odrl:assignee ex:consumer ;
+    odrl:target ex:marketPrices ;
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
         odrl:action adalbert-due:deliver ;
         ...
     ] ;
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:consumer ;
+        adalbert:subject ex:consumer ;
+        adalbert:object ex:dataTeam ;
         odrl:action adalbert-due:report ;
         ...
     ] .
@@ -97,15 +100,14 @@ Adalbert supports recurring duties via `adalbert:recurrence` — an RFC 5545 RRU
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:deliver ;
-    odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
     adalbert:deadline "PT30M"^^xsd:duration
 ] .
 ```
 
-This creates a daily delivery duty at 06:00 with a 30-minute fulfillment window. Each instance follows the standard lifecycle independently.
+This creates a daily delivery duty at 06:00 with a 30-minute fulfillment window (target inherited from policy). Each instance follows the standard lifecycle independently.
 
 ### 6. Contract Versioning
 

@@ -121,7 +121,8 @@ We define Adalbert's abstract syntax using a typed algebraic grammar.
 
 ```
 Norm ::= Permission(subject: Agent, action: Action, asset: Asset, condition: Condition?)
-       | Duty(subject: Agent, action: Action, asset: Asset, condition: Condition?, deadline: Deadline?, recurrence: Recurrence?)
+       | Duty(subject: Agent, action: Action, asset: Asset,
+              object: Agent?, condition: Condition?, deadline: Deadline?, recurrence: Recurrence?)
        | Prohibition(subject: Agent, action: Action, asset: Asset, condition: Condition?)
 
 Deadline ::= AbsoluteDeadline(time: Time)
@@ -133,7 +134,8 @@ Recurrence ::= RRule(rule: String)
 **Notes**:
 
 - `Permission` corresponds to `odrl:Permission`; `Prohibition` to `odrl:Prohibition`; `Duty` to `odrl:Duty`.
-- The formal `subject` parameter maps to `odrl:assignee` in the RDF encoding (the party to whom the norm applies).
+- The formal `subject` parameter maps to `adalbert:subject` on duties (rdfs:subPropertyOf `odrl:assignee`) and to `odrl:assignee` on permissions/prohibitions.
+- The formal `object` parameter (duties only) maps to `adalbert:object` — the party affected by the duty action (e.g., who is notified). Not used in norm matching.
 - `AbsoluteDeadline`: Fixed point in time (e.g., 2026-12-31T23:59:59Z)
 - `RelativeDeadline`: Duration from activation (e.g., P30D, PT24H)
 
@@ -144,7 +146,9 @@ Recurrence ::= RRule(rule: String)
 | `Permission` | `odrl:Permission` | |
 | `Duty` | `odrl:Duty` | |
 | `Prohibition` | `odrl:Prohibition` | |
-| `subject` | `odrl:assignee` | Party to whom the norm applies |
+| `subject` (Permission/Prohibition) | `odrl:assignee` | Party to whom the norm applies |
+| `subject` (Duty) | `adalbert:subject` | Party bearing the duty (rdfs:subPropertyOf odrl:assignee) |
+| `object` (Duty) | `adalbert:object` | Party affected by the duty action (metadata, not used in matching) |
 | `grantor` | `odrl:assigner` | Party granting rights |
 | `grantee` | `odrl:assignee` | Party receiving rights (policy-level) |
 | `condition` | `odrl:constraint` | |
@@ -972,28 +976,30 @@ Both sets are included in the evaluation result, with independent lifecycle trac
 ex:agreement a odrl:Agreement ;
     odrl:assigner ex:dataTeam ;
     odrl:assignee ex:analyticsTeam ;
+    odrl:target ex:marketData ;
 
-    # Assignee permission
+    # Assignee permission (target inherited from policy)
     odrl:permission [
         a odrl:Permission ;
         odrl:assignee ex:analyticsTeam ;
-        odrl:action odrl:display ;
-        odrl:target ex:marketData
+        odrl:action odrl:display
     ] ;
 
-    # Assignee duty
+    # Assignee duty (consumer reports to provider)
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:analyticsTeam ;
+        adalbert:subject ex:analyticsTeam ;
+        adalbert:object ex:dataTeam ;
         odrl:action adalbert-due:report ;
         odrl:target ex:usageStats ;
         adalbert:deadline "P30D"^^xsd:duration
     ] ;
 
-    # Assigner duty (provider SLA)
+    # Assigner duty (provider notifies consumer)
     odrl:obligation [
         a odrl:Duty ;
-        odrl:assignee ex:dataTeam ;
+        adalbert:subject ex:dataTeam ;
+        adalbert:object ex:analyticsTeam ;
         odrl:action adalbert-due:notify ;
         odrl:target ex:schemaChanges ;
         adalbert:deadline "P7D"^^xsd:duration
