@@ -162,11 +162,11 @@ ex:subscription a adalbert:Subscription ;
 ### Duty Holder
 
 **Business term:** `responsible party`, `obligee`, `who must do it`
-**Adalbert property:** `odrl:assignee` (on `odrl:Duty`)
+**Adalbert property:** `adalbert:subject` (on `odrl:Duty`)
 **Used on:** `odrl:Duty`
 **Cardinality:** 0..1
-**Source:** ODRL
-**Note:** In a DataContract (Offer), provider duties have `odrl:assignee` set to the provider. Consumer duties omit `odrl:assignee` — it is filled in when the Subscription is created.
+**Source:** Adalbert (`rdfs:subPropertyOf odrl:assignee`)
+**Note:** In a DataContract (Offer), provider duties have `adalbert:subject` set to the provider. Consumer duties omit `adalbert:subject` — it is filled in when the Subscription is created.
 **DCON equivalent:** `dcon:promisor`
 
 ### Party Hierarchy
@@ -228,7 +228,7 @@ ex:marketDataSchema a odrl:Asset ;
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:deliver ;
     odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
@@ -245,7 +245,7 @@ odrl:obligation [
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:conformTo ;
     odrl:target ex:marketDataSchema
 ] .
@@ -260,7 +260,7 @@ odrl:obligation [
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:conformTo ;
     odrl:target ex:riskMetricsSchema ;
     odrl:constraint [
@@ -281,7 +281,7 @@ odrl:obligation [
 ```turtle
 odrl:obligation [
     a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:notify ;
     odrl:target ex:schemaChanges ;
     adalbert:deadline "P14D"^^xsd:duration
@@ -441,7 +441,7 @@ Complete mapping of every DCON term to its Adalbert equivalent.
 | `dcon:subscribesTo` | `adalbert:subscribesTo` | Direct | Same semantics |
 | `dcon:promisedDeliveryTime` | `adalbert:recurrence` + `adalbert:deadline` | Simplified | Schedule + window |
 | `dcon:notificationLeadTime` | `adalbert:deadline` (as `xsd:duration`) | Simplified | Duration value |
-| `dcon:promisor` | `odrl:assignee` (on Duty) | Standard | ODRL term |
+| `dcon:promisor` | `adalbert:subject` (on Duty) | Adalbert | `rdfs:subPropertyOf odrl:assignee` |
 | `dcon:promisee` | Implicit (other party) | Not needed | Bilateral agreement handles this |
 | `dcon:promiseContent` | `odrl:action` (on Duty) | Standard | ODRL term |
 | `dcon:promiseState` | `adalbert:state` | Direct | Unified lifecycle |
@@ -487,7 +487,7 @@ When migrating a DCON contract to Adalbert v0.7:
 2. Change `dcon:DataContractSubscription` -> `adalbert:Subscription`
 3. Add `odrl:profile <https://vocabulary.bigbank/adalbert/>` declaration
 4. Replace promise subclasses with `odrl:Duty` + DUE action (see table above)
-5. Replace `dcon:promisor` with `odrl:assignee` on duties
+5. Replace `dcon:promisor` with `adalbert:subject` on duties
 6. Replace `dcon:hasSchedule`/`dcon:icalRule` with `adalbert:recurrence`
 7. Map `dcon:contractState` to `adalbert:state`
 8. Validate against SHACL shapes: `shacl validate --shapes adalbert-shacl.ttl --data migrated.ttl`

@@ -50,7 +50,7 @@ ex:timelinessPromise a dcon:ProviderTimelinessPromise ;
 
 # Adalbert v0.7 (after)
 [   a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:deliver ;
     odrl:target ex:marketPrices ;
     adalbert:recurrence "FREQ=DAILY;BYHOUR=6;BYMINUTE=0" ;
@@ -63,7 +63,7 @@ ex:timelinessPromise a dcon:ProviderTimelinessPromise ;
 ```turtle
 # Adalbert v0.7
 [   a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:conformTo ;
     odrl:target ex:marketDataSchema ;
     adalbert:state adalbert:Active
@@ -75,7 +75,7 @@ ex:timelinessPromise a dcon:ProviderTimelinessPromise ;
 ```turtle
 # Adalbert v0.7
 [   a odrl:Duty ;
-    odrl:assignee ex:dataTeam ;
+    adalbert:subject ex:dataTeam ;
     odrl:action adalbert-due:notify ;
     odrl:target ex:schemaChanges ;
     adalbert:deadline "P14D"^^xsd:duration
@@ -92,7 +92,7 @@ ex:timelinessPromise a dcon:ProviderTimelinessPromise ;
 | Subscription class | `adalbert:Subscription` (core) | Subclass of `odrl:Agreement` |
 | `subscribesTo` | `adalbert:subscribesTo` | Links Subscription to DataContract |
 | `effectiveDate` / `expirationDate` | `adalbert:effectiveDate` / `adalbert:expirationDate` | Contract lifecycle dates |
-| Provider/consumer duties | `odrl:obligation` with `odrl:assignee` | Bilateral agreement pattern |
+| Provider/consumer duties | `odrl:obligation` with `adalbert:subject` | Bilateral agreement pattern |
 | Permissions | `odrl:Permission` | Standard ODRL |
 | State tracking | `adalbert:State` | Unified 4-state lifecycle |
 
@@ -102,7 +102,7 @@ ex:timelinessPromise a dcon:ProviderTimelinessPromise ;
 |--------------|--------|
 | Promise Theory semantics (ought-to-be) | Duties suffice; RL2 has full Promise support |
 | Promise type hierarchy | DUE actions provide equivalent differentiation |
-| `promisor` / `promisee` distinction | `odrl:assignee` identifies the bearer; other party implicit |
+| `promisor` / `promisee` distinction | `adalbert:subject` identifies the bearer; other party implicit |
 | `dcon:contractState` (Draft/Published) | Pre-normative workflow metadata, not policy semantics |
 | `fulfillsPromise` link | `prov:wasDerivedFrom` covers provenance |
 | `dcat:Distribution` integration | Use DCAT directly — not policy semantics |
@@ -149,7 +149,7 @@ DCON's `Draft` and `Published` were pre-normative workflow metadata — not mode
 | `dcon:subscribesTo` | `adalbert:subscribesTo` | Contract reference |
 | `dcon:promisedDeliveryTime` | `adalbert:recurrence` + `adalbert:deadline` | Scheduling + window |
 | `dcon:notificationLeadTime` | `adalbert:deadline` | As duration |
-| `dcon:promisor` | `odrl:assignee` | Duty bearer |
+| `dcon:promisor` | `adalbert:subject` | Duty bearer |
 | `dcon:promiseState` | `adalbert:state` | Unified state |
 
 ---
@@ -247,7 +247,7 @@ Systematic verification that every DCON class, property, and action has an Adalb
 | `dcon:effectiveDate` | DatatypeProperty | `adalbert:effectiveDate` | Direct |
 | `dcon:expirationDate` | DatatypeProperty | `adalbert:expirationDate` | Direct |
 | `dcon:subscribesTo` | ObjectProperty | `adalbert:subscribesTo` | Direct |
-| `dcon:promisor` | ObjectProperty | `odrl:assignee` (on Duty) | Standard ODRL |
+| `dcon:promisor` | ObjectProperty | `adalbert:subject` (on Duty) | Adalbert (`rdfs:subPropertyOf odrl:assignee`) |
 | `dcon:promisee` | ObjectProperty | Implicit (other party) | Not needed |
 | `dcon:promiseContent` | ObjectProperty | `odrl:action` (on Duty) | Standard ODRL |
 | `dcon:promiseState` | ObjectProperty | `adalbert:state` | Direct |

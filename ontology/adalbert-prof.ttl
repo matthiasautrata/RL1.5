@@ -54,7 +54,7 @@ odrl:core a dct:Standard ;
         a prof:ResourceDescriptor ;
         dct:title "Adalbert Core Ontology"@en ;
         prof:hasRole role:vocabulary ;
-        dct:conformsTo owl: ;
+        dct:conformsTo <http://www.w3.org/TR/owl2-overview/> ;
         prof:hasArtifact <https://vocabulary.bigbank/adalbert/ontology/adalbert-core.ttl>
     ] , [
         a prof:ResourceDescriptor ;
@@ -79,7 +79,7 @@ odrl:core a dct:Standard ;
         a prof:ResourceDescriptor ;
         dct:title "Adalbert DUE Vocabulary"@en ;
         prof:hasRole role:vocabulary ;
-        dct:conformsTo owl: ;
+        dct:conformsTo <http://www.w3.org/TR/owl2-overview/> ;
         prof:hasArtifact <https://vocabulary.bigbank/adalbert/profiles/adalbert-due.ttl>
     ] .
 

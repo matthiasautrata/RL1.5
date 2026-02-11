@@ -68,10 +68,11 @@ adalbertsh:SetShape a sh:NodeShape ;
 
     sh:node adalbertsh:NonEmptyClausesConstraint ;
 
+    # odrl:target is optional on Sets (formal semantics: Asset?).
+    # When present, inherited by rules that omit their own target.
     sh:property [
         sh:path odrl:target ;
-        sh:minCount 1 ;
-        sh:message "Set policy must declare at least one target."
+        sh:message "Set policy may declare a policy-level target (inherited by rules)."
     ] .
 
 # =============================================================================
@@ -300,6 +301,23 @@ adalbertsh:SubscriptionShape a sh:NodeShape ;
 
     sh:node adalbertsh:NonEmptyClausesConstraint ;
 
+    # Explicit party constraints — Subscription is subClassOf Agreement,
+    # but without RDFS entailment AgreementShape won't target Subscription
+    # instances. Duplicate the party requirements here.
+    sh:property [
+        sh:path odrl:assigner ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Subscription must have exactly one assigner (data provider)."
+    ] ;
+
+    sh:property [
+        sh:path odrl:assignee ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Subscription must have exactly one assignee (data consumer)."
+    ] ;
+
     sh:property [
         sh:path adalbert:subscribesTo ;
         sh:minCount 1 ;
@@ -346,6 +364,14 @@ adalbertsh:LeftOperandShape a sh:NodeShape ;
 # =============================================================================
 # Unlike generic LeftOperandShape (which allows absent resolutionPath for ODRL
 # built-in operands like odrl:dateTime), DUE operands MUST declare a path.
+#
+# Validation model: this shape validates the DUE vocabulary itself, not
+# individual policies. The sh:targetNode list references operand IRIs
+# defined in adalbert-due.ttl. To validate, load both the DUE vocabulary
+# and this shapes graph:
+#   shacl validate --shapes adalbert-shacl.ttl --data adalbert-due.ttl
+# Policy-level validation (constraint structure, cardinality) is handled
+# by ConstraintShape and LeftOperandShape above.
 
 adalbertsh:DUEOperandShape a sh:NodeShape ;
     sh:name "DUE Operand Shape" ;
@@ -389,8 +415,12 @@ adalbertsh:DUEOperandShape a sh:NodeShape ;
     ] .
 
 # =============================================================================
-# PROFILE SHAPE — reject RL2-only constructs
+# PROFILE SHAPE — reject RL2-only and unsupported ODRL constructs
 # =============================================================================
+# Each shape targets nodes that use a rejected feature and declares a
+# constraint that always fails: sh:maxCount 0 on the targeted property
+# (for property-based rejections) or on rdf:type (for class-based
+# rejections, since any typed node has rdf:type >= 1).
 
 adalbertsh:RejectXoneShape a sh:NodeShape ;
     sh:target [
@@ -402,8 +432,12 @@ adalbertsh:RejectXoneShape a sh:NodeShape ;
             }
         """
     ] ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support xone operator." .
+    sh:property [
+        sh:path odrl:xone ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support xone operator."
+    ] .
 
 adalbertsh:RejectRemedyShape a sh:NodeShape ;
     sh:target [
@@ -415,8 +449,12 @@ adalbertsh:RejectRemedyShape a sh:NodeShape ;
             }
         """
     ] ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support odrl:remedy. Deferred to RL2." .
+    sh:property [
+        sh:path odrl:remedy ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support odrl:remedy. Deferred to RL2."
+    ] .
 
 adalbertsh:RejectConsequenceShape a sh:NodeShape ;
     sh:target [
@@ -428,28 +466,48 @@ adalbertsh:RejectConsequenceShape a sh:NodeShape ;
             }
         """
     ] ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support odrl:consequence. Deferred to RL2." .
+    sh:property [
+        sh:path odrl:consequence ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support odrl:consequence. Deferred to RL2."
+    ] .
 
 adalbertsh:RejectTicketShape a sh:NodeShape ;
     sh:targetClass odrl:Ticket ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support odrl:Ticket." .
+    sh:property [
+        sh:path rdf:type ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support odrl:Ticket."
+    ] .
 
 adalbertsh:RejectRequestShape a sh:NodeShape ;
     sh:targetClass odrl:Request ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support odrl:Request." .
+    sh:property [
+        sh:path rdf:type ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support odrl:Request."
+    ] .
 
 adalbertsh:RejectAssetCollectionShape a sh:NodeShape ;
     sh:targetClass odrl:AssetCollection ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support odrl:AssetCollection. Use adalbert:partOf hierarchy instead." .
+    sh:property [
+        sh:path rdf:type ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support odrl:AssetCollection. Use adalbert:partOf hierarchy instead."
+    ] .
 
 adalbertsh:RejectPartyCollectionShape a sh:NodeShape ;
     sh:targetClass odrl:PartyCollection ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support odrl:PartyCollection. Use adalbert:memberOf hierarchy instead." .
+    sh:property [
+        sh:path rdf:type ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support odrl:PartyCollection. Use adalbert:memberOf hierarchy instead."
+    ] .
 
 adalbertsh:RejectInheritAllowedShape a sh:NodeShape ;
     sh:target [
@@ -461,8 +519,12 @@ adalbertsh:RejectInheritAllowedShape a sh:NodeShape ;
             }
         """
     ] ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support odrl:inheritAllowed." .
+    sh:property [
+        sh:path odrl:inheritAllowed ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support odrl:inheritAllowed."
+    ] .
 
 adalbertsh:RejectInheritFromShape a sh:NodeShape ;
     sh:target [
@@ -474,8 +536,12 @@ adalbertsh:RejectInheritFromShape a sh:NodeShape ;
             }
         """
     ] ;
-    sh:severity sh:Violation ;
-    sh:message "Adalbert does not support odrl:inheritFrom." .
+    sh:property [
+        sh:path odrl:inheritFrom ;
+        sh:maxCount 0 ;
+        sh:severity sh:Violation ;
+        sh:message "Adalbert does not support odrl:inheritFrom."
+    ] .
 
 # =============================================================================
 # END OF SHAPES

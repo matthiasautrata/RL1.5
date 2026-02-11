@@ -522,7 +522,7 @@ odrl:obligation [
 1. Every policy declares `odrl:profile <https://vocabulary.bigbank/adalbert/>` and `<https://vocabulary.bigbank/adalbert/due/>`
 2. Conflict strategy (`odrl:conflict odrl:prohibit`) is inherited from the profile — do not repeat per-policy
 3. Policy has at least one `odrl:target`
-4. Each permission and prohibition has exactly one `odrl:action` and one `odrl:target` (rule-level target can be omitted when it matches the policy-level target — it is inherited)
+4. Each permission and prohibition has exactly one `odrl:action` and one effective `odrl:target` — either declared on the rule or inherited from the policy-level target (rule-level `odrl:target` may be omitted when a policy-level target exists)
 5. Each duty has exactly one `odrl:action`
 6. Each constraint has `leftOperand`, `operator`, and `rightOperand`
 7. LogicalConstraints use exactly one of `odrl:and`, `odrl:or`, or `adalbert:not`

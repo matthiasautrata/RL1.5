@@ -380,7 +380,7 @@ The DUE profile (`profiles/adalbert-due.ttl`) provides the complete data governa
 | Action | Definition | Hierarchy |
 |--------|------------|-----------|
 | `adalbert-due:nonDisplay` | Automated/programmatic use | `includedIn odrl:use` |
-| `adalbert-due:conformTo` | Conform to a schema or spec | No parent (governance action) |
+| `adalbert-due:conformTo` | Conform to a schema or spec | No parent (duty-only governance action) |
 | `adalbert-due:log` | Log access to the asset | `includedIn odrl:inform` |
 | `adalbert-due:notify` | Notify relevant parties | `includedIn odrl:inform` |
 | `adalbert-due:report` | Submit usage reports | `includedIn odrl:inform` |

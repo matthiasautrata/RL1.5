@@ -247,11 +247,14 @@ Several DUE actions lack `odrl:includedIn` declarations: `conformTo`, `log`, `no
 | `export` | `odrl:distribute` | Exporting is distributing externally |
 | `copy` | `odrl:reproduce` | Making duplicates |
 | `link` | `odrl:aggregate` | Linking/joining is aggregating |
-| `conformTo` | *(none)* | Governance action with no natural ODRL parent |
+| `conformTo` | *(none)* | Governance duty action — see note below |
+
+> **Note (S7 revert):** External review S7 added `odrl:includedIn odrl:use` to `conformTo`. Reverted: `conformTo` is a duty-only action (schema/quality SLA obligations). The `includedIn` hierarchy governs permission subsumption — granting `odrl:use` implicitly grants sub-actions. Since `conformTo` never appears in permissions, chaining it to `odrl:use` would create a false subsumption.
 
 **Changes:**
 
 - `profiles/adalbert-due.ttl`: Added `odrl:includedIn` to 7 actions; documented `conformTo` exception
+- `profiles/adalbert-due.ttl`: Reverted S7 `odrl:includedIn odrl:use` on `conformTo` (duty-only action)
 
 **Status:** Resolved
 
@@ -492,3 +495,4 @@ Four sub-issues:
 | 2026-02-06 | Issue 18 | Added 6 SHACL rejection shapes for excluded ODRL constructs: Ticket, Request, AssetCollection, PartyCollection, inheritAllowed, inheritFrom | -- |
 | 2026-02-06 | Issue 19 | Added `ProfilePropertyGroup` and `NonEmptyClausesConstraint` to Set/Offer/Agreement/DataContract/Subscription shapes — ensures validation without RDFS inference | -- |
 | 2026-02-06 | Issue 20 | Fixed 4 doc inconsistencies: stale SHACL snippet, DUE URI slash, SKOS status contradiction, `odrl:duty` → `odrl:obligation` | -- |
+| 2026-02-10 | S7 revert | Reverted `odrl:includedIn odrl:use` on `conformTo` — duty-only action, `includedIn` hierarchy governs permission subsumption not duty obligations | -- |

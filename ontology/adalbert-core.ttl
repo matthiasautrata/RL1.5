@@ -34,7 +34,7 @@
 # ONTOLOGY DECLARATION
 # =============================================================================
 
-<https://vocabulary.bigbank/adalbert/> a owl:Ontology, odrl:Profile ;
+<https://vocabulary.bigbank/adalbert/> a owl:Ontology ;
     dcterms:title "Adalbert Core Ontology"@en ;
     dcterms:description """
         Adalbert: a proper ODRL 2.2 profile for deterministic data governance.
@@ -78,11 +78,24 @@ adalbert:State a owl:Class ;
     skos:definition "Unified lifecycle state for duties and contracts."@en ;
     owl:oneOf (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
     rdfs:comment """
-        Four states cover both duty and contract lifecycles:
-        - Pending: condition not yet met / not yet in force
-        - Active: condition met, action required / in force
-        - Fulfilled: action performed / obligations complete
-        - Violated: deadline passed / breached
+        Four states cover both duty and contract lifecycles.
+
+        On duties (evaluated during Eval):
+        - Pending: condition not yet satisfied
+        - Active: condition met, action required
+        - Fulfilled: action performed
+        - Violated: deadline passed without performance
+
+        On contracts/subscriptions (administrative, not evaluated at request time):
+        - Pending: not yet in force
+        - Active: in force
+        - Fulfilled: obligations complete
+        - Violated: breached
+
+        Unified by design: the same four transitions apply to both domains,
+        and a single state property avoids proliferating parallel enums.
+        The formal semantics (§4.1) tracks only duty state during evaluation;
+        contract state is managed by external administrative processes.
     """@en .
 
 adalbert:Pending a adalbert:State ;
@@ -161,6 +174,7 @@ adalbert:Subscription a owl:Class ;
     rdfs:label "Subscription"@en ;
     skos:definition "Activated data contract binding provider and consumer."@en ;
     rdfs:subClassOf odrl:Agreement ;
+    owl:disjointWith adalbert:DataContract ;
     rdfs:comment """
         A Subscription is an activated DataContract.
         - assigner: data provider (from contract)
@@ -268,7 +282,8 @@ adalbert:currentAgent a adalbert:RuntimeReference, odrl:Party ;
 adalbert:currentDateTime a odrl:LeftOperand, adalbert:RuntimeReference ;
     rdfs:label "current date time"@en ;
     skos:definition "Evaluation timestamp."@en ;
-    skos:exactMatch odrl:dateTime .
+    rdfs:seeAlso odrl:dateTime ;
+    rdfs:comment "Equivalent to odrl:dateTime in constraint evaluation. Dual-typed as RuntimeReference to enable resolution at evaluation time."@en .
 
 # =============================================================================
 # LOGICAL NEGATION (genuinely new — ODRL lacks this)
