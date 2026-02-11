@@ -42,6 +42,10 @@ Recurring instance creation is defined abstractly. Lifecycle interaction with po
 
 ---
 
+## Scope Note
+
+All four findings relate to the same architectural boundary: Adalbert defines declarative evaluation semantics (`Eval : Request × PolicySet × State → Decision × DutySet`) but leaves the `State` parameter as an opaque runtime input. Duty state management, event-driven triggers, deadline enforcement, and re-evaluation protocols are out of scope for a declarative policy profile. RL2 extends Adalbert's evaluation semantics with a complete operational protocol layer covering these concerns. The resolution path for each finding is: leave unspecified in Adalbert; implementations requiring operational completeness should adopt RL2 or an equivalent runtime protocol.
+
 ## Suggested Discussion Priority
 
 1. **F3** — Temporal applicability (expired policies can authorize)

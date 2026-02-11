@@ -27,7 +27,23 @@ Adalbert provides:
 - Clear separation of Condition (pre-requisite) from Duty (obligation)
 - Path-based operand resolution with formal grammar and security constraints
 
-### 1.1 Notation
+### 1.1 Scope and Runtime Boundary
+
+This specification defines **evaluation semantics** — the contract a conformant engine
+must satisfy. The `State` parameter in `Eval` is an opaque input provided by the
+runtime environment. Adalbert specifies what decision and state transitions *should*
+result from evaluation, but does not define:
+
+- How `State` is persisted or managed between evaluations
+- Event-driven triggers for duty activation or deadline enforcement
+- Protocols for requirement fulfillment claims or re-evaluation
+
+These operational concerns are out of scope for a declarative policy profile.
+Implementations requiring runtime state management, event processing, and enforcement
+protocols should consult RL2, which extends Adalbert's evaluation semantics with a
+complete operational protocol layer.
+
+### 1.2 Notation
 
 - `×` for Cartesian product
 - `→` for function types
