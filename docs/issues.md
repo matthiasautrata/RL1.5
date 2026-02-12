@@ -46,9 +46,23 @@ Recurring instance creation is defined abstractly. Lifecycle interaction with po
 
 All four findings relate to the same architectural boundary: Adalbert defines declarative evaluation semantics (`Eval : Request × PolicySet × State → Decision × DutySet`) but leaves the `State` parameter as an opaque runtime input. Duty state management, event-driven triggers, deadline enforcement, and re-evaluation protocols are out of scope for a declarative policy profile. RL2 extends Adalbert's evaluation semantics with a complete operational protocol layer covering these concerns. The resolution path for each finding is: leave unspecified in Adalbert; implementations requiring operational completeness should adopt RL2 or an equivalent runtime protocol.
 
+### Q1 — "Promise" as syntactic sugar over Duty
+
+DCON used a `Promise` hierarchy (ProviderPromise, QualityPromise, etc.). Adalbert dissolved this into standard `odrl:Duty` with DUE actions for ODRL alignment. If users prefer "promise" terminology, it can be reintroduced as syntactic sugar.
+
+A "promise" is a Duty where `adalbert:subject` equals the policy's `odrl:assigner` (the provider). Two options:
+
+1. **LinkML authoring layer (preferred):** Add a `promise` class in the LinkML schema that expands to a Duty with subject auto-filled from the contract's assigner. Sugar lives entirely in the authoring format; no ontology or semantics change.
+2. **OWL thin alias:** Define `adalbert:Promise rdfs:subClassOf odrl:Duty` with a SHACL constraint requiring subject = assigner. Makes "Promise" queryable in SPARQL but adds ontological weight.
+
+**Impact:** Authoring ergonomics — no semantic change in either option.
+
+---
+
 ## Suggested Discussion Priority
 
 1. **F3** — Temporal applicability (expired policies can authorize)
 2. **F1** — Auth/compliance coupling (provider miss denies consumer)
 3. **F2** — Request-driven duty lifecycle (missed deadlines)
 4. **F5** — Recurrence execution cadence (partly addressed by S4)
+5. **Q1** — Promise syntactic sugar (authoring ergonomics)

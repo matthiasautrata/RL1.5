@@ -34,7 +34,7 @@ The W3C ODRL Community Group published best practices for ODRL 2.2 profiles. Thi
 
 **Requirement**: Use SKOS Collection for profile concepts.
 
-**Adalbert Status**: Not yet implemented. The profile does not currently declare `skos:ConceptScheme` or `skos:Collection` structures. SKOS concept values are used in the DUE profile (e.g., purpose taxonomy, classification levels), but the profile-level SKOS structuring recommended by the W3C best practices is planned for a future version.
+**Adalbert Compliance**: Implemented. The DUE profile (`profiles/adalbert-due.ttl`) declares `adalbert-due:scheme` as a `skos:ConceptScheme` and organizes concept values (purpose taxonomy, classification levels, etc.) under it.
 
 ### 4. OWL Ontology
 

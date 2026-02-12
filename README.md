@@ -140,6 +140,8 @@ As of v0.7, Adalbert **supersedes** DCON. DCON's promise hierarchy dissolves int
 
 See [comparison-dcon.md](docs/comparisons/comparison-dcon.md) for the supersession analysis, [adalbert-term-mapping.md](docs/adalbert-term-mapping.md) for complete DCON -> Adalbert property mapping, and [contracts-guide.md](docs/contracts-guide.md) for the contracts authoring guide.
 
+> **Promise terminology.** If you prefer DCON-style "promise" naming (ProviderPromise, QualityPromise, etc.), this can be reintroduced as syntactic sugar. A promise is a Duty where `adalbert:subject` equals the policy's `odrl:assigner`. Two options: **(1)** LinkML authoring sugar — a `promise` class that expands to a standard Duty, no ontology change; **(2)** OWL thin alias — `adalbert:Promise rdfs:subClassOf odrl:Duty` with a SHACL constraint, making promises queryable in SPARQL. See [issues.md Q1](docs/issues.md#q1--promise-as-syntactic-sugar-over-duty) for details.
+
 ---
 
 ## Namespaces

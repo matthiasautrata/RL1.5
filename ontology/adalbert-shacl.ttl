@@ -346,6 +346,10 @@ adalbertsh:SubscriptionShape a sh:NodeShape ;
 # sh:minCount 0: resolutionPath is optional in the shape because ODRL's
 # built-in left operands (odrl:dateTime, etc.) don't have it. Adalbert
 # profile operands MUST provide it — enforced by convention and DUE.
+#
+# The sh:pattern validates the root prefix only. Full path grammar enforcement
+# (identifier syntax, depth constraints, traversal rejection) is a runtime
+# concern per Adalbert_Semantics.md §6.2, not expressible in SHACL.
 
 adalbertsh:LeftOperandShape a sh:NodeShape ;
     sh:targetClass odrl:LeftOperand ;
