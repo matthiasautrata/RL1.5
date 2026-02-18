@@ -1,299 +1,42 @@
-# Adalbert Conformance to W3C Profile Best Practices
+# Conformance to W3C ODRL Profile Best Practices
 
-**Purpose**: Verify Adalbert follows W3C ODRL Profile Best Practices and W3C Profiles Vocabulary (DXPROF).
+This document summarizes how Adalbert aligns with ODRL profile best practices.
 
----
+## 1. Profile Identity
 
-## W3C ODRL Profile Best Practices (CG-FINAL-profile-bp-20240808)
+- Base standard: ODRL 2.2
+- Profile IRI: `https://vocabulary.bigbank/adalbert/`
+- Conflict strategy: `odrl:prohibit`
+- Metadata declaration: `ontology/adalbert-prof.ttl` (DXPROF)
 
-The W3C ODRL Community Group published best practices for ODRL 2.2 profiles. This document assesses Adalbert conformance.
+## 2. Reuse of ODRL Terms
 
----
+Adalbert reuses ODRL classes/properties directly for standard policy modeling:
 
-## Best Practice Checklist
+- `odrl:Permission`, `odrl:Duty`, `odrl:Prohibition`
+- `odrl:Set`, `odrl:Offer`, `odrl:Agreement`
+- `odrl:Constraint`, `odrl:LogicalConstraint`
+- `odrl:action`, `odrl:target`, `odrl:assignee`, `odrl:assigner`, `odrl:constraint`
 
-### 1. Globally Unique Identifier
+## 3. Extensions (Minimal)
 
-**Requirement**: Each profile must have a globally unique IRI identifier.
+Adalbert adds only non-ODRL capabilities:
 
-**Adalbert Compliance**:
-```turtle
-<https://vocabulary.bigbank/adalbert/> a odrl:Profile .
-```
+- lifecycle state: `adalbert:State`, `adalbert:state`
+- duty timing: `adalbert:deadline`, `adalbert:recurrence`
+- duty roles: `adalbert:subject`, `adalbert:object`
+- hierarchy: `adalbert:partOf`, `adalbert:memberOf`
+- operand resolution: `adalbert:resolutionPath`
+- runtime references: `adalbert:RuntimeReference`, `adalbert:currentAgent`, `adalbert:currentDateTime`
+- logical negation: `adalbert:not`
 
-### 2. Profile as Stable Web Resource
+## 4. Validation Artifacts
 
-**Requirement**: Profile specification should be publicly accessible.
+- OWL vocabulary: `ontology/adalbert-core.ttl`
+- SHACL constraints: `ontology/adalbert-shacl.ttl`
+- Profile metadata: `ontology/adalbert-prof.ttl`
 
-**Adalbert Compliance**:
-- Specification: `https://vocabulary.bigbank/adalbert/spec`
-- Ontology: `https://vocabulary.bigbank/adalbert/ontology`
-- SHACL: `https://vocabulary.bigbank/adalbert/shapes`
+## 5. Vocabulary Profile (DUE)
 
-### 3. SKOS Collection Structure
-
-**Requirement**: Use SKOS Collection for profile concepts.
-
-**Adalbert Compliance**: Implemented. The DUE profile (`profiles/adalbert-due.ttl`) declares `adalbert-due:scheme` as a `skos:ConceptScheme` and organizes concept values (purpose taxonomy, classification levels, etc.) under it.
-
-### 4. OWL Ontology
-
-**Requirement**: Define concepts in OWL ontology.
-
-**Adalbert Compliance**:
-- File: `ontology/adalbert-core.ttl`
-- Format: RDF Turtle
-- Content: Extension class definitions (State, DataContract, Subscription), extension property definitions (state, deadline, partOf, memberOf, resolutionPath, etc.), annotation properties
-
-### 5. Human-Readable Specification
-
-**Requirement**: Provide human-readable documentation.
-
-**Adalbert Compliance**:
-- `README.md` -- Overview
-- `docs/Adalbert_Semantics.md` -- Formal semantics
-- `docs/*.md` -- Comparison documents
-
-### 6. W3C Profile Vocabulary (DXPROF)
-
-**Requirement**: Use W3C Profiles Vocabulary for profile description.
-
-**Adalbert Compliance**: See [DXPROF Declaration](#dxprof-declaration) below.
-
-### 7. JSON-LD Context (Partial)
-
-**Requirement**: Provide JSON-LD context if JSON-LD supported.
-
-**Adalbert Status**: Planned but not yet implemented.
-
----
-
-## Concept Definition Requirements
-
-### Additional Actions
-
-**Requirement**: Define new actions as subclasses of `odrl:Action`.
-
-**Adalbert**: No new actions defined in core. Uses ODRL Core and Common Vocabulary actions. Domain profiles (DUE) add actions.
-
-### Additional Left Operands
-
-**Requirement**: Define new left operands.
-
-**Adalbert**: No new left operands in core. One runtime reference (`adalbert:currentDateTime`) has `skos:exactMatch odrl:dateTime`. Domain profiles add operands:
-- `adalbert-due:timeliness` -- Data use (market data)
-- `odrl:purpose` -- ODRL standard operand, extended with `adalbert:resolutionPath`
-
-### Additional Operators
-
-**Requirement**: Define new operators if needed.
-
-**Adalbert**: Uses ODRL operators directly (`odrl:eq`, `odrl:neq`, `odrl:lt`, `odrl:lteq`, `odrl:gt`, `odrl:gteq`, `odrl:isAnyOf`, `odrl:isNoneOf`, `odrl:and`, `odrl:or`). Adds `adalbert:not` (logical negation, missing from ODRL Core).
-
-### Additional Party Functions
-
-**Requirement**: Define new party roles.
-
-**Adalbert**: Uses `odrl:assignee` and `odrl:assigner` directly on policies and permissions. For duties, Adalbert defines two additional party functions following the standard ODRL extension pattern (`rdfs:subPropertyOf odrl:function`):
-
-- `adalbert:subject` (`rdfs:subPropertyOf odrl:assignee`) — duty bearer (who must perform the action)
-- `adalbert:object` (`rdfs:subPropertyOf odrl:function`) — affected party (who receives the result)
-
-ODRL Common Vocabulary party functions (`odrl:informedParty`, `odrl:compensatedParty`, etc.) can also be used directly when their specific semantics is a better fit. `adalbert:object` is the generic alternative.
-
-Hierarchy is expressed via `adalbert:memberOf` (transitive party membership on `odrl:Party`, declared `rdfs:subPropertyOf odrl:partOf` for ODRL interoperability).
-
-### Additional Asset Relationships
-
-**Requirement**: Define new asset relations.
-
-**Adalbert**: Uses `odrl:target` directly. Adds `adalbert:partOf` (transitive asset containment on `odrl:Asset`, declared `rdfs:subPropertyOf odrl:partOf` for ODRL interoperability).
-
-### Rule Types
-
-**Requirement**: Define rule subclasses with proper disjointness if needed.
-
-**Adalbert**: Does not define rule subclasses. Uses ODRL rule types directly:
-- `odrl:Permission` -- used as-is
-- `odrl:Duty` -- used as-is, with added `adalbert:state` and `adalbert:deadline` properties
-- `odrl:Prohibition` -- used as-is
-
-### Policy Subclasses
-
-**Requirement**: Define policy subclasses with proper disjointness.
-
-**Adalbert**: Defines two domain-specific policy subclasses:
-```turtle
-adalbert:DataContract a owl:Class ;
-    rdfs:subClassOf odrl:Offer ;
-    rdfs:label "Data Contract"@en ;
-    skos:definition "Policy offer defining data access terms."@en .
-
-adalbert:Subscription a owl:Class ;
-    rdfs:subClassOf odrl:Agreement ;
-    rdfs:label "Subscription"@en ;
-    skos:definition "Activated data contract binding provider and consumer."@en .
-```
-
-`odrl:Set` is used directly without subclassing.
-
----
-
-## DXPROF Declaration
-
-The W3C Profiles Vocabulary ([DXPROF](https://www.w3.org/TR/dx-prof/)) provides standard metadata for profiles.
-
-### Adalbert Profile Description
-
-From `ontology/adalbert-prof.ttl`:
-
-```turtle
-@prefix prof: <http://www.w3.org/ns/dx/prof/> .
-@prefix role: <http://www.w3.org/ns/dx/prof/role/> .
-@prefix dct:  <http://purl.org/dc/terms/> .
-@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
-@prefix owl:  <http://www.w3.org/2002/07/owl#> .
-
-# Base specification
-odrl:core a dct:Standard ;
-    dct:title "ODRL Information Model 2.2"@en ;
-    dct:identifier <http://www.w3.org/TR/odrl-model/> .
-
-# Adalbert Core Profile
-<https://vocabulary.bigbank/adalbert/> a prof:Profile ;
-    dct:title "Adalbert Core"@en ;
-    dct:description """
-        Proper ODRL 2.2 profile for deterministic data governance.
-        Uses ODRL terms for standard constructs; adds lifecycle state,
-        deadline, data contracts, hierarchy extensions, operand resolution,
-        runtime references, and logical negation.
-    """@en ;
-    prof:isProfileOf odrl:core ;
-    prof:hasToken "adalbert"^^xsd:token ;
-
-    prof:hasResource [
-        a prof:ResourceDescriptor ;
-        dct:title "Adalbert Specification"@en ;
-        prof:hasRole role:specification ;
-        prof:hasArtifact <https://vocabulary.bigbank/adalbert/docs/README.md>
-    ] , [
-        a prof:ResourceDescriptor ;
-        dct:title "Adalbert Formal Semantics"@en ;
-        prof:hasRole role:specification ;
-        prof:hasArtifact <https://vocabulary.bigbank/adalbert/docs/Adalbert_Semantics.md>
-    ] , [
-        a prof:ResourceDescriptor ;
-        dct:title "Adalbert Core Ontology"@en ;
-        prof:hasRole role:vocabulary ;
-        dct:conformsTo owl: ;
-        prof:hasArtifact <https://vocabulary.bigbank/adalbert/ontology/adalbert-core.ttl>
-    ] , [
-        a prof:ResourceDescriptor ;
-        dct:title "Adalbert SHACL Shapes"@en ;
-        prof:hasRole role:validation ;
-        dct:conformsTo <http://www.w3.org/ns/shacl#> ;
-        prof:hasArtifact <https://vocabulary.bigbank/adalbert/ontology/adalbert-shacl.ttl>
-    ] .
-```
-
-### Domain Profiles
-
-```turtle
-# Data Use Profile
-<https://vocabulary.bigbank/adalbert/due/> a prof:Profile ;
-    dct:title "Adalbert Data Use (DUE)"@en ;
-    dct:description "Complete data governance vocabulary: operands, actions, concept values."@en ;
-    prof:isProfileOf <https://vocabulary.bigbank/adalbert/> ;
-    prof:isTransitiveProfileOf odrl:core ;
-    prof:hasToken "adalbert-due"^^xsd:token ;
-
-    prof:hasResource [
-        a prof:ResourceDescriptor ;
-        dct:title "Adalbert DUE Vocabulary"@en ;
-        prof:hasRole role:vocabulary ;
-        dct:conformsTo owl: ;
-        prof:hasArtifact <https://vocabulary.bigbank/adalbert/profiles/adalbert-due.ttl>
-    ] .
-```
-
----
-
-## Profile Hierarchy
-
-Using `prof:isTransitiveProfileOf` for the complete hierarchy:
-
-```turtle
-<https://vocabulary.bigbank/adalbert/due/>
-    prof:isProfileOf <https://vocabulary.bigbank/adalbert/> ;
-    prof:isTransitiveProfileOf
-        <https://vocabulary.bigbank/adalbert/> ,
-        odrl:core .
-```
-
----
-
-## Resource Roles Used
-
-| Role | Adalbert Resources |
-|------|-----------------|
-| `role:specification` | README.md, Adalbert_Semantics.md |
-| `role:vocabulary` | adalbert-core.ttl, adalbert-due.ttl |
-| `role:validation` | adalbert-shacl.ttl |
-| `role:guidance` | docs/*.md |
-| `role:example` | examples/*.ttl |
-
----
-
-## Conformance Summary
-
-| Best Practice | Status | Notes |
-|---------------|--------|-------|
-| Unique IRI | Done | `https://vocabulary.bigbank/adalbert/` |
-| Stable web resource | Done | Planned hosting |
-| SKOS structure | Planned | SKOS concept values used in DUE; profile-level SKOS structuring planned |
-| OWL ontology | Done | `adalbert-core.ttl` (extensions only) |
-| Human-readable spec | Done | Multiple markdown docs |
-| DXPROF metadata | Done | `adalbert-prof.ttl` |
-| JSON-LD context | Planned | Not yet implemented |
-| Rule types | Done | Uses ODRL types directly (no subclasses) |
-| Policy subclasses | Done | DataContract (Offer), Subscription (Agreement) |
-
----
-
-## Recommendations
-
-### 1. Add JSON-LD Context
-
-Create `contexts/adalbert.jsonld`:
-```json
-{
-  "@context": {
-    "adalbert": "https://vocabulary.bigbank/adalbert/",
-    "odrl": "http://www.w3.org/ns/odrl/2/",
-    "Permission": "odrl:Permission",
-    "Duty": "odrl:Duty",
-    "Prohibition": "odrl:Prohibition",
-    "DataContract": "adalbert:DataContract",
-    "Subscription": "adalbert:Subscription",
-    "state": "adalbert:state",
-    "deadline": "adalbert:deadline"
-  }
-}
-```
-
-### 2. Register with ODRL Community Group
-
-Submit profile to W3C ODRL Profiles Registry:
-- Business name: Adalbert Deterministic Rights Language
-- Maintainer: RL2 Project
-- Identifier: `https://vocabulary.bigbank/adalbert/`
-- Spec URL: `https://vocabulary.bigbank/adalbert/spec`
-- Ontology URL: `https://vocabulary.bigbank/adalbert/ontology`
-
----
-
-## References
-
-- [W3C ODRL Profile Best Practices](https://www.w3.org/community/reports/odrl/CG-FINAL-profile-bp-20240808.html)
-- [W3C Profiles Vocabulary (DXPROF)](https://www.w3.org/TR/dx-prof/)
-- [W3C ODRL Profiles Registry](https://www.w3.org/community/odrl/wiki/ODRL_Profiles)
+`profiles/adalbert-due.ttl` defines domain-specific operands/actions/concepts.
+Where ODRL common actions already exist, Adalbert uses them directly.

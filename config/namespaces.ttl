@@ -7,7 +7,7 @@
 # Adalbert is a proper ODRL 2.2 profile. The odrl: namespace provides
 # all standard constructs (Rule types, Policy types, Constraint types,
 # operators, core properties). The adalbert: namespace is for extensions
-# only (lifecycle state, deadline, recurrence, contracts, hierarchy,
+# only (lifecycle state, deadline, recurrence, hierarchy,
 # resolution, runtime references, logical negation).
 # =============================================================================
 
@@ -20,7 +20,6 @@
 @prefix adalbert-due:  <https://vocabulary.bigbank/adalbert/due/> .
 
 # External vocabularies
-@prefix dcon:    <https://vocabulary.bigbank/dcon/> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
@@ -38,12 +37,8 @@
 # odrl:          ODRL 2.2 — provides Rule, Policy, Constraint types,
 #                operators, and core properties (action, target, assignee, etc.)
 # adalbert:      Adalbert extensions only (State, deadline, recurrence,
-#                DataContract, Subscription, partOf, memberOf,
-#                resolutionPath, RuntimeReference, not)
+#                partOf, memberOf, resolutionPath, RuntimeReference, not)
 # adalbertsh:    SHACL validation shapes
 # adalbert-due:  Data use profile (all operands, actions, concept values)
-#
-# DCON is superseded as of v0.7. The dcon: prefix is retained here
-# for reference but is not used in active Adalbert artifacts.
 #
 # =============================================================================

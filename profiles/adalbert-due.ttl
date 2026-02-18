@@ -457,16 +457,6 @@ adalbert-due:serviceWindow a odrl:LeftOperand, skos:Concept ;
     rdfs:comment "E.g., business-hours, 24x7, weekdays."@en .
 
 # =============================================================================
-# SUBSCRIPTION OPERANDS
-# =============================================================================
-
-adalbert-due:subscriptionTier a odrl:LeftOperand, skos:Concept ;
-    rdfs:label "subscription tier"@en ;
-    skos:definition "Access tier or subscription level."@en ;
-    adalbert:resolutionPath "context.subscriptionTier" ;
-    rdfs:comment "E.g., free, basic, premium, enterprise."@en .
-
-# =============================================================================
 # DERIVATION OPERANDS
 # =============================================================================
 
@@ -547,7 +537,7 @@ adalbert-due:deliver a odrl:Action, skos:Concept ;
     rdfs:label "deliver"@en ;
     skos:definition "Deliver data to consumer."@en ;
     odrl:includedIn odrl:distribute ;
-    rdfs:comment "Typically an assigner duty in data contracts."@en .
+    rdfs:comment "Typically a provider-side duty in bilateral governance policies."@en .
 
 # =============================================================================
 # SPECIALIZED ACTIONS

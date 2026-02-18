@@ -174,7 +174,7 @@ Module structure:
 Guardrails (from prior discussion):
 - Keep ADT definitions in a single module with no logic, clean seam for later extraction
 - No platform-dependent `int` — use `Zarith` for all semantics-critical numeric types
-- Lock behavior with property tests (from `examples/baseline.ttl`) and golden tests
+- Lock behavior with property tests (from `examples/data-use-policy.ttl`) and golden tests
 - All I/O, RDF, and protocol code stays outside the eval module
 
 ### Growth path
@@ -199,7 +199,7 @@ Both paths converge on OCaml for RL2 if mechanical verification is pursued.
 | Protocol layer language | OCaml (unified with Path B) or Go (cloud-native)? |
 | RDF loading for OCaml path | Which library? Or shell out to `rapper`/`riot`? |
 | Prolog embedding strategy | C API (`libswipl`) vs subprocess vs socket? |
-| Test oracle | Generate golden tests from `examples/baseline.ttl` before building? |
+| Test oracle | Generate golden tests from `examples/data-use-policy.ttl` before building? |
 | Path choice | Depends on how seriously we weight verification for RL1.5 |
 
 ## References

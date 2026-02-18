@@ -17,7 +17,7 @@ This is a **cross-LLM project**. Multiple AI agents and humans collaborate on th
 * Writing style is concise and precise, with no filler.
 * Mindset is that of a mathematician and engineer.
 * Always consider at least two or more alternative solutions. Prefer to research and evaluate alternatives -- locally or by searching secondary sources, like the internet -- instead of jumping into the design right away.
-* Use the ODRL vocabulary for standard constructs; use Adalbert vocabulary only for extensions (State, state, deadline, recurrence, subject, object, DataContract, Subscription, subscribesTo, effectiveDate, expirationDate, partOf, memberOf, resolutionPath, RuntimeReference, currentAgent, currentDateTime, not). On Duties, `adalbert:subject` replaces `odrl:assignee` to disambiguate the duty-bearer from the permission-holder, and `adalbert:object` identifies the affected party; these are mandatory on Duties, not optional extensions.
+* Use the ODRL vocabulary for standard constructs; use Adalbert vocabulary only for extensions (State, state, deadline, recurrence, subject, object, partOf, memberOf, resolutionPath, RuntimeReference, currentAgent, currentDateTime, not). On Duties, `adalbert:subject` replaces `odrl:assignee` to disambiguate the duty-bearer from the permission-holder, and `adalbert:object` identifies the affected party; these are mandatory on Duties, not optional extensions.
 
 ## Core Principles
 
@@ -52,7 +52,6 @@ This is a **cross-LLM project**. Multiple AI agents and humans collaborate on th
 |---------|-------------------------|
 | **RL2** | Adalbert is a strict subset; upgrade by adding capabilities |
 | **ODRL 2.2** | Adalbert is a proper profile; uses ODRL classes/properties directly |
-| **DCON** | Superseded by Adalbert v0.7; DataContract/Subscription in core; promise hierarchy dissolved |
 | **Semantipolis** | Uses Adalbert for governance evaluation in the semantic layer |
 | **Themis** | Existing ODRL runtime; backward-compatibility target |
 
@@ -112,11 +111,6 @@ Adalbert uses ODRL's classes and properties directly and only adds terms for gen
 | `adalbert:recurrence` | RFC 5545 RRULE defining when duty instances are generated |
 | `adalbert:subject` | Duty bearer party role (`rdfs:subPropertyOf odrl:assignee`) |
 | `adalbert:object` | Affected party role (`rdfs:subPropertyOf odrl:function`) |
-| `adalbert:DataContract` | `rdfs:subClassOf odrl:Offer` -- data access offer |
-| `adalbert:Subscription` | `rdfs:subClassOf odrl:Agreement` -- activated contract |
-| `adalbert:subscribesTo` | Links Subscription to its DataContract |
-| `adalbert:effectiveDate` | When contract/subscription takes effect |
-| `adalbert:expirationDate` | When contract/subscription expires |
 | `adalbert:partOf` | Asset hierarchy (transitive) |
 | `adalbert:memberOf` | Party hierarchy (transitive) |
 | `adalbert:resolutionPath` | Dot-separated path from canonical root to value |
@@ -157,7 +151,7 @@ Active  ────────────────────────
 Active  ────────────────────────> Violated
 ```
 
-Four states apply to both duties and contracts: **Pending** (constraint not yet met / not yet in force), **Active** (constraint met, action required / in force), **Fulfilled** (action performed / obligations complete), **Violated** (deadline passed / breached).
+Four states apply to duties: **Pending** (constraint not yet met), **Active** (constraint met, action required), **Fulfilled** (action performed), **Violated** (deadline passed).
 
 ### Operand Resolution
 
@@ -176,7 +170,6 @@ Operands are `odrl:LeftOperand` instances. Resolution uses `adalbert:resolutionP
           (thin profile extension:
            State, deadline, recurrence,
            subject, object,
-           DataContract, Subscription,
            partOf, memberOf,
            resolutionPath,
            RuntimeReference, not)
@@ -191,7 +184,7 @@ Operands are `odrl:LeftOperand` instances. Resolution uses `adalbert:resolutionP
              used directly)
 ```
 
-One profile (DUE) carries all vocabulary. Contract lifecycle classes (DataContract, Subscription) live in core. DCON is superseded.
+One profile (DUE) carries all vocabulary for data-use requests.
 
 ### What Adalbert Defers to RL2
 
@@ -218,19 +211,11 @@ One profile (DUE) carries all vocabulary. Contract lifecycle classes (DataContra
 | `ontology/adalbert-prof.ttl` | W3C DXPROF profile metadata |
 | `docs/adalbert-overview.md` | Architecture, key concepts, document map |
 | `docs/adalbert-specification.md` | Technical vocabulary reference (classes, properties, SHACL, DUE summary) |
-| `docs/adalbert-term-mapping.md` | Business term → property mapping + DCON migration |
-| `docs/contracts-guide.md` | Data contract authoring guide |
 | `docs/policy-writers-guide.md` | Data use policy authoring guide |
 | `profiles/README.md` | Profile architecture and extension rules |
 | `profiles/adalbert-due.ttl` | Data use vocabulary (all operands, actions, concept values) |
-| `examples/baseline.ttl` | Comprehensive test data (8 contracts, 2 subscriptions, all patterns) |
-| `docs/comparisons/comparison-odrl22.md` | Detailed ODRL 2.2 comparison |
-| `docs/comparisons/comparison-dcon.md` | DCON supersession analysis + completeness verification |
-| `docs/comparisons/comparison-rl2.md` | RL2 functional gap, complexity, translation path |
-| `docs/comparisons/comparison-odrl-profiles.md` | W3C ecosystem positioning |
-| `docs/comparisons/comparison-w3c-market-data.md` | W3C Market Data Profile mapping |
+| `examples/data-use-policy.ttl` | Policy-level example for evaluation requests |
 | `docs/conformance-w3c-best-practices.md` | W3C Best Practices compliance |
-| `docs/comparisons/namespace-alignment.md` | Namespace coordination with DCON2 |
 
 ## Standards
 
@@ -286,7 +271,7 @@ Each persona represents a discipline needed to maintain rigor. Any agent (Claude
 - Design the duty lifecycle state machine and conflict resolution strategy
 - Evaluate mechanization targets (Dafny, Why3, Coq/Lean) and extraction strategies
 - Maintain the boundary between what Adalbert includes and what it defers to RL2
-- Design the integration pattern with DCON (contracts contain policies)
+- Design integration patterns for policy evaluation runtimes
 - Review profile architecture for semantic soundness
 
 **Key question:** Are the semantics total, deterministic, and sound?
@@ -526,9 +511,7 @@ Any change must preserve all four theorems:
 - SHACL validation shapes (`ontology/adalbert-shacl.ttl`)
 - DXPROF profile metadata (`ontology/adalbert-prof.ttl`)
 - Domain profile: DUE (data use vocabulary)
-- DCON superseded (v0.7); see `docs/comparisons/comparison-dcon.md`
-- Comparison documents (ODRL 2.2, W3C profiles, market data, DCON)
-- Conformance documentation (W3C Best Practices, namespace alignment)
+- Conformance documentation (W3C Best Practices)
 
 **Next:**
 1. Cross-LLM review of formal semantics against ontology
