@@ -1,0 +1,176 @@
+# ==============================================================================
+# Adalbert DUE Profile — Schema (classes + slots only)
+# ==============================================================================
+# LinkML schema for the Adalbert Data Use (DUE) vocabulary structure.
+# Defines DUELeftOperand and DUEAction classes; vocabulary instances live in
+# schemas/vocabulary/.
+#
+# Imports: adalbert-core.yaml
+# Used by: schemas/vocabulary/, schemas/examples/
+#
+# Gap register:
+#   - Dual typing (a odrl:LeftOperand, skos:Concept) — not directly expressible
+#     in LinkML; documented in DUELeftOperand annotation; custom generator step
+#     or post-processing needed to emit both rdf:type triples
+#   - skos:ConceptScheme declaration — expressed as a named instance in concepts.yaml
+#   - odrl:purpose annotated with resolutionPath — expressed in operands.yaml
+# ==============================================================================
+
+id: https://vocabulary.bigbank/adalbert/linkml/due
+name: adalbert_due
+title: Adalbert DUE Vocabulary Schema
+description: >-
+  LinkML schema for the Adalbert Data Use Profile vocabulary.
+  Defines the class structure for DUE operands and actions.
+  Vocabulary instances (the 34 operands, 16 actions, 45 concepts) are in
+  schemas/vocabulary/operands.yaml, actions.yaml, and concepts.yaml.
+version: "0.7"
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  adalbert: https://vocabulary.bigbank/adalbert/
+  adalbert_due: https://vocabulary.bigbank/adalbert/due/
+  odrl: http://www.w3.org/ns/odrl/2/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  skos: http://www.w3.org/2004/02/skos/core#
+
+default_range: string
+
+imports:
+  - linkml:types
+  - adalbert-core
+
+# ==============================================================================
+# CLASSES
+# ==============================================================================
+
+classes:
+
+  # --------------------------------------------------------------------------
+  # Vocabulary schema root (for vocabulary instance files)
+  # --------------------------------------------------------------------------
+
+  OperandVocabulary:
+    tree_root: true
+    description: Container for DUE LeftOperand vocabulary instances.
+    slots:
+      - operands
+
+  ActionVocabulary:
+    tree_root: true
+    description: Container for DUE Action vocabulary instances.
+    slots:
+      - actions
+
+  ConceptVocabulary:
+    tree_root: true
+    description: Container for SKOS Concept vocabulary instances.
+    slots:
+      - conceptScheme
+      - concepts
+
+  # --------------------------------------------------------------------------
+  # DUE vocabulary classes
+  # --------------------------------------------------------------------------
+
+  DUELeftOperand:
+    class_uri: odrl:LeftOperand
+    is_a: LeftOperand
+    description: >-
+      A DUE-specific ODRL LeftOperand individual.
+      In the RDF ontology, each instance is typed as both odrl:LeftOperand
+      and skos:Concept.
+      GAP: dual typing (a odrl:LeftOperand, skos:Concept) is not directly
+      expressible in LinkML. The generated RDF will have class_uri = odrl:LeftOperand.
+      A post-processing step or custom generator must add skos:Concept typing.
+      The adalbert:resolutionPath property is inherited from LeftOperand.
+    slots:
+      - id
+      - label
+      - definition
+      - resolutionPath
+      - inScheme
+
+  DUEAction:
+    class_uri: odrl:Action
+    is_a: Action
+    description: >-
+      A DUE-specific ODRL Action individual.
+      In the RDF ontology, each instance is typed as both odrl:Action
+      and skos:Concept.
+      GAP: dual typing not directly expressible; same post-processing note
+      as DUELeftOperand applies.
+    slots:
+      - id
+      - label
+      - definition
+      - includedIn
+      - inScheme
+
+  SKOSConcept:
+    class_uri: skos:Concept
+    description: >-
+      A SKOS Concept used as a vocabulary value (right-operand of a constraint).
+      Examples: adalbert-due:analytics, adalbert-due:production, adalbert-due:pii.
+    slots:
+      - id
+      - label
+      - definition
+      - inScheme
+
+  SKOSConceptScheme:
+    class_uri: skos:ConceptScheme
+    description: >-
+      A SKOS ConceptScheme grouping the DUE vocabulary concepts.
+      Corresponds to adalbert-due:scheme in the RDF ontology.
+    slots:
+      - id
+      - label
+      - definition
+
+# ==============================================================================
+# SLOTS (DUE-specific additions)
+# ==============================================================================
+
+slots:
+
+  # --------------------------------------------------------------------------
+  # SKOS slots
+  # --------------------------------------------------------------------------
+
+  definition:
+    slot_uri: skos:definition
+    description: Human-readable definition of the concept or operand.
+    range: string
+
+  inScheme:
+    slot_uri: skos:inScheme
+    description: The SKOS ConceptScheme this concept or operand belongs to.
+    range: string
+
+  # --------------------------------------------------------------------------
+  # Vocabulary container slots
+  # --------------------------------------------------------------------------
+
+  operands:
+    description: List of DUE LeftOperand instances.
+    range: DUELeftOperand
+    multivalued: true
+    inlined_as_list: true
+
+  actions:
+    description: List of DUE Action instances.
+    range: DUEAction
+    multivalued: true
+    inlined_as_list: true
+
+  conceptScheme:
+    description: The SKOS ConceptScheme declaration.
+    range: SKOSConceptScheme
+    inlined: true
+
+  concepts:
+    description: List of SKOS Concept instances.
+    range: SKOSConcept
+    multivalued: true
+    inlined_as_list: true

@@ -1,0 +1,205 @@
+# ==============================================================================
+# DPROD Example 4: Full Lifecycle (Customer Segments)
+# ==============================================================================
+# YAML equivalent of Example 4 from examples/dprod-translated.ttl
+# Schema: schemas/adalbert-core.yaml
+#
+# DPROD original: Full lifecycle with dprod:DataOffer + dprod:DataContract +
+# versioning (dprod:supersedes) + all promise types.
+#
+# Translation decisions:
+#   dprod:DataOffer          -> adalbert:DataContract (Adalbert unifies offer/contract)
+#   dprod:supersedes         -> prov:wasRevisionOf
+#   dprod:contractStatus Pending -> adalbert:state Pending
+#   dprod:contractStatus Active  -> adalbert:state Active
+#   dprod:contractStatus Expired -> adalbert:state Fulfilled
+#
+# This file contains three documents:
+#   1. contract-segments-v1 (retired, Fulfilled state)
+#   2. contract-segments-v2 (active, references v1 via previousVersion)
+#   3. subscription-marketing-segments (Marketing subscribes to v2)
+# ==============================================================================
+
+schema: https://vocabulary.bigbank/adalbert/linkml/core
+
+prefixes:
+  odrl: "http://www.w3.org/ns/odrl/2/"
+  adalbert: "https://vocabulary.bigbank/adalbert/"
+  adalbert_due: "https://vocabulary.bigbank/adalbert/due/"
+  ex: "https://example.com/"
+  prov: "http://www.w3.org/ns/prov#"
+
+parties:
+  - id: "ex:segments-team"
+    label: "Customer Segments Team"
+  - id: "ex:marketing"
+    label: "Marketing Division"
+
+assets:
+  - id: "ex:segments-data"
+    label: "Customer Segments Data"
+  - id: "ex:segments-schema"
+    label: "Customer Segments Schema"
+  - id: "ex:segments-changes"
+    label: "Segments Schema Change Notifications"
+  - id: "ex:segments-usage"
+    label: "Segments Usage Statistics"
+
+# ==============================================================================
+# V1: Retired (Fulfilled)
+# ==============================================================================
+
+type: DataContract
+id: "ex:contract-segments-v1"
+label: "Customer Segments v1 (retired)"
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+assigner: "ex:segments-team"
+target: "ex:segments-data"
+state: Fulfilled
+
+permission:
+  - id: "ex:contract-segments-v1/permissions/use"
+    action: "odrl:use"
+
+---
+
+# ==============================================================================
+# V2: Active
+# ==============================================================================
+
+type: DataContract
+id: "ex:contract-segments-v2"
+label: "Customer Segments v2"
+description: "Full lifecycle contract with all provider and consumer promise types."
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+assigner: "ex:segments-team"
+target: "ex:segments-data"
+state: Active
+effectiveDate: "2026-01-01T00:00:00Z"
+expirationDate: "2026-12-31T23:59:59Z"
+previousVersion: "ex:contract-segments-v1"
+
+obligation:
+
+  # Provider duties
+
+  - id: "ex:contract-segments-v2/duties/daily-delivery"
+    label: "Daily segments delivery"
+    subject: "ex:segments-team"
+    action: "adalbert_due:deliver"
+    recurrence: "FREQ=DAILY;BYHOUR=6;BYMINUTE=0"
+    deadline: "PT30M"
+    # target: inherited (ex:segments-data)
+
+  - id: "ex:contract-segments-v2/duties/schema-conformance"
+    label: "Schema conformance"
+    subject: "ex:segments-team"
+    action: "adalbert_due:conformTo"
+    target: "ex:segments-schema"
+
+  - id: "ex:contract-segments-v2/duties/change-notification"
+    label: "Schema change notification (14 days)"
+    subject: "ex:segments-team"
+    action: "adalbert_due:notify"
+    target: "ex:segments-changes"
+    deadline: "P14D"
+
+  - id: "ex:contract-segments-v2/duties/termination-notice"
+    label: "Termination notice (60 days)"
+    subject: "ex:segments-team"
+    action: "adalbert_due:notify"
+    deadline: "P60D"
+    # target: inherited (ex:segments-data)
+
+  # Consumer duties (subject omitted in Offer; filled upon subscription)
+
+  - id: "ex:contract-segments-v2/duties/usage-reporting"
+    label: "Monthly usage reporting"
+    action: "adalbert_due:report"
+    target: "ex:segments-usage"
+    recurrence: "FREQ=MONTHLY;BYMONTHDAY=5"
+    deadline: "P5D"
+
+  - id: "ex:contract-segments-v2/duties/delete-on-expiry"
+    label: "Delete data on contract expiry"
+    action: "odrl:delete"
+    deadline: "P30D"
+
+permission:
+  - id: "ex:contract-segments-v2/permissions/read"
+    label: "Segments read access"
+    action: "odrl:read"
+
+  - id: "ex:contract-segments-v2/permissions/derive"
+    label: "Derive from segments"
+    action: "odrl:derive"
+
+prohibition:
+  - id: "ex:contract-segments-v2/prohibitions/no-redistribute"
+    label: "No redistribution"
+    action: "odrl:distribute"
+
+---
+
+# ==============================================================================
+# Subscription: Marketing subscribes to v2
+# ==============================================================================
+
+type: Subscription
+id: "ex:subscription-marketing-segments"
+label: "Marketing Segments Subscription 2026"
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+subscribesTo: "ex:contract-segments-v2"
+assigner: "ex:segments-team"
+assignee: "ex:marketing"
+target: "ex:segments-data"
+effectiveDate: "2026-02-01T00:00:00Z"
+expirationDate: "2026-12-31T23:59:59Z"
+
+obligation:
+
+  # Provider duties (with subject + object party roles)
+  - id: "ex:subscription-marketing-segments/duties/daily-delivery"
+    label: "Daily segments delivery"
+    subject: "ex:segments-team"
+    object: "ex:marketing"
+    action: "adalbert_due:deliver"
+    recurrence: "FREQ=DAILY;BYHOUR=6;BYMINUTE=0"
+    deadline: "PT30M"
+
+  - id: "ex:subscription-marketing-segments/duties/schema-conformance"
+    label: "Schema conformance"
+    subject: "ex:segments-team"
+    object: "ex:marketing"
+    action: "adalbert_due:conformTo"
+    target: "ex:segments-schema"
+
+  # Consumer duty (subject = assignee in subscription)
+  - id: "ex:subscription-marketing-segments/duties/usage-reporting"
+    label: "Monthly usage reporting"
+    subject: "ex:marketing"
+    object: "ex:segments-team"
+    action: "adalbert_due:report"
+    target: "ex:segments-usage"
+    recurrence: "FREQ=MONTHLY;BYMONTHDAY=5"
+    deadline: "P5D"
+
+permission:
+  - id: "ex:subscription-marketing-segments/permissions/read"
+    action: "odrl:read"
+    assignee: "ex:marketing"
+
+  - id: "ex:subscription-marketing-segments/permissions/derive"
+    action: "odrl:derive"
+    assignee: "ex:marketing"
+
+prohibition:
+  - id: "ex:subscription-marketing-segments/prohibitions/no-redistribute"
+    action: "odrl:distribute"
+    assignee: "ex:marketing"

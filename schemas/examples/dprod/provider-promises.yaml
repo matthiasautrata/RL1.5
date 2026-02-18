@@ -1,0 +1,86 @@
+# ==============================================================================
+# DPROD Example 2: Provider Promises (Revenue Data)
+# ==============================================================================
+# YAML equivalent of Example 2 from examples/dprod-translated.ttl
+# Schema: schemas/adalbert-core.yaml
+#
+# DPROD original: dprod:DataContract with three provider promises:
+#   - ProviderTimelinessPromise (deliverOnSchedule, hourly)
+#   - ProviderSchemaPromise (maintainSchema)
+#   - ProviderTerminationNoticePromise (notifyTermination, 90-day notice)
+#
+# Translation decisions:
+#   ProviderTimelinessPromise   -> odrl:obligation + adalbert-due:deliver + recurrence
+#   ProviderSchemaPromise       -> odrl:obligation + adalbert-due:conformTo + target=schema
+#   ProviderTerminationNotice   -> odrl:obligation + adalbert-due:notify + deadline
+#   All provider duties carry adalbert:subject identifying the duty bearer.
+# ==============================================================================
+
+schema: https://vocabulary.bigbank/adalbert/linkml/core
+
+prefixes:
+  odrl: "http://www.w3.org/ns/odrl/2/"
+  adalbert: "https://vocabulary.bigbank/adalbert/"
+  adalbert_due: "https://vocabulary.bigbank/adalbert/due/"
+  ex: "https://example.com/"
+
+parties:
+  - id: "ex:revenue-team"
+    label: "Revenue Data Team"
+
+assets:
+  - id: "ex:revenue-data"
+    label: "Revenue Reporting Data"
+  - id: "ex:revenue-schema"
+    label: "Revenue Data Schema v3"
+  - id: "ex:revenue-changes"
+    label: "Revenue Schema Change Notifications"
+
+type: DataContract
+id: "ex:contract-revenue-promises"
+label: "Revenue Data Contract (Provider Promises)"
+description: "Revenue reporting data with timeliness, schema, and termination promises."
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+assigner: "ex:revenue-team"
+target: "ex:revenue-data"
+state: Active
+effectiveDate: "2026-01-01T00:00:00Z"
+expirationDate: "2026-12-31T23:59:59Z"
+
+obligation:
+
+  # Provider duty: hourly delivery with 15-minute window
+  # DPROD: ProviderTimelinessPromise with FREQ=HOURLY schedule
+  - id: "ex:contract-revenue-promises/duties/hourly-delivery"
+    label: "Hourly revenue data delivery"
+    subject: "ex:revenue-team"
+    action: "adalbert_due:deliver"
+    recurrence: "FREQ=HOURLY"
+    deadline: "PT15M"
+    # target: inherited from policy (ex:revenue-data)
+
+  # Provider duty: schema conformance
+  # DPROD: ProviderSchemaPromise with dprod:maintainSchema
+  - id: "ex:contract-revenue-promises/duties/schema-conformance"
+    label: "Revenue schema conformance"
+    subject: "ex:revenue-team"
+    action: "adalbert_due:conformTo"
+    target: "ex:revenue-schema"
+
+  # Provider duty: 90-day termination notice
+  # DPROD: ProviderTerminationNoticePromise with dprod:noticePeriod P90D
+  - id: "ex:contract-revenue-promises/duties/termination-notice"
+    label: "Termination notice (90 days)"
+    subject: "ex:revenue-team"
+    action: "adalbert_due:notify"
+    target: "ex:revenue-changes"
+    deadline: "P90D"
+
+permission:
+
+  # Consumer: read access
+  - id: "ex:contract-revenue-promises/permissions/read"
+    label: "Revenue data read access"
+    action: "odrl:read"

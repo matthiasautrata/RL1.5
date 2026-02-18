@@ -1,0 +1,102 @@
+# ==============================================================================
+# DPROD Example 3: Consumer Promises (Clickstream ML)
+# ==============================================================================
+# YAML equivalent of Example 3 from examples/dprod-translated.ttl
+# Schema: schemas/adalbert-core.yaml
+#
+# DPROD original: dprod:DataContract with consumer promises:
+#   - query (access method)
+#   - deriveInsights (ML use case)
+#   - provideAttribution (consumer obligation)
+#   - deleteOnExpiry (consumer obligation)
+#   - restrictPurpose: no redistribution (prohibition)
+#
+# Translation decisions:
+#   dprod:query           -> odrl:permission + adalbert-due:query
+#   dprod:deriveInsights  -> odrl:permission + odrl:derive + purpose constraint
+#   dprod:provideAttribution -> odrl:obligation + adalbert-due:report (attribution)
+#   dprod:deleteOnExpiry  -> odrl:obligation + odrl:delete
+#   dprod:restrictPurpose -> odrl:prohibition + odrl:distribute
+#
+# In an Offer, consumer duties omit adalbert:subject (filled upon subscription).
+# Consumer permissions omit odrl:assignee (filled upon subscription).
+# ==============================================================================
+
+schema: https://vocabulary.bigbank/adalbert/linkml/core
+
+prefixes:
+  odrl: "http://www.w3.org/ns/odrl/2/"
+  adalbert: "https://vocabulary.bigbank/adalbert/"
+  adalbert_due: "https://vocabulary.bigbank/adalbert/due/"
+  ex: "https://example.com/"
+
+parties:
+  - id: "ex:clickstream-team"
+    label: "Clickstream Data Team"
+
+assets:
+  - id: "ex:clickstream-data"
+    label: "Clickstream Event Data"
+  - id: "ex:attribution-report"
+    label: "Attribution Report"
+
+type: DataContract
+id: "ex:contract-clickstream-ml"
+label: "Clickstream ML Contract (Consumer Promises)"
+description: "Clickstream data for ML insights with attribution, deletion, and redistribution constraints."
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+assigner: "ex:clickstream-team"
+target: "ex:clickstream-data"
+state: Active
+effectiveDate: "2026-02-01T00:00:00Z"
+expirationDate: "2027-01-31T23:59:59Z"
+
+permission:
+
+  # Consumer permission: query access
+  # DPROD: dprod:consumerPromise [ dprod:query ]
+  - id: "ex:contract-clickstream-ml/permissions/query"
+    label: "Query access"
+    action: "adalbert_due:query"
+    # assignee: omitted in Offer; filled upon subscription
+
+  # Consumer permission: derive ML insights (analytics purpose constraint)
+  # DPROD: dprod:consumerPromise [ dprod:deriveInsights ]
+  - id: "ex:contract-clickstream-ml/permissions/derive"
+    label: "Derive ML insights"
+    action: "odrl:derive"
+    constraint:
+      - id: "ex:contract-clickstream-ml/constraints/purpose-analytics"
+        leftOperand: "odrl:purpose"
+        operator: "odrl:eq"
+        rightOperand: "adalbert_due:analytics"
+
+obligation:
+
+  # Consumer duty: provide attribution (monthly)
+  # DPROD: dprod:consumerPromise [ dprod:provideAttribution ]
+  # subject omitted in Offer — filled upon subscription
+  - id: "ex:contract-clickstream-ml/duties/monthly-attribution"
+    label: "Monthly attribution report"
+    action: "adalbert_due:report"
+    target: "ex:attribution-report"
+    recurrence: "FREQ=MONTHLY;BYMONTHDAY=1"
+    deadline: "P5D"
+
+  # Consumer duty: delete data on contract expiry
+  # DPROD: dprod:consumerPromise [ dprod:deleteOnExpiry ]
+  - id: "ex:contract-clickstream-ml/duties/delete-on-expiry"
+    label: "Delete data on expiry"
+    action: "odrl:delete"
+    deadline: "P30D"
+    # target: inherited from policy (ex:clickstream-data)
+
+prohibition:
+
+  # Prohibition: no redistribution
+  # DPROD: dprod:consumerPromise [ dprod:restrictPurpose "no redistribution" ]
+  - id: "ex:contract-clickstream-ml/prohibitions/no-redistribute"
+    label: "No redistribution"
+    action: "odrl:distribute"

@@ -1,0 +1,224 @@
+# ==============================================================================
+# Example: Data Contract and Subscription
+# ==============================================================================
+# YAML equivalent of examples/data-contract.ttl
+# Schema: schemas/adalbert-core.yaml
+# Profile: Adalbert Core + DUE
+#
+# Key differences from TTL:
+#   - No blank nodes: all duties, permissions, prohibitions have explicit IDs
+#   - Named resources (no [ ] anonymous nodes)
+#   - Flat structure: parties and assets declared separately, referenced by URI
+#   - Semantically equivalent; structurally different (no blank nodes = better
+#     for registries, event sourcing, and incremental updates)
+#
+# Target inheritance: rules without an explicit target inherit the policy-level
+# target (ODRL standard pattern). Documented at rule level for clarity.
+# ==============================================================================
+
+schema: https://vocabulary.bigbank/adalbert/linkml/core
+
+prefixes:
+  odrl: "http://www.w3.org/ns/odrl/2/"
+  adalbert: "https://vocabulary.bigbank/adalbert/"
+  adalbert_due: "https://vocabulary.bigbank/adalbert/due/"
+  xsd: "http://www.w3.org/2001/XMLSchema#"
+  rdfs: "http://www.w3.org/2000/01/rdf-schema#"
+  prov: "http://www.w3.org/ns/prov#"
+  data: "https://data.bigbank/"
+  vocab: "https://vocabulary.bigbank/adalbert/"
+
+# ==============================================================================
+# PARTIES
+# ==============================================================================
+
+parties:
+  - id: "https://data.bigbank/agents/data-platform-team"
+    label: "Data Platform Team"
+
+  - id: "https://data.bigbank/agents/quant-research"
+    label: "Quantitative Research"
+    memberOf: "https://data.bigbank/agents/trading-division"
+
+  - id: "https://data.bigbank/agents/trading-division"
+    label: "Trading Division"
+
+# ==============================================================================
+# ASSETS
+# ==============================================================================
+
+assets:
+  - id: "https://data.bigbank/assets/market-prices"
+    label: "Market Price Data"
+    partOf: "https://data.bigbank/assets/market-data-lake"
+
+  - id: "https://data.bigbank/assets/market-data-lake"
+    label: "Market Data Lake"
+
+  - id: "https://data.bigbank/assets/data-ready-notification"
+    label: "Data Ready Notification"
+
+  - id: "https://data.bigbank/assets/schema-changes"
+    label: "Schema Changes"
+
+  - id: "https://data.bigbank/assets/usage-stats"
+    label: "Usage Statistics"
+
+# ==============================================================================
+# DATA CONTRACT (Offer)
+# ==============================================================================
+# Template offer from the data provider. Subscribers accept this to create
+# a Subscription (Agreement).
+#
+# Target inheritance: rules without an explicit target inherit market-prices.
+
+type: DataContract
+id: "https://data.bigbank/offers/market-prices-v2"
+label: "Market Price Data Contract v2"
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+assigner: "https://data.bigbank/agents/data-platform-team"
+target: "https://data.bigbank/assets/market-prices"
+state: Active
+effectiveDate: "2026-01-01T00:00:00Z"
+previousVersion: "https://data.bigbank/offers/market-prices-v1"
+
+obligation:
+
+  # SLA: Daily delivery by 6:30 AM
+  # Target inherited from policy (market-prices)
+  - id: "https://data.bigbank/offers/market-prices-v2/duties/daily-delivery"
+    label: "Daily data delivery"
+    subject: "https://data.bigbank/agents/data-platform-team"
+    action: "adalbert_due:deliver"
+    recurrence: "FREQ=DAILY;BYHOUR=6;BYMINUTE=0"
+    deadline: "PT30M"
+    # target: inherited — https://data.bigbank/assets/market-prices
+
+  # SLA: 14-day notice for schema changes
+  # Target overridden — schema-changes, not market-prices
+  - id: "https://data.bigbank/offers/market-prices-v2/duties/schema-notification"
+    label: "Schema change notification"
+    subject: "https://data.bigbank/agents/data-platform-team"
+    action: "adalbert_due:notify"
+    target: "https://data.bigbank/assets/schema-changes"
+    deadline: "P14D"
+
+  # Consumer obligation: monthly usage reporting
+  # Target overridden — usage-stats, not market-prices
+  # Note: subject omitted in Offer (filled when subscription is created)
+  - id: "https://data.bigbank/offers/market-prices-v2/duties/usage-reporting"
+    label: "Usage reporting"
+    action: "adalbert_due:report"
+    target: "https://data.bigbank/assets/usage-stats"
+    deadline: "P30D"
+
+permission:
+
+  # Consumer right: display (human viewing)
+  # Target inherited from policy (market-prices)
+  - id: "https://data.bigbank/offers/market-prices-v2/permissions/display"
+    label: "Display access"
+    action: "odrl:display"
+    # assignee: omitted in Offer; filled upon subscription
+
+  # Consumer right: non-display (algorithmic use) — restricted to internal recipients
+  # Target inherited from policy (market-prices)
+  - id: "https://data.bigbank/offers/market-prices-v2/permissions/non-display"
+    label: "Non-display use"
+    action: "adalbert_due:nonDisplay"
+    constraint:
+      - id: "https://data.bigbank/offers/market-prices-v2/constraints/recipient-internal"
+        leftOperand: "adalbert_due:recipientType"
+        operator: "odrl:eq"
+        rightOperand: "adalbert_due:internal"
+
+  # Consumer right: derive (create derived products)
+  # Target inherited from policy (market-prices)
+  - id: "https://data.bigbank/offers/market-prices-v2/permissions/derive"
+    label: "Derivation rights"
+    action: "odrl:derive"
+
+prohibition:
+
+  # No external distribution
+  # Target inherited from policy (market-prices)
+  - id: "https://data.bigbank/offers/market-prices-v2/prohibitions/no-distribute"
+    label: "No redistribution"
+    action: "odrl:distribute"
+
+---
+
+# ==============================================================================
+# SUBSCRIPTION (Agreement)
+# ==============================================================================
+# Quant Research has subscribed to the data contract.
+# Bilateral: both parties have explicit duties.
+# Target inherited from policy (market-prices) unless overridden.
+
+type: Subscription
+id: "https://data.bigbank/agreements/quant-market-data-2026"
+label: "Quant Research Market Data 2026"
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+subscribesTo: "https://data.bigbank/offers/market-prices-v2"
+assigner: "https://data.bigbank/agents/data-platform-team"
+assignee: "https://data.bigbank/agents/quant-research"
+target: "https://data.bigbank/assets/market-prices"
+effectiveDate: "2026-01-15T00:00:00Z"
+expirationDate: "2026-12-31T23:59:59Z"
+
+obligation:
+
+  # Provider duty: daily delivery (with state tracking)
+  - id: "https://data.bigbank/duties/delivery-2026-001"
+    label: "Daily delivery duty (2026-01-15)"
+    subject: "https://data.bigbank/agents/data-platform-team"
+    object: "https://data.bigbank/agents/quant-research"
+    action: "adalbert_due:deliver"
+    target: "https://data.bigbank/assets/market-prices"
+    recurrence: "FREQ=DAILY;BYHOUR=6;BYMINUTE=0"
+    deadline: "PT30M"
+    state: Fulfilled
+
+  # Provider duty: schema change notification
+  - id: "https://data.bigbank/duties/notify-2026-001"
+    label: "Schema notification duty"
+    subject: "https://data.bigbank/agents/data-platform-team"
+    object: "https://data.bigbank/agents/quant-research"
+    action: "adalbert_due:notify"
+    target: "https://data.bigbank/assets/schema-changes"
+    deadline: "P14D"
+    state: Pending
+
+  # Consumer duty: monthly usage reporting
+  - id: "https://data.bigbank/duties/report-2026-001"
+    label: "January usage report"
+    subject: "https://data.bigbank/agents/quant-research"
+    object: "https://data.bigbank/agents/data-platform-team"
+    action: "adalbert_due:report"
+    target: "https://data.bigbank/assets/usage-stats"
+    deadline: "P30D"
+    state: Active
+
+permission:
+
+  - id: "https://data.bigbank/agreements/quant-market-data-2026/permissions/display"
+    action: "odrl:display"
+    assignee: "https://data.bigbank/agents/quant-research"
+
+  - id: "https://data.bigbank/agreements/quant-market-data-2026/permissions/non-display"
+    action: "adalbert_due:nonDisplay"
+    assignee: "https://data.bigbank/agents/quant-research"
+
+  - id: "https://data.bigbank/agreements/quant-market-data-2026/permissions/derive"
+    action: "odrl:derive"
+    assignee: "https://data.bigbank/agents/quant-research"
+
+prohibition:
+
+  - id: "https://data.bigbank/agreements/quant-market-data-2026/prohibitions/no-distribute"
+    action: "odrl:distribute"
+    assignee: "https://data.bigbank/agents/quant-research"

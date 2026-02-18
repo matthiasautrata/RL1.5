@@ -1,0 +1,110 @@
+# ==============================================================================
+# DPROD Example 5: Service Level Promise (API with SLAs)
+# ==============================================================================
+# YAML equivalent of Example 5 from examples/dprod-translated.ttl
+# Schema: schemas/adalbert-core.yaml
+#
+# DPROD original: dprod:ProviderServiceLevelPromise with SLA targets:
+#   - availability >= 99.9%
+#   - latency (p99) <= 200ms
+#   - throughput >= 1000 req/s
+#
+# Translation decisions:
+#   dprod:meetServiceLevel -> odrl:obligation + adalbert-due:conformTo + constraints
+#   SLA metrics expressed as named Constraint nodes combined in a LogicalConstraint
+#   Each SLA metric is a separate atomic Constraint under odrl:and
+#
+# Gap note: The LogicalConstraint with odrl:and containing three sub-constraints
+# is expressed here with named sub-constraint IDs (no blank nodes).
+# ==============================================================================
+
+schema: https://vocabulary.bigbank/adalbert/linkml/core
+
+prefixes:
+  odrl: "http://www.w3.org/ns/odrl/2/"
+  adalbert: "https://vocabulary.bigbank/adalbert/"
+  adalbert_due: "https://vocabulary.bigbank/adalbert/due/"
+  ex: "https://example.com/"
+
+parties:
+  - id: "ex:api-platform"
+    label: "API Platform Team"
+
+assets:
+  - id: "ex:api-data"
+    label: "API Service Data"
+  - id: "ex:api-schema"
+    label: "API Schema v2"
+
+type: DataContract
+id: "ex:contract-api-sla"
+label: "API Service Level Contract"
+description: "API data contract with availability, latency, and throughput SLAs."
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+assigner: "ex:api-platform"
+target: "ex:api-data"
+state: Active
+effectiveDate: "2026-01-01T00:00:00Z"
+expirationDate: "2026-12-31T23:59:59Z"
+
+obligation:
+
+  # Provider duty: schema conformance
+  - id: "ex:contract-api-sla/duties/schema-conformance"
+    label: "API schema conformance"
+    subject: "ex:api-platform"
+    action: "adalbert_due:conformTo"
+    target: "ex:api-schema"
+
+  # Provider duty: SLA conformance (availability + latency + throughput)
+  # DPROD: dprod:ProviderServiceLevelPromise with dprod:meetServiceLevel
+  # Three metrics combined with odrl:and (LogicalConstraint)
+  - id: "ex:contract-api-sla/duties/sla-conformance"
+    label: "Service level conformance"
+    subject: "ex:api-platform"
+    action: "adalbert_due:conformTo"
+    constraint:
+      - id: "ex:contract-api-sla/constraints/sla-compound"
+        type: LogicalConstraint
+        and:
+          - id: "ex:contract-api-sla/constraints/availability-99-9"
+            label: "Availability >= 99.9%"
+            leftOperand: "adalbert_due:availability"
+            operator: "odrl:gteq"
+            rightOperand: "99.9"
+          - id: "ex:contract-api-sla/constraints/latency-p99-200ms"
+            label: "P99 latency <= 200ms"
+            leftOperand: "adalbert_due:latency"
+            operator: "odrl:lteq"
+            rightOperand: "PT0.2S"
+          - id: "ex:contract-api-sla/constraints/throughput-1000rps"
+            label: "Throughput >= 1000 req/s"
+            leftOperand: "adalbert_due:throughput"
+            operator: "odrl:gteq"
+            rightOperand: "1000"
+
+  # Provider duty: 14-day change notification
+  - id: "ex:contract-api-sla/duties/change-notification"
+    label: "API change notification (14 days)"
+    subject: "ex:api-platform"
+    action: "adalbert_due:notify"
+    deadline: "P14D"
+    # target: inherited from policy (ex:api-data)
+
+permission:
+
+  - id: "ex:contract-api-sla/permissions/read"
+    label: "API read access"
+    action: "odrl:read"
+
+  - id: "ex:contract-api-sla/permissions/query"
+    label: "API query access"
+    action: "adalbert_due:query"
+
+prohibition:
+
+  - id: "ex:contract-api-sla/prohibitions/no-redistribute"
+    label: "No redistribution"
+    action: "odrl:distribute"

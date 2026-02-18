@@ -1,0 +1,330 @@
+# ==============================================================================
+# Adalbert DUE — LeftOperand Vocabulary Instances
+# ==============================================================================
+# YAML instance data for all DUE LeftOperand individuals.
+# Schema: schemas/adalbert-due.yaml (DUELeftOperand class)
+# Equivalent to: profiles/adalbert-due.ttl operand declarations
+#
+# Notes:
+#   - Each operand is typed as odrl:LeftOperand (+ skos:Concept in RDF)
+#   - resolutionPath follows the pattern: agent.*, asset.*, context.*
+#   - odrl:purpose is an ODRL base operand annotated with resolutionPath
+#   - All other operands are adalbert-due: namespace individuals
+#
+# Operand count: 35 (1 ODRL re-annotated + 34 DUE-specific)
+# ==============================================================================
+
+# Schema reference
+schema: https://vocabulary.bigbank/adalbert/linkml/due
+type: OperandVocabulary
+
+prefixes:
+  odrl: "http://www.w3.org/ns/odrl/2/"
+  adalbert: "https://vocabulary.bigbank/adalbert/"
+  adalbert_due: "https://vocabulary.bigbank/adalbert/due/"
+  skos: "http://www.w3.org/2004/02/skos/core#"
+
+operands:
+
+  # --------------------------------------------------------------------------
+  # Purpose (ODRL base operand, re-annotated with resolutionPath)
+  # --------------------------------------------------------------------------
+
+  - id: odrl:purpose
+    label: "purpose"
+    definition: "Purpose of data use."
+    resolutionPath: "context.purpose"
+    note: >-
+      ODRL Common Vocabulary operand. The odrl:purpose URI is defined by W3C.
+      Adalbert adds adalbert:resolutionPath as an annotation.
+      Concept values: see concepts.yaml (analytics, research, compliance, operations).
+
+  # --------------------------------------------------------------------------
+  # Classification and Sensitivity
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:classification
+    label: "classification"
+    definition: "Data classification level."
+    resolutionPath: "asset.classification"
+    inScheme: adalbert_due:scheme
+    note: "Values: public, internal, confidential, restricted (see concepts.yaml)."
+
+  - id: adalbert_due:sensitivity
+    label: "sensitivity"
+    definition: "Data sensitivity type."
+    resolutionPath: "asset.sensitivity"
+    inScheme: adalbert_due:scheme
+    note: "Values: pii, mnpi, phi (see concepts.yaml)."
+
+  # --------------------------------------------------------------------------
+  # Asset Metadata
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:assetClass
+    label: "asset class"
+    definition: "Financial instrument or data classification."
+    resolutionPath: "asset.class"
+    inScheme: adalbert_due:scheme
+    note: "E.g., equity, fixed-income, fx, commodity, reference."
+
+  - id: adalbert_due:market
+    label: "market"
+    definition: "Trading venue or market of origin."
+    resolutionPath: "asset.market"
+    inScheme: adalbert_due:scheme
+    note: "E.g., NYSE, LSE, CME, OTC."
+
+  - id: adalbert_due:isBenchmark
+    label: "is benchmark"
+    definition: "Whether asset is a benchmark or index."
+    resolutionPath: "asset.isBenchmark"
+    inScheme: adalbert_due:scheme
+    note: "Benchmarks often have stricter usage constraints."
+
+  # --------------------------------------------------------------------------
+  # Jurisdiction
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:jurisdiction
+    label: "jurisdiction"
+    definition: "Legal jurisdiction governing data use."
+    resolutionPath: "context.jurisdiction"
+    inScheme: adalbert_due:scheme
+
+  - id: adalbert_due:residency
+    label: "residency"
+    definition: "Data residency location."
+    resolutionPath: "asset.residency"
+    inScheme: adalbert_due:scheme
+
+  # --------------------------------------------------------------------------
+  # Temporal
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:retentionPeriod
+    label: "retention period"
+    definition: "Maximum time data may be retained."
+    resolutionPath: "asset.retentionPeriod"
+    inScheme: adalbert_due:scheme
+
+  - id: adalbert_due:expiry
+    label: "expiry"
+    definition: "Expiration date of the policy."
+    resolutionPath: "asset.expiry"
+    inScheme: adalbert_due:scheme
+
+  # --------------------------------------------------------------------------
+  # Processing
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:processingMode
+    label: "processing mode"
+    definition: "How data is processed."
+    resolutionPath: "context.processingMode"
+    inScheme: adalbert_due:scheme
+    note: "Values: human, automated, modelTraining, inference (see concepts.yaml)."
+
+  # --------------------------------------------------------------------------
+  # Audit
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:auditRequired
+    label: "audit required"
+    definition: "Whether audit logging is required."
+    resolutionPath: "asset.auditRequired"
+    inScheme: adalbert_due:scheme
+
+  # --------------------------------------------------------------------------
+  # Identity and Access
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:role
+    label: "role"
+    definition: "Role of the requesting agent."
+    resolutionPath: "agent.role"
+    inScheme: adalbert_due:scheme
+
+  - id: adalbert_due:organization
+    label: "organization"
+    definition: "Organization of the requesting agent."
+    resolutionPath: "agent.organization"
+    inScheme: adalbert_due:scheme
+    note: "Hierarchy via org:subOrganizationOf."
+
+  - id: adalbert_due:costCenter
+    label: "cost center"
+    definition: "Cost center of the requesting agent."
+    resolutionPath: "agent.costCenter"
+    inScheme: adalbert_due:scheme
+
+  - id: adalbert_due:project
+    label: "project"
+    definition: "Project context of the request."
+    resolutionPath: "context.project"
+    inScheme: adalbert_due:scheme
+
+  - id: adalbert_due:recipientType
+    label: "recipient type"
+    definition: "Type of data recipient."
+    resolutionPath: "agent.recipientType"
+    inScheme: adalbert_due:scheme
+    note: "Values: internalRecipient, externalRecipient, professional, retail."
+
+  # --------------------------------------------------------------------------
+  # Environment
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:environment
+    label: "environment"
+    definition: "Execution environment."
+    resolutionPath: "context.environment"
+    inScheme: adalbert_due:scheme
+    note: "Values: production, staging, development, sandbox (see concepts.yaml)."
+
+  - id: adalbert_due:network
+    label: "network"
+    definition: "Network zone of the request."
+    resolutionPath: "context.network"
+    inScheme: adalbert_due:scheme
+    note: "Values: internalNetwork, externalNetwork, cloudNetwork (see concepts.yaml)."
+
+  # --------------------------------------------------------------------------
+  # Service Level
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:availability
+    label: "availability"
+    definition: "Service availability percentage."
+    resolutionPath: "context.availability"
+    inScheme: adalbert_due:scheme
+    note: "Measured as uptime percentage (e.g., 99.9%). Used in SLA constraints."
+
+  - id: adalbert_due:latency
+    label: "latency"
+    definition: "Response latency at a given percentile."
+    resolutionPath: "context.latency"
+    inScheme: adalbert_due:scheme
+    note: "Measured as duration (e.g., P99 latency <= PT0.2S)."
+
+  - id: adalbert_due:throughput
+    label: "throughput"
+    definition: "Request throughput capacity."
+    resolutionPath: "context.throughput"
+    inScheme: adalbert_due:scheme
+    note: "Measured in requests per second."
+
+  # --------------------------------------------------------------------------
+  # Data Quality
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:completeness
+    label: "completeness"
+    definition: "Data completeness percentage."
+    resolutionPath: "asset.completeness"
+    inScheme: adalbert_due:scheme
+    note: "Percentage of non-null required fields."
+
+  - id: adalbert_due:accuracy
+    label: "accuracy"
+    definition: "Data accuracy percentage."
+    resolutionPath: "asset.accuracy"
+    inScheme: adalbert_due:scheme
+    note: "Percentage of records passing validation rules."
+
+  # --------------------------------------------------------------------------
+  # Timeliness
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:timeliness
+    label: "timeliness"
+    definition: "Required data freshness category."
+    resolutionPath: "asset.timeliness"
+    inScheme: adalbert_due:scheme
+    note: "Values: realtime, nearRealtime, delayed, endOfDay, historical."
+
+  - id: adalbert_due:delayMinutes
+    label: "delay minutes"
+    definition: "Maximum acceptable delay in minutes."
+    resolutionPath: "asset.delayMinutes"
+    inScheme: adalbert_due:scheme
+
+  # --------------------------------------------------------------------------
+  # Legal Basis and Consent
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:legalBasis
+    label: "legal basis"
+    definition: "Legal basis for processing."
+    resolutionPath: "context.legalBasis"
+    inScheme: adalbert_due:scheme
+    note: "Values: consent, contract, legalObligation, vitalInterest, publicTask, legitimateInterest."
+
+  - id: adalbert_due:consentId
+    label: "consent ID"
+    definition: "Reference to consent record."
+    resolutionPath: "context.consentId"
+    inScheme: adalbert_due:scheme
+
+  # --------------------------------------------------------------------------
+  # Access Pattern
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:accessPattern
+    label: "access pattern"
+    definition: "Type of data access."
+    resolutionPath: "context.accessPattern"
+    inScheme: adalbert_due:scheme
+    note: "Values: batch, streaming, interactive, api (see concepts.yaml)."
+
+  - id: adalbert_due:volumeLimit
+    label: "volume limit"
+    definition: "Maximum data volume per request."
+    resolutionPath: "context.volumeLimit"
+    inScheme: adalbert_due:scheme
+
+  - id: adalbert_due:rateLimit
+    label: "rate limit"
+    definition: "Maximum requests per time period."
+    resolutionPath: "context.rateLimit"
+    inScheme: adalbert_due:scheme
+
+  # --------------------------------------------------------------------------
+  # Channel and Service Window
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:channel
+    label: "channel"
+    definition: "Communication or delivery channel."
+    resolutionPath: "context.channel"
+    inScheme: adalbert_due:scheme
+    note: "E.g., email, chat, phone, api, sftp."
+
+  - id: adalbert_due:serviceWindow
+    label: "service window"
+    definition: "Time window during which a service is available."
+    resolutionPath: "context.serviceWindow"
+    inScheme: adalbert_due:scheme
+    note: "E.g., business-hours, 24x7, weekdays."
+
+  # --------------------------------------------------------------------------
+  # Subscription
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:subscriptionTier
+    label: "subscription tier"
+    definition: "Access tier or subscription level."
+    resolutionPath: "context.subscriptionTier"
+    inScheme: adalbert_due:scheme
+    note: "E.g., free, basic, premium, enterprise."
+
+  # --------------------------------------------------------------------------
+  # Derivation
+  # --------------------------------------------------------------------------
+
+  - id: adalbert_due:derivationType
+    label: "derivation type"
+    definition: "Type of derivation being performed."
+    resolutionPath: "context.derivationType"
+    inScheme: adalbert_due:scheme
+    note: "Values: commingled, nonSubstitutive, newProduct (see concepts.yaml)."

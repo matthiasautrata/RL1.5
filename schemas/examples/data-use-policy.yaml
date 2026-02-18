@@ -1,0 +1,215 @@
+# ==============================================================================
+# Example: Internal Data Access Policy
+# ==============================================================================
+# YAML equivalent of examples/data-use-policy.ttl
+# Schema: schemas/adalbert-core.yaml
+# Profile: Adalbert Core + DUE
+#
+# Key differences from TTL:
+#   - No blank nodes: all rules and constraints have explicit IDs
+#   - LogicalConstraint (AND) decomposed into named constraint + named sub-constraints
+#   - Accepted gap: compound constraints (odrl:and on permission) are expressed
+#     with named sub-constraint nodes; semantically equivalent
+#
+# Target inheritance: both policies declare a policy-level target; rules without
+# an explicit target inherit it.
+# ==============================================================================
+
+schema: https://vocabulary.bigbank/adalbert/linkml/core
+
+prefixes:
+  odrl: "http://www.w3.org/ns/odrl/2/"
+  adalbert: "https://vocabulary.bigbank/adalbert/"
+  adalbert_due: "https://vocabulary.bigbank/adalbert/due/"
+  xsd: "http://www.w3.org/2001/XMLSchema#"
+  rdfs: "http://www.w3.org/2000/01/rdf-schema#"
+
+# ==============================================================================
+# PARTIES
+# ==============================================================================
+
+parties:
+  - id: "https://data.bigbank/agents/hr-analytics"
+    label: "HR Analytics Team"
+    memberOf: "https://data.bigbank/agents/hr-division"
+
+  - id: "https://data.bigbank/agents/hr-division"
+    label: "Human Resources Division"
+
+  - id: "https://data.bigbank/agents/compliance-team"
+    label: "Compliance Team"
+
+# ==============================================================================
+# ASSETS
+# ==============================================================================
+
+assets:
+  - id: "https://data.bigbank/assets/employee-compensation"
+    label: "Employee Compensation Data"
+    partOf: "https://data.bigbank/assets/employee-data"
+
+  - id: "https://data.bigbank/assets/employee-performance"
+    label: "Employee Performance Reviews"
+    partOf: "https://data.bigbank/assets/employee-data"
+
+  - id: "https://data.bigbank/assets/employee-data"
+    label: "Employee Data Lake"
+
+  - id: "https://data.bigbank/assets/access-log"
+    label: "Access Log"
+
+# ==============================================================================
+# POLICY SET 1: HR Data Access Controls
+# ==============================================================================
+# A Set (no parties) — applies to anyone matching the conditions.
+# Target: employee-data (inherited by rules unless overridden)
+
+type: Set
+id: "https://data.bigbank/policies/hr-data-access"
+label: "HR Data Access Policy"
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+target: "https://data.bigbank/assets/employee-data"
+
+permission:
+
+  # Rule 1: HR Analytics can read for analytics purposes
+  # Target inherited from policy (employee-data)
+  - id: "https://data.bigbank/policies/hr-data-access/permissions/hr-analytics-read"
+    label: "HR analytics read access"
+    assignee: "https://data.bigbank/agents/hr-analytics"
+    action: "odrl:read"
+    constraint:
+      - id: "https://data.bigbank/policies/hr-data-access/constraints/purpose-analytics"
+        leftOperand: "odrl:purpose"
+        operator: "odrl:eq"
+        rightOperand: "adalbert_due:analytics"
+
+  # Rule 2: Compliance can read for compliance purposes
+  # Target inherited from policy (employee-data)
+  - id: "https://data.bigbank/policies/hr-data-access/permissions/compliance-read"
+    label: "Compliance audit access"
+    assignee: "https://data.bigbank/agents/compliance-team"
+    action: "odrl:read"
+    constraint:
+      - id: "https://data.bigbank/policies/hr-data-access/constraints/purpose-compliance"
+        leftOperand: "odrl:purpose"
+        operator: "odrl:eq"
+        rightOperand: "adalbert_due:compliance"
+
+obligation:
+
+  # Rule 3: Anyone reading must log access within 1 hour
+  # Target overridden — access-log, not employee-data
+  - id: "https://data.bigbank/policies/hr-data-access/duties/mandatory-logging"
+    label: "Mandatory audit logging"
+    action: "adalbert_due:log"
+    target: "https://data.bigbank/assets/access-log"
+    deadline: "PT1H"
+    constraint:
+      - id: "https://data.bigbank/policies/hr-data-access/constraints/classification-confidential"
+        leftOperand: "adalbert_due:classification"
+        operator: "odrl:eq"
+        rightOperand: "adalbert_due:confidential"
+
+prohibition:
+
+  # Rule 4: No external distribution
+  # Target inherited from policy (employee-data)
+  - id: "https://data.bigbank/policies/hr-data-access/prohibitions/no-distribute"
+    label: "No external sharing"
+    action: "odrl:distribute"
+
+  # Rule 5: No use for model training
+  # Target inherited from policy (employee-data)
+  - id: "https://data.bigbank/policies/hr-data-access/prohibitions/no-ml-training"
+    label: "No ML training"
+    action: "odrl:use"
+    constraint:
+      - id: "https://data.bigbank/policies/hr-data-access/constraints/mode-model-training"
+        leftOperand: "adalbert_due:processingMode"
+        operator: "odrl:eq"
+        rightOperand: "adalbert_due:modelTraining"
+
+  # Rule 6: Production and staging only (prohibit development and sandbox)
+  # Target inherited from policy (employee-data)
+  - id: "https://data.bigbank/policies/hr-data-access/prohibitions/env-restrict"
+    label: "Production and staging only"
+    action: "odrl:use"
+    constraint:
+      - id: "https://data.bigbank/policies/hr-data-access/constraints/env-not-dev-sandbox"
+        leftOperand: "adalbert_due:environment"
+        operator: "odrl:isNoneOf"
+        rightOperand:
+          - "adalbert_due:production"
+          - "adalbert_due:staging"
+
+---
+
+# ==============================================================================
+# POLICY SET 2: Compensation Data (Stricter)
+# ==============================================================================
+# More restrictive policy for sensitive compensation data.
+# Target: employee-compensation (inherited by rules unless overridden)
+#
+# Gap note: The TTL uses odrl:and with a LogicalConstraint containing two
+# sub-constraints (purpose isAnyOf [compliance, operations] AND legalBasis eq
+# legitimateInterest). This is expressed here with a named LogicalConstraint
+# and named sub-constraints; semantically equivalent.
+
+type: Set
+id: "https://data.bigbank/policies/compensation-access"
+label: "Compensation Data Access Policy"
+profile:
+  - "https://vocabulary.bigbank/adalbert/"
+  - "https://vocabulary.bigbank/adalbert/due/"
+target: "https://data.bigbank/assets/employee-compensation"
+
+permission:
+
+  # Only HR Division (not just analytics sub-team)
+  # Compound constraint: purpose isAnyOf [compliance, operations] AND legalBasis eq legitimateInterest
+  # Target inherited from policy (employee-compensation)
+  - id: "https://data.bigbank/policies/compensation-access/permissions/hr-division-read"
+    label: "HR Division compensation access"
+    assignee: "https://data.bigbank/agents/hr-division"
+    action: "odrl:read"
+    constraint:
+      - id: "https://data.bigbank/policies/compensation-access/constraints/purpose-and-basis"
+        type: LogicalConstraint
+        and:
+          - id: "https://data.bigbank/policies/compensation-access/constraints/purpose-ops-compliance"
+            leftOperand: "odrl:purpose"
+            operator: "odrl:isAnyOf"
+            rightOperand:
+              - "adalbert_due:compliance"
+              - "adalbert_due:operations"
+          - id: "https://data.bigbank/policies/compensation-access/constraints/basis-legitimate"
+            leftOperand: "adalbert_due:legalBasis"
+            operator: "odrl:eq"
+            rightOperand: "adalbert_due:legitimateInterest"
+
+obligation:
+
+  # Retention limit: delete after 7 years
+  # Target inherited from policy (employee-compensation)
+  - id: "https://data.bigbank/policies/compensation-access/duties/retention-limit"
+    label: "Retention limit"
+    action: "odrl:delete"
+    constraint:
+      - id: "https://data.bigbank/policies/compensation-access/constraints/retention-7y"
+        leftOperand: "adalbert_due:retentionPeriod"
+        operator: "odrl:gt"
+        rightOperand: "P7Y"
+
+  # Mandatory anonymization for analytics use
+  # Target inherited from policy (employee-compensation)
+  - id: "https://data.bigbank/policies/compensation-access/duties/anonymize-analytics"
+    label: "Anonymization required"
+    action: "odrl:anonymize"
+    constraint:
+      - id: "https://data.bigbank/policies/compensation-access/constraints/purpose-analytics"
+        leftOperand: "odrl:purpose"
+        operator: "odrl:eq"
+        rightOperand: "adalbert_due:analytics"
