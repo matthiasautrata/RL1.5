@@ -354,9 +354,13 @@ The DUE profile (`profiles/adalbert-due.ttl`) provides the complete data governa
 | **Audit** | `adalbert-due:auditRequired` | `asset.auditRequired` |
 | **Identity** | `adalbert-due:role`, `adalbert-due:organization`, `adalbert-due:costCenter`, `adalbert-due:project`, `adalbert-due:recipientType` | `agent.*`, `context.*` |
 | **Environment** | `adalbert-due:environment`, `adalbert-due:network` | `context.*` |
+| **Service level** | `adalbert-due:availability`, `adalbert-due:latency`, `adalbert-due:throughput` | `context.*` |
+| **Data quality** | `adalbert-due:completeness`, `adalbert-due:accuracy` | `asset.*` |
 | **Timeliness** | `adalbert-due:timeliness`, `adalbert-due:delayMinutes` | `asset.*` |
 | **Legal basis** | `adalbert-due:legalBasis`, `adalbert-due:consentId` | `context.*` |
 | **Access pattern** | `adalbert-due:accessPattern`, `adalbert-due:volumeLimit`, `adalbert-due:rateLimit` | `context.*` |
+| **Channel** | `adalbert-due:channel`, `adalbert-due:serviceWindow` | `context.*` |
+| **Subscription** | `adalbert-due:subscriptionTier` | `context.subscriptionTier` |
 | **Derivation** | `adalbert-due:derivationType` | `context.derivationType` |
 
 ### 5.2 Actions
@@ -407,6 +411,7 @@ Key SKOS concept values defined by DUE:
 | Network | `internalNetwork`, `externalNetwork`, `cloudNetwork` |
 | Timeliness | `realtime`, `nearRealtime`, `delayed`, `endOfDay`, `historical` |
 | Legal basis | `consent`, `contract`, `legalObligation`, `vitalInterest`, `publicTask`, `legitimateInterest` |
+| Recipient type | `internalRecipient`, `externalRecipient`, `professional`, `retail` |
 | Access pattern | `batch`, `streaming`, `interactive`, `api` |
 | Derivation type | `commingled`, `nonSubstitutive`, `newProduct` |
 

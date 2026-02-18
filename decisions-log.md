@@ -496,3 +496,4 @@ Four sub-issues:
 | 2026-02-06 | Issue 19 | Added `ProfilePropertyGroup` and `NonEmptyClausesConstraint` to Set/Offer/Agreement/DataContract/Subscription shapes — ensures validation without RDFS inference | -- |
 | 2026-02-06 | Issue 20 | Fixed 4 doc inconsistencies: stale SHACL snippet, DUE URI slash, SKOS status contradiction, `odrl:duty` → `odrl:obligation` | -- |
 | 2026-02-10 | S7 revert | Reverted `odrl:includedIn odrl:use` on `conformTo` — duty-only action, `includedIn` hierarchy governs permission subsumption not duty obligations | -- |
+| 2026-02-17 | dprod-fork sync | Synced new DUE operands from dprod-fork PR (add-adalbert-contracts): 8 operands added (availability, latency, throughput, completeness, accuracy, channel, serviceWindow, subscriptionTier) + 4 recipient type SKOS concepts; also added `examples/dprod-translated.ttl` (8 dprod examples in Adalbert) and `docs/comparisons/comparison-dprod.md` | -- |

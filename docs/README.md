@@ -31,6 +31,7 @@
 | [comparison-w3c-market-data.md](comparisons/comparison-w3c-market-data.md) | vs W3C Market Data Profile (+ migration appendix) |
 | [comparison-dcon.md](comparisons/comparison-dcon.md) | DCON supersession analysis (+ completeness verification) |
 | [comparison-rl2.md](comparisons/comparison-rl2.md) | vs RL2 (functional gap, complexity, translation path) |
+| [comparison-dprod.md](comparisons/comparison-dprod.md) | vs dprod-contracts (Promise hierarchy vs Duty, mapping table) |
 | [namespace-alignment.md](comparisons/namespace-alignment.md) | Namespace coordination |
 
 ## Examples
@@ -40,6 +41,7 @@
 | [data-contract.ttl](../examples/data-contract.ttl) | Complete contract example (bilateral duties, recurrence, subscription) |
 | [data-use-policy.ttl](../examples/data-use-policy.ttl) | Access control example (role-based, purpose constraints) |
 | [baseline.ttl](../examples/baseline.ttl) | Comprehensive test data (5 orgs, 8 assets, 8 contracts, 2 subscriptions) |
+| [dprod-translated.ttl](../examples/dprod-translated.ttl) | All 8 dprod-contracts examples translated to Adalbert syntax |
 
 ---
 

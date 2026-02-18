@@ -13,6 +13,7 @@ and extend them with Adalbert-specific vocabulary only where ODRL has no equival
 |------|-------------|
 | [data-contract.ttl](data-contract.ttl) | DataContract, Subscription, bilateral duties, provider SLA |
 | [data-use-policy.ttl](data-use-policy.ttl) | Set policy, role-based access, purpose constraints, prohibitions |
+| [dprod-translated.ttl](dprod-translated.ttl) | All 8 dprod-contracts examples translated to Adalbert syntax |
 
 ## Key Patterns Demonstrated
 

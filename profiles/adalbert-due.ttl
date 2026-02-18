@@ -244,7 +244,25 @@ adalbert-due:recipientType a odrl:LeftOperand, skos:Concept ;
     rdfs:label "recipient type"@en ;
     skos:definition "Type of data recipient."@en ;
     adalbert:resolutionPath "agent.recipientType" ;
-    rdfs:comment "E.g., internal, professional, retail."@en .
+    rdfs:comment "E.g., internal, external, professional, retail."@en .
+
+# Recipient type values
+adalbert-due:internalRecipient a skos:Concept ;
+    skos:inScheme adalbert-due:scheme ;
+    rdfs:label "internal recipient"@en ;
+    skos:definition "Recipient within the same organization."@en .
+adalbert-due:externalRecipient a skos:Concept ;
+    skos:inScheme adalbert-due:scheme ;
+    rdfs:label "external recipient"@en ;
+    skos:definition "Recipient outside the organization."@en .
+adalbert-due:professional a skos:Concept ;
+    skos:inScheme adalbert-due:scheme ;
+    rdfs:label "professional"@en ;
+    skos:definition "Licensed professional user."@en .
+adalbert-due:retail a skos:Concept ;
+    skos:inScheme adalbert-due:scheme ;
+    rdfs:label "retail"@en ;
+    skos:definition "Retail/individual user."@en .
 
 # =============================================================================
 # ENVIRONMENT OPERANDS
@@ -282,6 +300,44 @@ adalbert-due:externalNetwork a skos:Concept ;
 adalbert-due:cloudNetwork a skos:Concept ;
     skos:inScheme adalbert-due:scheme ;
     rdfs:label "cloud network"@en .
+
+# =============================================================================
+# SERVICE LEVEL OPERANDS
+# =============================================================================
+
+adalbert-due:availability a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "availability"@en ;
+    skos:definition "Service availability percentage."@en ;
+    adalbert:resolutionPath "context.availability" ;
+    rdfs:comment "Typically measured as uptime percentage over a period (e.g., 99.9%)."@en .
+
+adalbert-due:latency a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "latency"@en ;
+    skos:definition "Response latency at a given percentile."@en ;
+    adalbert:resolutionPath "context.latency" ;
+    rdfs:comment "Measured as duration (e.g., P99 latency <= PT0.2S)."@en .
+
+adalbert-due:throughput a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "throughput"@en ;
+    skos:definition "Request throughput capacity."@en ;
+    adalbert:resolutionPath "context.throughput" ;
+    rdfs:comment "Measured in requests per second."@en .
+
+# =============================================================================
+# DATA QUALITY OPERANDS
+# =============================================================================
+
+adalbert-due:completeness a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "completeness"@en ;
+    skos:definition "Data completeness percentage."@en ;
+    adalbert:resolutionPath "asset.completeness" ;
+    rdfs:comment "Percentage of non-null required fields."@en .
+
+adalbert-due:accuracy a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "accuracy"@en ;
+    skos:definition "Data accuracy percentage."@en ;
+    adalbert:resolutionPath "asset.accuracy" ;
+    rdfs:comment "Percentage of records passing validation rules."@en .
 
 # =============================================================================
 # TIMELINESS OPERANDS
@@ -383,6 +439,32 @@ adalbert-due:rateLimit a odrl:LeftOperand, skos:Concept ;
     rdfs:label "rate limit"@en ;
     skos:definition "Maximum requests per time period."@en ;
     adalbert:resolutionPath "context.rateLimit" .
+
+# =============================================================================
+# CHANNEL OPERANDS
+# =============================================================================
+
+adalbert-due:channel a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "channel"@en ;
+    skos:definition "Communication or delivery channel."@en ;
+    adalbert:resolutionPath "context.channel" ;
+    rdfs:comment "E.g., email, chat, phone, api, sftp."@en .
+
+adalbert-due:serviceWindow a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "service window"@en ;
+    skos:definition "Time window during which a service is available."@en ;
+    adalbert:resolutionPath "context.serviceWindow" ;
+    rdfs:comment "E.g., business-hours, 24x7, weekdays."@en .
+
+# =============================================================================
+# SUBSCRIPTION OPERANDS
+# =============================================================================
+
+adalbert-due:subscriptionTier a odrl:LeftOperand, skos:Concept ;
+    rdfs:label "subscription tier"@en ;
+    skos:definition "Access tier or subscription level."@en ;
+    adalbert:resolutionPath "context.subscriptionTier" ;
+    rdfs:comment "E.g., free, basic, premium, enterprise."@en .
 
 # =============================================================================
 # DERIVATION OPERANDS
