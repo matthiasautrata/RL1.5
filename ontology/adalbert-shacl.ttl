@@ -257,6 +257,90 @@ adalbertsh:LogicalConstraintShape a sh:NodeShape ;
     sh:message "LogicalConstraint must have exactly one of: odrl:and, odrl:or, or adalbert:not." .
 
 # =============================================================================
+# DATA CONTRACT SHAPE
+# =============================================================================
+
+adalbertsh:DataContractShape a sh:NodeShape ;
+    sh:targetClass adalbert:DataContract ;
+    sh:name "Data Contract Shape" ;
+
+    sh:property adalbertsh:ProfilePropertyGroup ;
+
+    sh:node adalbertsh:NonEmptyClausesConstraint ;
+
+    sh:property [
+        sh:path odrl:assigner ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "DataContract must have exactly one assigner."
+    ] ;
+
+    sh:property adalbertsh:StatePropertyGroup ;
+
+    sh:property [
+        sh:path adalbert:effectiveDate ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime
+    ] ;
+
+    sh:property [
+        sh:path adalbert:expirationDate ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime
+    ] .
+
+# =============================================================================
+# SUBSCRIPTION SHAPE
+# =============================================================================
+
+adalbertsh:SubscriptionShape a sh:NodeShape ;
+    sh:targetClass adalbert:Subscription ;
+    sh:name "Subscription Shape" ;
+
+    sh:property adalbertsh:ProfilePropertyGroup ;
+
+    sh:node adalbertsh:NonEmptyClausesConstraint ;
+
+    # Explicit party constraints — Subscription is subClassOf Agreement,
+    # but without RDFS entailment AgreementShape won't target Subscription
+    # instances. Duplicate the party requirements here.
+    sh:property [
+        sh:path odrl:assigner ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Subscription must have exactly one assigner (data provider)."
+    ] ;
+
+    sh:property [
+        sh:path odrl:assignee ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "Subscription must have exactly one assignee (data consumer)."
+    ] ;
+
+    sh:property [
+        sh:path adalbert:subscribesTo ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class adalbert:DataContract ;
+        sh:message "Subscription must reference exactly one DataContract."
+    ] ;
+
+    sh:property adalbertsh:StatePropertyGroup ;
+
+    sh:property [
+        sh:path adalbert:effectiveDate ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime
+    ] ;
+
+    sh:property [
+        sh:path adalbert:expirationDate ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime
+    ] .
+
+# =============================================================================
 # LEFT OPERAND SHAPE
 # =============================================================================
 # sh:minCount 0: resolutionPath is optional in the shape because ODRL's

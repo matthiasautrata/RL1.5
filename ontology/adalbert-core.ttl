@@ -10,6 +10,7 @@
 #   - Deadline on duties
 #   - Recurrence on duties (RFC 5545 RRULE)
 #   - Duty party roles (subject, object)
+#   - Data contracts and subscriptions (domain subtypes)
 #   - Asset/party hierarchy (partOf, memberOf)
 #   - Structured operand resolution (resolutionPath)
 #   - Runtime references (RuntimeReference, currentAgent, currentDateTime)
@@ -44,6 +45,7 @@
         - Deadline property on odrl:Duty
         - Recurrence property on odrl:Duty (RFC 5545 RRULE)
         - Duty party roles (subject = duty bearer, object = affected party)
+        - Data contract and subscription subtypes
         - Asset/party hierarchy properties
         - Structured operand resolution via resolutionPath
         - Runtime references for dynamic right-operand values
@@ -73,10 +75,10 @@
 
 adalbert:State a owl:Class ;
     rdfs:label "State"@en ;
-    skos:definition "Unified lifecycle state for duties."@en ;
+    skos:definition "Unified lifecycle state for duties and contracts."@en ;
     owl:oneOf (adalbert:Pending adalbert:Active adalbert:Fulfilled adalbert:Violated) ;
     rdfs:comment """
-        Four states cover duty lifecycles.
+        Four states cover both duty and contract lifecycles.
 
         On duties (evaluated during Eval):
         - Pending: condition not yet satisfied
@@ -84,30 +86,38 @@ adalbert:State a owl:Class ;
         - Fulfilled: action performed
         - Violated: deadline passed without performance
 
-        Unified by design: one state property with deterministic transitions.
-        The formal semantics (§4.1) tracks duty state during evaluation.
+        On contracts/subscriptions (administrative, not evaluated at request time):
+        - Pending: not yet in force
+        - Active: in force
+        - Fulfilled: obligations complete
+        - Violated: breached
+
+        Unified by design: the same four transitions apply to both domains,
+        and a single state property avoids proliferating parallel enums.
+        The formal semantics (§4.1) tracks only duty state during evaluation;
+        contract state is managed by external administrative processes.
     """@en .
 
 adalbert:Pending a adalbert:State ;
     rdfs:label "Pending"@en ;
-    skos:definition "Condition not yet satisfied."@en .
+    skos:definition "Condition not yet satisfied; not yet in force."@en .
 
 adalbert:Active a adalbert:State ;
     rdfs:label "Active"@en ;
-    skos:definition "Condition satisfied, action required."@en .
+    skos:definition "Condition satisfied, action required; in force."@en .
 
 adalbert:Fulfilled a adalbert:State ;
     rdfs:label "Fulfilled"@en ;
-    skos:definition "Action performed."@en .
+    skos:definition "Action performed; obligations complete."@en .
 
 adalbert:Violated a adalbert:State ;
     rdfs:label "Violated"@en ;
-    skos:definition "Deadline passed without performance."@en .
+    skos:definition "Deadline passed without performance; breached."@en .
 
 adalbert:state a owl:ObjectProperty ;
     rdfs:label "state"@en ;
     skos:definition "Current lifecycle state."@en ;
-    rdfs:domain odrl:Duty ;
+    rdfs:domain [ owl:unionOf (odrl:Duty adalbert:DataContract adalbert:Subscription) ] ;
     rdfs:range adalbert:State .
 
 # =============================================================================
@@ -144,6 +154,56 @@ adalbert:recurrence a owl:DatatypeProperty ;
         The deadline property defines the per-instance fulfillment window.
         Any iCal-compliant library can parse the value.
     """@en .
+
+# =============================================================================
+# CONTRACT CLASSES (genuinely new — domain subtypes)
+# =============================================================================
+
+adalbert:DataContract a owl:Class ;
+    rdfs:label "Data Contract"@en ;
+    skos:definition "Policy offer defining data access terms."@en ;
+    rdfs:subClassOf odrl:Offer ;
+    rdfs:comment """
+        A DataContract is an Offer from a data provider.
+        It defines permissions, duties, and prohibitions for data access.
+
+        When accepted (subscribed), becomes a Subscription (Agreement).
+    """@en .
+
+adalbert:Subscription a owl:Class ;
+    rdfs:label "Subscription"@en ;
+    skos:definition "Activated data contract binding provider and consumer."@en ;
+    rdfs:subClassOf odrl:Agreement ;
+    owl:disjointWith adalbert:DataContract ;
+    rdfs:comment """
+        A Subscription is an activated DataContract.
+        - assigner: data provider (from contract)
+        - assignee: data consumer (subscriber)
+
+        Bilateral: both parties may have active duties.
+    """@en .
+
+# =============================================================================
+# CONTRACT PROPERTIES (genuinely new)
+# =============================================================================
+
+adalbert:subscribesTo a owl:ObjectProperty ;
+    rdfs:label "subscribes to"@en ;
+    skos:definition "The contract this subscription activates."@en ;
+    rdfs:domain adalbert:Subscription ;
+    rdfs:range adalbert:DataContract .
+
+adalbert:effectiveDate a owl:DatatypeProperty ;
+    rdfs:label "effective date"@en ;
+    skos:definition "When the contract/subscription becomes effective."@en ;
+    rdfs:domain [ owl:unionOf (adalbert:DataContract adalbert:Subscription) ] ;
+    rdfs:range xsd:dateTime .
+
+adalbert:expirationDate a owl:DatatypeProperty ;
+    rdfs:label "expiration date"@en ;
+    skos:definition "When the contract/subscription expires."@en ;
+    rdfs:domain [ owl:unionOf (adalbert:DataContract adalbert:Subscription) ] ;
+    rdfs:range xsd:dateTime .
 
 # =============================================================================
 # HIERARCHY EXTENSIONS (genuinely new)
